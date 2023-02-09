@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  provider:
+    image: edc-ionos-provider:latest
+    ports:
+      - "8181:8181"
+      - "8182:8182"
+      - "8282:8282"
+    environment:
+      EDC_FS_CONFIG: /resources/provider-config.properties
