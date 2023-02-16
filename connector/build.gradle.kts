@@ -66,6 +66,8 @@ dependencies {
 	
 	implementation("${edcGroup}:iam-mock:${edcVersion}")
 	
+	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
+	
 	//Ionos Extension 
 	implementation(project(":edc-ionos-extension:provision-ionos-s3"))
 	

@@ -49,9 +49,15 @@ public class S3CoreExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        String accessKey = context.getSetting(IONOS_ACCESS_KEY, "ACCESS");
-        String secretKey = context.getSetting(IONOS_SECRET_KEY, "SECRET");
-        String endPoint = context.getSetting(IONOS_ENDPOINT, "URL");
+        var accessKey = vault.resolveSecret(IONOS_ACCESS_KEY);
+        var secretKey = vault.resolveSecret(IONOS_SECRET_KEY);
+        var endPoint = vault.resolveSecret(IONOS_ENDPOINT);
+        if(accessKey == null || secretKey  == null || endPoint ==null) {    	
+        	  accessKey = context.getSetting(IONOS_ACCESS_KEY, IONOS_ACCESS_KEY);
+              secretKey = context.getSetting(IONOS_ACCESS_KEY, IONOS_ACCESS_KEY);
+              endPoint = context.getSetting(IONOS_ENDPOINT, IONOS_ENDPOINT);
+        }
+		
         var s3Api = new S3ConnectorApiImpl(endPoint, accessKey, secretKey);
         context.registerService(S3ConnectorApi.class, s3Api);
     }

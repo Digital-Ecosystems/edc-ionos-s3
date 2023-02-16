@@ -53,7 +53,9 @@ dependencies {
 
 	implementation("${edcGroup}:auth-tokenbased:${edcVersion}")	
 
-    implementation("$edcGroup:management-api:$edcVersion")
+    implementation("${edcGroup}:management-api:${edcVersion}")
+	
+	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
 	
 	implementation(project(":edc-ionos-extension:provision-ionos-s3"))	
 	

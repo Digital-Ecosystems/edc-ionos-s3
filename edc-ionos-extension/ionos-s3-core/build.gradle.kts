@@ -24,6 +24,8 @@ dependencies {
 	api("${edcGroup}:runtime-metamodel:${metaModelVersion}")
 	implementation("${edcGroup}:transfer-spi:${edcVersion}")
 	
+	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
+	
 	implementation("io.minio:minio:${minIOVersion}")
 	
 	testImplementation ("${edcGroup}:junit:${edcVersion}")	

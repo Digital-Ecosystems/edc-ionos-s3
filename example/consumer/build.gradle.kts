@@ -54,7 +54,9 @@ dependencies {
 	
 	implementation("$edcGroup:ids:$edcVersion")
 	
-	implementation("$edcGroup:management-api:$edcVersion")
+	implementation("${edcGroup}:management-api:${edcVersion}")
+	
+	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
 	
 	implementation(project(":edc-ionos-extension:data-plane-ionos-s3"))
 	
