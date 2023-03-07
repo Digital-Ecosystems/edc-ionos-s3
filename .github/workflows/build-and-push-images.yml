@@ -47,13 +47,8 @@ jobs:
             latest
             ${{ github.sha }}
 
-      - uses: sigstore/cosign-installer@main
-
-      - name: Write signing key to disk
-        run: echo "${{ secrets.SIGNING_SECRET }}" > cosign.key
-
       - name: Build and push "connector"
-        id: build_and_push_demo_portal
+        id: build_and_push_connector
         uses: docker/build-push-action@v4
         with:
           context: ./connector
@@ -62,10 +57,4 @@ jobs:
           tags: ${{ steps.connector-meta.outputs.tags }}
           labels: ${{ steps.connector-meta.outputs.labels }}
       
-      - name: Sign "connector" image
-        run: |
-          cosign sign -y --key cosign.key \
-          ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector@${{ steps.build_and_push_demo_portal.outputs.digest }}
-        env:
-          COSIGN_PASSWORD: ${{ secrets.SIGNING_SECRET_PASSWORD }}
     
