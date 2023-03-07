@@ -35,14 +35,11 @@ jobs:
         with:
           buildkitd-flags: --debug
 
-      - name: Prepare required files
-        run: ./gradlew clean build
-
       - name: Docker "connector" meta
         id: connector-meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector
+          images: ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/hello
           tags: |
             latest
             ${{ github.sha }}
@@ -51,8 +48,8 @@ jobs:
         id: build_and_push_connector
         uses: docker/build-push-action@v4
         with:
-          context: ./connector
-          file: ./connector/Dockerfile
+          context: ./docker
+          file: ./docker/Dockerfile
           push: true
           tags: ${{ steps.connector-meta.outputs.tags }}
           labels: ${{ steps.connector-meta.outputs.labels }}
