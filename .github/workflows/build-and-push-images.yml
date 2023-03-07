@@ -10,7 +10,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  NAMESPACE: edc-ionos-s3
+  NAMESPACE: digital-ecosystems
 
 jobs:
   build-and-push-image:
@@ -35,23 +35,36 @@ jobs:
         with:
           buildkitd-flags: --debug
 
+      - name: Prepare required files
+        run: ./gradlew clean build
+
       - name: Docker "connector" meta
         id: connector-meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/hello
+          images: ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector
           tags: |
             latest
             ${{ github.sha }}
+      
+      - uses: sigstore/cosign-installer@main
+
+      - name: Write signing key to disk
+        run: echo "${{ secrets.SIGNING_SECRET }}" > cosign.key
 
       - name: Build and push "connector"
         id: build_and_push_connector
         uses: docker/build-push-action@v4
         with:
-          context: ./docker
-          file: ./docker/Dockerfile
+          context: ./connector
+          file: ./connector/Dockerfile
           push: true
           tags: ${{ steps.connector-meta.outputs.tags }}
           labels: ${{ steps.connector-meta.outputs.labels }}
       
-    
+      - name: Sign "connector" image
+        run: |
+          cosign sign -y --key cosign.key \
+          ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector@${{ steps.build_and_push_connector.outputs.digest }}
+        env:
+          COSIGN_PASSWORD: ${{ secrets.SIGNING_SECRET_PASSWORD }}
