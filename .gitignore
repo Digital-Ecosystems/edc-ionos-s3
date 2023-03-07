@@ -1,4 +1,4 @@
-# .gradle/**
-# connector/build/**
-# **/bin/**
-# **/build/**
+.gradle/**
+connector/build/**
+**/bin/**
+**/build/**
