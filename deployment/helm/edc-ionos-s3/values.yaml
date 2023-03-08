@@ -109,13 +109,13 @@ edc:
     name: ionos
     hashicorp:
       url: http://vault:8200
-      token: 
+      token:
       timeout:
         seconds: 30
   ionos:
-    accessKey: 
-    secretKey: 
-    endpoint: s3-eu-central-1.ionoscloud.com
+    accessKey:
+    secretKey:
+    endpoint:
 ids:
   webhook:
     address: http://localhost:8282

@@ -18,7 +18,7 @@ The IONOS S3 Extension can be deployed to a Kubernetes cluster using the Helm ch
 
     ```bash
     helm repo add hashicorp https://helm.releases.hashicorp.com
-    helm install vault hashicorp/vault --version 0.23.0 --namespace edc-ionos-s3 --create-namespace
+    helm install vault hashicorp/vault --version 0.19.0 --namespace edc-ionos-s3 --create-namespace
 
     # Initialize Vault
     kubectl exec --namespace edc-ionos-s3 -it vault-0 -- vault operator init -key-shares=1 -key-threshold=1 -format=json > vault-keys.json
@@ -30,7 +30,7 @@ The IONOS S3 Extension can be deployed to a Kubernetes cluster using the Helm ch
     kubectl exec --namespace edc-ionos-s3 -it vault-0 -- vault login $(jq -r ".root_token" vault-keys.json)
 
     # Enable KV secrets engine
-    kubectl exec --namespace edc-ionos-s3 -it vault-0 -- vault secrets enable -path=secret kv
+    kubectl exec --namespace edc-ionos-s3 -it vault-0 -- vault secrets enable -version=2 -path=secret kv
 
     # Add secrets to Vault
     kubectl exec --namespace edc-ionos-s3 -it vault-0 -- vault kv put secret/edc.ionos.access.key content=
