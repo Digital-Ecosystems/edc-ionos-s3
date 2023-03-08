@@ -32,7 +32,7 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             groupId = "com.ionos.edc"
-            artifactId = "provision-s3"
+            artifactId = "s3-provision"
             version = "0.0.1"
 
             from(components["java"])
