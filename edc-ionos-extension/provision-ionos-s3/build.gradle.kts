@@ -1,5 +1,6 @@
 plugins {
     `java-library`
+	`maven-publish`
 }
 val javaVersion: String by project
 val faaastVersion: String by project
@@ -17,8 +18,6 @@ repositories {
     }
 }
 dependencies {
-
-   
 	api("${edcGroup}:runtime-metamodel:${metaModelVersion}")
     implementation(project(":edc-ionos-extension:ionos-s3-core"))
 	implementation("${edcGroup}:transfer-spi:${edcVersion}")
@@ -26,5 +25,18 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
 	
 	implementation("dev.failsafe:failsafe:3.2.4")
+}
+
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "com.ionos.edc"
+            artifactId = "provision-s3"
+            version = "0.0.1"
+
+            from(components["java"])
+        }
+    }
 }
 

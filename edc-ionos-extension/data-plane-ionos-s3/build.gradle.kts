@@ -14,7 +14,8 @@
  */
  
 plugins {
-  `java-library`
+  	`java-library`
+  	`maven-publish`
 }
 repositories {
 	mavenLocal()
@@ -51,3 +52,14 @@ dependencies {
 
 }
 
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "com.ionos.edc"
+            artifactId = "s3-data-plane"
+            version = "0.0.1"
+
+            from(components["java"])
+        }
+    }
+}

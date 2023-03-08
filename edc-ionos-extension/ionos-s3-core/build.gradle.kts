@@ -1,6 +1,6 @@
 plugins {
 	`java-library`
-
+	`maven-publish`
 }
 repositories {
 	mavenLocal()
@@ -31,4 +31,17 @@ dependencies {
 	testImplementation ("${edcGroup}:junit:${edcVersion}")	
 	
 
+}
+
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "com.ionos.edc"
+            artifactId = "s3-core"
+            version = "0.0.1"
+
+            from(components["java"])
+        }
+    }
 }
