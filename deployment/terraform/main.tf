@@ -7,22 +7,57 @@ terraform {
   }
 }
 
-provider "helm" {
-  kubernetes {
-    config_path = "./kubeconfig-ionos.yaml"
-  }
+variable "kubeconfig" {
+  type = string
+}
+
+variable "s3_access_key" {
+  type = string
+}
+
+variable "s3_secret_key" {
+  type = string
+}
+
+variable "s3_endpoint" {
+  type = string
 }
 
 variable "namespace" {
+  type = string
   default = "edc-ionos-s3"
 }
 
-resource "helm_release" "edc-ionos-s3" {
-  name       = "edc-ionos-s3"
+provider "helm" {
+  kubernetes {
+    config_path = "${var.kubeconfig}"
+  }
+}
 
-  repository = "../deployment/helm"
-  chart      = "edc-ionos-s3"
+module "vault-deploy" {
+  source = "./vault-deploy"
 
-  namespace = var.namespace
-  create_namespace = true
+  namespace = "${var.namespace}"
+}
+
+module "vault-init" {
+  source = "./vault-init"
+
+  depends_on = [
+    module.vault-deploy
+  ]
+
+  s3_access_key = "${var.s3_access_key}"
+  s3_secret_key = "${var.s3_secret_key}"
+  s3_endpoint = "${var.s3_endpoint}"
+}
+
+module "ionos-s3-deploy" {
+  source = "./ionos-s3-deploy"
+
+  depends_on = [
+    module.vault-init
+  ]
+
+  namespace = "${var.namespace}"
 }
