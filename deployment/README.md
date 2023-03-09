@@ -9,7 +9,7 @@ This document describes how to deploy EDC Ionos S3 on IONOS DCD.
 - [Helm](https://helm.sh/docs/intro/install/)
 - [Terraform](https://developer.hashicorp.com/terraform/downloads)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-- [Kubernetes cluster](https://kubernetes.io/docs/setup/)
+- [Kubernetes cluster](https://kubernetes.io/docs/setup/) - **Note:** You can use the terraform script in [General-des-development](https://github.com/Digital-Ecosystems/general-des-development) repository to deploy a kubernetes cluster on IONOS DCD.
 
 ***
 
@@ -40,7 +40,7 @@ export TF_VAR_s3_endpoint=''
 To install the services run the script ```deploy-services.sh``` in ```terraform``` directory.
 
 ```sh
-cd terraform-deploy
+cd terraform
 ./deploy-services.sh
 ```
 
