@@ -6,8 +6,9 @@ variable "namespace" {
 resource "helm_release" "vault" {
   name       = "vault"
 
-  repository = "../helm"
+  repository = "https://helm.releases.hashicorp.com"
   chart      = "vault"
+  version = "v0.19.0"
 
   namespace = "${var.namespace}"
   create_namespace = true
