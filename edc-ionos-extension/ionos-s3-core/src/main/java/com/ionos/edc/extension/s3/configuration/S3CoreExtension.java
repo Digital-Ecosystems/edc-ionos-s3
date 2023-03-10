@@ -54,7 +54,7 @@ public class S3CoreExtension implements ServiceExtension {
         var endPoint = vault.resolveSecret(IONOS_ENDPOINT);
         if(accessKey == null || secretKey  == null || endPoint ==null) {    	
         	  accessKey = context.getSetting(IONOS_ACCESS_KEY, IONOS_ACCESS_KEY);
-              secretKey = context.getSetting(IONOS_ACCESS_KEY, IONOS_ACCESS_KEY);
+              secretKey = context.getSetting(IONOS_SECRET_KEY, IONOS_SECRET_KEY);
               endPoint = context.getSetting(IONOS_ENDPOINT, IONOS_ENDPOINT);
         }
 		
