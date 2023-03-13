@@ -33,12 +33,14 @@ export TF_VAR_s3_endpoint=''
 
 ***
 
+## Deploy
+
 ### 1. Update the docker image and imagepullsecret in the helm chart
 ```sh
 vim helm/edc-ionos-s3/values.yaml
 ```
 
-### 1. Install the EDC Ionos S3 services
+### 2. Install the EDC Ionos S3 services
 
 To install the services run the script ```deploy-services.sh``` in ```terraform``` directory.
 
@@ -47,5 +49,5 @@ cd terraform
 ./deploy-services.sh
 ```
 
-### 2. Vault keys
+### 3. Vault keys
 After the services are installed you will have ```vault-keys.json``` file containing the vault keys in ```terraform``` directory.
