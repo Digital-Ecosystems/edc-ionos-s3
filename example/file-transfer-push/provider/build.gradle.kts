@@ -65,7 +65,7 @@ dependencies {
 		
 	implementation("${edcGroup}:iam-mock:${edcVersion}")
 	
-    implementation(project(":example:transfer-file"))
+    implementation(project(":example:file-transfer-push:transfer-file"))
 }
 
 application {
