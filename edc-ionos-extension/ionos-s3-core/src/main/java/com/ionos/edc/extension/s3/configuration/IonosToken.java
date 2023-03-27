@@ -15,36 +15,36 @@
 package com.ionos.edc.extension.s3.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import org.eclipse.edc.connector.transfer.spi.types.SecretToken;
 
-
+@JsonTypeName("dataspaceconnector:ionostoken")
 public class IonosToken implements SecretToken {
-    private final String sessionToken;
+
+    private final String accessKey;
+    private final String secretKey;
     private final long expiration;
-    private final String accessKeyId;
-    private final String secretAccessKey;
 
-    public IonosToken(@JsonProperty("accessKeyId") String accessKeyId, @JsonProperty("secretAccessKey") String secretAccessKey, @JsonProperty("sessionToken") String sessionToken, @JsonProperty("expiration") long expiration) {
-        this.sessionToken = sessionToken;
-        this.expiration = expiration;
-        this.accessKeyId = accessKeyId;
-        this.secretAccessKey = secretAccessKey;
+    public IonosToken(@JsonProperty("accessKey") String accessKey, @JsonProperty("secretKey") String secretKey, @JsonProperty("expiration") long expiration) {
+    	this.expiration = expiration;
+        this.accessKey = accessKey;
+        this.secretKey = secretKey;
     }
+   
+	public String getAccessKey() {
+		return accessKey;
+	}
 
-    public String getSessionToken() {
-        return sessionToken;
-    }
+	public String getSecretKey() {
+		return secretKey;
+	}
+	
+	@Override
+	public long getExpiration() {
+		return expiration;
+	}
 
-    @Override
-    public long getExpiration() {
-        return expiration;
-    }
+	
 
-    public String getAccessKeyId() {
-        return accessKeyId;
-    }
-
-    public String getSecretAccessKey() {
-        return secretAccessKey;
-    }
 }

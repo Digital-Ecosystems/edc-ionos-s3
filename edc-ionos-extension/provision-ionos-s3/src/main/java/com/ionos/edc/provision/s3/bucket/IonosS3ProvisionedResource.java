@@ -28,11 +28,10 @@ import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.STORAGE_NAME;
 @JsonTypeName("dataspaceconnector:ionosprovisionedresource")
 public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResource {
     private String role;
-
+    
     public String getStorage() {
         return getDataAddress().getProperty(STORAGE_NAME);
     }
-
     public String getBucketName() {
         return getDataAddress().getProperty(BUCKET_NAME);
     }
@@ -67,7 +66,6 @@ public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResour
             dataAddressBuilder.property(STORAGE_NAME, storage);
             return this;
         }
-
         public Builder bucketName(String bucketName) {
             dataAddressBuilder.property(BUCKET_NAME, bucketName);
             dataAddressBuilder.keyName(bucketName + "-key");

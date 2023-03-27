@@ -7,7 +7,7 @@ curl -H 'Content-Type: application/json' \
    "edctype": "dataspaceconnector:dataplaneinstance",
    "id": "http-pull-provider-dataplane",
    "url": "http://localhost:19192/control/transfer",
-   "allowedSourceTypes": [ "HttpData", "IonosS3" ],
+   "allowedSourceTypes": [ "HttpData" ],
    "allowedDestTypes": [ "HttpProxy", "HttpData" ],
    "properties": {
      "publicApiUrl": "http://localhost:19291/public/"
@@ -20,7 +20,7 @@ curl -H 'Content-Type: application/json' \
    "edctype": "dataspaceconnector:dataplaneinstance",
    "id": "http-pull-consumer-dataplane",
    "url": "http://localhost:29192/control/transfer",
-   "allowedSourceTypes": [ "HttpData", "IonosS3" ],
+   "allowedSourceTypes": [ "HttpData" ],
    "allowedDestTypes": [ "HttpProxy", "HttpData", "IonosS3" ],
    "properties": {
      "publicApiUrl": "http://localhost:29291/public/"
@@ -38,12 +38,9 @@ curl -d '{
            },
            "dataAddress": {
              "properties": {
-	       "storage":"s3-eu-central-1.ionoscloud.com",
-               "container": "pullcompany2",
-               "bucketName": "pullcompany2",
-	       "blobName": "device1-data.csv",
-	       "name": "device1-data.csv",
-               "type": "IonosS3"
+				"name": "Test asset",
+				"baseUrl": "https://jsonplaceholder.typicode.com/users",
+				"type": "HttpData"
              }
            }
          }' -H 'content-type: application/json' http://localhost:19193/api/v1/data/assets
@@ -157,7 +154,10 @@ curl -X POST "http://localhost:29193/api/v1/data/transferprocess" \
                 "managedResources": "false",
 		"dataDestination": { 
 		"properties": {
-		   "type": "HttpProxy"
+		   "type": "IonosS3"
+			"storage":"s3-eu-central-2.ionoscloud.com",
+			"bucketName": "company2",
+			"blobName": "Test asset"
 	        }
 	        }
             }' \

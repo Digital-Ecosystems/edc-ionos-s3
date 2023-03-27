@@ -15,6 +15,8 @@
 package com.ionos.edc.provision.s3.bucket;
 
 import com.ionos.edc.extension.s3.api.S3ConnectorApi;
+import com.ionos.edc.extension.s3.configuration.IonosToken;
+
 import dev.failsafe.RetryPolicy;
 import org.eclipse.edc.connector.transfer.spi.provision.Provisioner;
 import org.eclipse.edc.connector.transfer.spi.types.DeprovisionedResource;
@@ -23,10 +25,12 @@ import org.eclipse.edc.connector.transfer.spi.types.ProvisionedResource;
 import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.response.StatusResult;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.OffsetDateTime;
 import java.util.concurrent.CompletableFuture;
 
+import static dev.failsafe.Failsafe.with;
 
 public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition, IonosS3ProvisionedResource> {
     private final RetryPolicy<Object> retryPolicy;
@@ -55,35 +59,72 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
     @Override
     public CompletableFuture<StatusResult<ProvisionResponse>> provision(IonosS3ResourceDefinition resourceDefinition,
             org.eclipse.edc.policy.model.Policy policy) {
-
+//    	monitor.debug("provisionIOnos 62");
+    	
         String storage = resourceDefinition.getStorage();
         String bucketName = resourceDefinition.getbucketName();
-
-      
-
+        String accessKey = resourceDefinition.getAccessKey();
+        String secretKey = resourceDefinition.getSecretKey();
+        monitor.debug(" storage " + storage +" bucketName " + bucketName +" accessKey " + accessKey +" secretKey " + secretKey  );
         OffsetDateTime expiryTime = OffsetDateTime.now().plusHours(1);
 
-        // Ensure resource name is unique to avoid key collisions in local and remote
-        // vaults
         if (storage == null) {
             storage = "storage";       
         }
-        String resourceName = resourceDefinition.getId() + "-container";
-        var resource = IonosS3ProvisionedResource.Builder.newInstance().id(bucketName).storage(storage)
-                .bucketName(bucketName).resourceDefinitionId(resourceDefinition.getId())
-                .transferProcessId(resourceDefinition.getTransferProcessId()).resourceName(resourceName).hasToken(true)
-                .build();
-        
-        var response = ProvisionResponse.Builder.newInstance().resource(resource).build();
-        return CompletableFuture.completedFuture(StatusResult.success(response));
-
+//        monitor.debug(" vou tentar");
+        return with(retryPolicy).getAsync(() -> s3Api.bucketExists(bucketName))
+        		.thenCompose(exists -> {
+                    if (exists) {
+                        return getExistBucket(bucketName);
+                    } else {
+                        return createBucket(bucketName);
+                    }
+                })
+                .thenApply(writeOnlySas -> {
+                    // Ensure resource name is unique to avoid key collisions in local and remote vaults
+                	String resourceName = resourceDefinition.getId() + "-container";
+                	 monitor.debug("ResourceName or keyname" +  resourceDefinition.getbucketName());
+                	 var resource = IonosS3ProvisionedResource.Builder.newInstance().id( resourceName)  
+                			 .storage(secretKey)
+                             .bucketName(resourceDefinition.getbucketName()).resourceDefinitionId(resourceDefinition.getId())
+                             .transferProcessId(resourceDefinition.getTransferProcessId()).resourceName(resourceName).hasToken(true)
+                             .build();
+                	 
+                	var serviceAccount =s3Api.createTemporaryKey();
+                	var secretToken = new IonosToken(serviceAccount.getAccessKey(), serviceAccount.secretKey, expiryTime.toInstant().toEpochMilli() );
+//                	monitor.debug("token: " + secretToken);
+                    var response = ProvisionResponse.Builder.newInstance().resource(resource).secretToken(secretToken).build();
+                   
+                    return StatusResult.success(response);
+                });
+    
     }
 
     @Override
     public CompletableFuture<StatusResult<DeprovisionedResource>> deprovision(
             IonosS3ProvisionedResource provisionedResource, org.eclipse.edc.policy.model.Policy policy) {
         // TODO Auto-generated method stub
-        return null;
+    	 monitor.debug("deprovisionIOnos 106");
+    	  return with(retryPolicy).runAsync(() -> s3Api.deleteBucket(provisionedResource.getBucketName()))
+                  .thenApply(empty -> StatusResult.success(DeprovisionedResource.Builder.newInstance().provisionedResourceId(provisionedResource.getId()).build()));
+
+      
     }
+    
+    @NotNull
+    private CompletableFuture<Void> getExistBucket(String bucketName) {
+        monitor.debug("Provisioner: re-use existing bucket " + bucketName);
+        return CompletableFuture.completedFuture(null);
+    }
+    
+    @NotNull
+    private CompletableFuture<Void> createBucket(String bucketName) {
+        return with(retryPolicy)
+                .runAsync(() -> {
+                    s3Api.createBucket(bucketName);
+                    monitor.debug("Provisioner: created a new bucket " + bucketName);
+                });
+    }
+
 
 }

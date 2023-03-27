@@ -34,6 +34,7 @@ class IonosDataSource implements DataSource {
 
     @Override
     public Stream<Part> openPartStream() {
+    	System.out.println("Datasource open part " + keyName + " - " + bucketName + " - " + blobName + " qual é o access: " + s3Api.getAccessKey());
         return Stream.of(new S3Part(s3Api, keyName, bucketName, blobName));
     }
 
@@ -58,7 +59,9 @@ class IonosDataSource implements DataSource {
 
         @Override
         public InputStream openStream() {
+        	  System.out.println("DataSource 62 " + bucketName + " - " + blobName  +  " " + s3Api.getAccessKey());
             InputStream targetStream = new ByteArrayInputStream(s3Api.getFile(bucketName, blobName));
+            System.out.println("DataSource 64 " + targetStream.hashCode());
             return targetStream;
         }
 

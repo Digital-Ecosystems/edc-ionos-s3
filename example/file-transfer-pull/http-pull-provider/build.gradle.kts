@@ -51,8 +51,6 @@ dependencies {
     implementation("${edcGroupId}:data-plane-core:${edcVersion}")
     implementation("${edcGroupId}:data-plane-http:${edcVersion}")
 
-	implementation(project(":edc-ionos-extension:data-plane-ionos-s3"))
-	implementation(project(":edc-ionos-extension:provision-ionos-s3"))
 
 }
 

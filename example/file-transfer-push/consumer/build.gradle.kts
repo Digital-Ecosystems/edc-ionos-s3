@@ -58,7 +58,7 @@ dependencies {
 	
 	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
 	
-	implementation(project(":edc-ionos-extension:data-plane-ionos-s3"))
+	implementation(project(":edc-ionos-extension:provision-ionos-s3"))
 	
 	implementation("${edcGroup}:catalog-api:${edcVersion}")
 		

@@ -17,6 +17,8 @@ package com.ionos.edc.dataplane.ionos.s3;
 
 import com.ionos.edc.dataplane.ionos.s3.validation.IonosSinkDataAddressValidationRule;
 import com.ionos.edc.extension.s3.api.S3ConnectorApi;
+import com.ionos.edc.extension.s3.api.S3ConnectorApiImpl;
+import com.ionos.edc.extension.s3.configuration.IonosToken;
 import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSink;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSinkFactory;
@@ -32,6 +34,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ExecutorService;
 
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.ACCESS_KEY_ID;
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.SECRET_ACCESS_KEY;
 public class IonosDataSinkFactory implements DataSinkFactory {
 
     private static final int CHUNK_SIZE_IN_BYTES = 1024 * 1024 * 500; // 500MB chunk size
@@ -72,10 +76,28 @@ public class IonosDataSinkFactory implements DataSinkFactory {
             throw new EdcException(String.join(", ", validationResult.getFailureMessages()));
         }
         var destination = request.getDestinationDataAddress();
+
+        var secret = vault.resolveSecret(destination.getKeyName());
+        S3ConnectorApi s3ApiTemp;
+        if (secret != null) {
+            var Token = typeManager.readValue(secret, IonosToken.class);
+            if (destination.getProperty(IonosBucketSchema.STORAGE_NAME)!=null) {
+            	  System.out.println("createSink:90  incrivel vir aqui porque o storage é null");
+            s3ApiTemp = new S3ConnectorApiImpl(destination.getProperty(IonosBucketSchema.STORAGE_NAME), Token.getAccessKey(), Token.getSecretKey(), "");
+            		 return IonosDataSink.Builder.newInstance().bucketName(destination.getProperty(IonosBucketSchema.BUCKET_NAME))
+            	                .blobName(destination.getKeyName()).requestId(request.getId()).executorService(executorService)
+            	                .monitor(monitor).s3Api(s3ApiTemp).build();
+            }	 else {
+            	 System.out.println("createSink:96  o storage é null");
+            	 s3ApiTemp = new S3ConnectorApiImpl("s3-eu-central-1.ionoscloud.com", Token.getAccessKey(), Token.getSecretKey(), "");
+            	 return IonosDataSink.Builder.newInstance().bucketName(destination.getProperty(IonosBucketSchema.BUCKET_NAME))
+				   	                .blobName(destination.getKeyName()).requestId(request.getId()).executorService(executorService)
+				   	                .monitor(monitor).s3Api(s3ApiTemp).build();
+            }
+        }  
         
-    
         return IonosDataSink.Builder.newInstance().bucketName(destination.getProperty(IonosBucketSchema.BUCKET_NAME))
-                .keyName(destination.getKeyName()).requestId(request.getId()).executorService(executorService)
+                .blobName(destination.getKeyName()).requestId(request.getId()).executorService(executorService)
                 .monitor(monitor).s3Api(s3Api).build();
     }
 
