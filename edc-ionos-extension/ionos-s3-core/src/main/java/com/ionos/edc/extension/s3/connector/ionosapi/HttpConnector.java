@@ -15,7 +15,7 @@ public class HttpConnector {
 	OkHttpClient client = new OkHttpClient();
 	String basicUrl = "https://api.ionos.com/cloudapi/v6/um/users/";
 	
-	public String retrieveUserID(String token) throws IOException {		
+	public String retrieveUserID(String token)  {		
 		
 		Request request = new Request.Builder()
 				   .url(basicUrl)
@@ -31,20 +31,18 @@ public class HttpConnector {
 				        ResponseIonosApi resp = objectMapper.readValue(response.body().string(), ResponseIonosApi.class);
 				        System.out.println("Server: " + resp.getItems().get(0).getId());
 				        return  resp.getItems().get(0).getId();		  
-				     }
+				     }catch (Exception e) {
+				    	e.printStackTrace();
+				    	return "";
+					}
 				    
 		   
 	}
 	
 		
 	public TemporaryKey createTemporaryKey(String token) {
-		 String url ="";
-		try {
-			url = basicUrl + retrieveUserID(token) + "/s3keys";
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		 String url = basicUrl + retrieveUserID(token) + "/s3keys";
+		
 		
 		Request request = new Request.Builder()
 				   .url(url)
@@ -68,8 +66,8 @@ public class HttpConnector {
 					}				    
 	}
 	
-	public void deleteTemporaryAccount(String token, String userID, String keyID) {
-		String url = basicUrl + userID + "/s3keys/" + keyID;
+	public void deleteTemporaryAccount(String token, String keyID)  {
+		String url = basicUrl + retrieveUserID(token) + "/s3keys/" + keyID;
 		
 		Request request = new Request.Builder()
 				   .url(url)
@@ -81,11 +79,7 @@ public class HttpConnector {
 				         if (!response.isSuccessful()){
 				            throw new IOException("Unexpected code " + response);
 				         }
-
-				        
-
-				     } catch (IOException e) {
-						// TODO Auto-generated catch block
+				     } catch (IOException e) {				
 						e.printStackTrace();
 					}
 	}

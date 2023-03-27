@@ -76,11 +76,13 @@ public class IonosDataSinkFactory implements DataSinkFactory {
             throw new EdcException(String.join(", ", validationResult.getFailureMessages()));
         }
         var destination = request.getDestinationDataAddress();
-
+       
         var secret = vault.resolveSecret(destination.getKeyName());
+        System.out.println("79 DataSinkFract " + destination.getKeyName() + " vault " + secret);
         S3ConnectorApi s3ApiTemp;
         if (secret != null) {
             var Token = typeManager.readValue(secret, IonosToken.class);
+            System.out.println("85 DataSinkFract token " + Token.getAccessKey());
             if (destination.getProperty(IonosBucketSchema.STORAGE_NAME)!=null) {
             	  System.out.println("createSink:90  incrivel vir aqui porque o storage é null");
             s3ApiTemp = new S3ConnectorApiImpl(destination.getProperty(IonosBucketSchema.STORAGE_NAME), Token.getAccessKey(), Token.getSecretKey(), "");

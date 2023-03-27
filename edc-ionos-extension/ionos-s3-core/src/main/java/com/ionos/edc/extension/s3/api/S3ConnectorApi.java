@@ -48,5 +48,7 @@ public interface S3ConnectorApi {
     TemporaryKey createTemporaryKey();
     
     String getAccessKey();
+    
+    void deleteTemporaryKey(String accessKey);
 
 }

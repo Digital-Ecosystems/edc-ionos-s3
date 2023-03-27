@@ -51,8 +51,8 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
     private MinioClient minioClient;
     private String token;
     private String accessKey;
+    
     public S3ConnectorApiImpl(String endpoint, String accessKey, String secretKey, String token) {
-        // TODO Auto-generated method stub
         this.minioClient = minConnector.connect(endpoint, accessKey, secretKey);
         this.accessKey = accessKey;
         this.token = token; 
@@ -201,4 +201,11 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
     public String getAccessKey() {
     	return accessKey;
     }
+
+	@Override
+	public void deleteTemporaryKey(String accessKey) {
+		ionosApi.deleteTemporaryAccount(token,accessKey);
+		
+	}
+    
 }
