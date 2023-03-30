@@ -39,11 +39,12 @@ import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.SECRET_ACCESS_
 public class IonosDataSinkFactory implements DataSinkFactory {
 
     private static final int CHUNK_SIZE_IN_BYTES = 1024 * 1024 * 500; // 500MB chunk size
-
+    private static final String DEFAULT_STORAGE = "s3-eu-central-1.ionoscloud.com";
    
     private final ExecutorService executorService;
     private final Monitor monitor;
     private S3ConnectorApi s3Api;
+   
     private Vault vault;
     private TypeManager typeManager;
 
@@ -78,20 +79,19 @@ public class IonosDataSinkFactory implements DataSinkFactory {
         var destination = request.getDestinationDataAddress();
        
         var secret = vault.resolveSecret(destination.getKeyName());
-        System.out.println("79 DataSinkFract " + destination.getKeyName() + " vault " + secret);
+        
         S3ConnectorApi s3ApiTemp;
         if (secret != null) {
             var Token = typeManager.readValue(secret, IonosToken.class);
-            System.out.println("85 DataSinkFract token " + Token.getAccessKey());
+            
             if (destination.getProperty(IonosBucketSchema.STORAGE_NAME)!=null) {
-            	  System.out.println("createSink:90  incrivel vir aqui porque o storage é null");
+            	
             s3ApiTemp = new S3ConnectorApiImpl(destination.getProperty(IonosBucketSchema.STORAGE_NAME), Token.getAccessKey(), Token.getSecretKey(), "");
             		 return IonosDataSink.Builder.newInstance().bucketName(destination.getProperty(IonosBucketSchema.BUCKET_NAME))
             	                .blobName(destination.getKeyName()).requestId(request.getId()).executorService(executorService)
             	                .monitor(monitor).s3Api(s3ApiTemp).build();
             }	 else {
-            	 System.out.println("createSink:96  o storage é null");
-            	 s3ApiTemp = new S3ConnectorApiImpl("s3-eu-central-1.ionoscloud.com", Token.getAccessKey(), Token.getSecretKey(), "");
+            	 s3ApiTemp = new S3ConnectorApiImpl(DEFAULT_STORAGE, Token.getAccessKey(), Token.getSecretKey(), "");
             	 return IonosDataSink.Builder.newInstance().bucketName(destination.getProperty(IonosBucketSchema.BUCKET_NAME))
 				   	                .blobName(destination.getKeyName()).requestId(request.getId()).executorService(executorService)
 				   	                .monitor(monitor).s3Api(s3ApiTemp).build();

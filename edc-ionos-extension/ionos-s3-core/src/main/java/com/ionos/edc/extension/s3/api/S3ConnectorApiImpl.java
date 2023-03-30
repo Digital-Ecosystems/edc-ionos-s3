@@ -50,19 +50,18 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
     
     private MinioClient minioClient;
     private String token;
-    private String accessKey;
+
     
     public S3ConnectorApiImpl(String endpoint, String accessKey, String secretKey, String token) {
-        this.minioClient = minConnector.connect(endpoint, accessKey, secretKey);
-        this.accessKey = accessKey;
+    	if(accessKey != null && secretKey  != null && endpoint !=null)
+    		this.minioClient = minConnector.connect(endpoint, accessKey, secretKey);
         this.token = token; 
     }
 
     @Override
     public void s3ConnectorApi(String endpoint, String accessKey, String secretKey, String token) {
-        // TODO Auto-generated method stub
-        this.minioClient = minConnector.connect(endpoint, accessKey, secretKey);
-        this.accessKey = accessKey;
+    	if(accessKey != null && secretKey  != null && endpoint !=null)
+    		this.minioClient = minConnector.connect(endpoint, accessKey, secretKey);
         this.token = token; 
     }
 
@@ -76,7 +75,6 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
             } catch (InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException |
                     InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException |
                     IllegalArgumentException | IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -93,7 +91,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
             } catch (InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException |
                     InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException |
                     IllegalArgumentException | IOException e) {
-                // TODO Auto-generated catch block
+
                 e.printStackTrace();
             }
         }
@@ -133,7 +131,6 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
 
     @Override
     public byte[] getFile(String bucketName, String fileName) {
-        // TODO Auto-generated method stub
 
         if (!bucketExists(bucketName.toLowerCase())) {
             return null;
@@ -154,7 +151,6 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
 
     @Override
     public Result<Item> listItems(String bucketName) {
-        // TODO Auto-generated method stub
 
         Iterable<Result<Item>> results = minioClient
                 .listObjects(ListObjectsArgs.builder().bucket(bucketName.toLowerCase()).build());
@@ -197,13 +193,10 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
 		return ionosApi.createTemporaryKey(token);
     	
     }
-    @Override
-    public String getAccessKey() {
-    	return accessKey;
-    }
-
+ 
 	@Override
 	public void deleteTemporaryKey(String accessKey) {
+		
 		ionosApi.deleteTemporaryAccount(token,accessKey);
 		
 	}

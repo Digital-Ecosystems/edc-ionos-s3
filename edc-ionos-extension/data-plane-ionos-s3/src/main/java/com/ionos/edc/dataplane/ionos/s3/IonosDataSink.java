@@ -39,10 +39,9 @@ public class IonosDataSink extends ParallelSink {
 
     @Override
     protected StatusResult<Void> transferParts(List<DataSource.Part> parts) {
-    	System.out.println("DataSink42 " + bucketName  + " - " + s3Api.getAccessKey());
         for (DataSource.Part part : parts) {
         	 String blobName = part.name();
-        	 System.out.println("DataSink45 " + blobName  + " - " + s3Api.getAccessKey());
+        
             try (var input = part.openStream()) {
                
                

@@ -68,7 +68,7 @@ public class HttpConnector {
 	
 	public void deleteTemporaryAccount(String token, String keyID)  {
 		String url = basicUrl + retrieveUserID(token) + "/s3keys/" + keyID;
-		
+
 		Request request = new Request.Builder()
 				   .url(url)
 				   //This adds the token to the header.

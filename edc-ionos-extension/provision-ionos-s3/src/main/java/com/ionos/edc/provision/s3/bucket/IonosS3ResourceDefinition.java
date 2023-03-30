@@ -16,14 +16,13 @@ package com.ionos.edc.provision.s3.bucket;
 
 import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
 
-import java.util.function.Supplier;
 
 public class IonosS3ResourceDefinition extends ResourceDefinition {
     private String storage;
     private String accessKey;
     private String secretKey;
     private String bucketName;
-    private Supplier<Boolean> checker;
+
 
     public IonosS3ResourceDefinition() {
         super();

@@ -27,7 +27,7 @@ import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.STORAGE_NAME;
 @JsonDeserialize(builder = IonosS3ProvisionedResource.Builder.class)
 @JsonTypeName("dataspaceconnector:ionosprovisionedresource")
 public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResource {
-    private String role;
+    private String keyId;
     
     public String getStorage() {
         return getDataAddress().getProperty(STORAGE_NAME);
@@ -35,16 +35,21 @@ public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResour
     public String getBucketName() {
         return getDataAddress().getProperty(BUCKET_NAME);
     }
-
-    @Override
+    
+    
+ 
+    public String getKeyId() {
+		return keyId;
+	}
+	public void setKeyId(String keyId) {
+		this.keyId = keyId;
+	}
+	@Override
     public String getResourceName() {
         return dataAddress.getProperty(BUCKET_NAME);
     }
 
-    public String getRole() {
-        return role;
-    }
-
+ 
     private IonosS3ProvisionedResource() {
     }
 
@@ -72,8 +77,8 @@ public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResour
             return this;
         }
 
-        public Builder role(String arn) {
-            provisionedResource.role = arn;
+        public Builder keyId(String arn) {
+            provisionedResource.keyId = arn;
             return this;
         }
     }
