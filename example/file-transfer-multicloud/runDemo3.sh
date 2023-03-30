@@ -11,10 +11,10 @@ curl -d '{
            "dataAddress": {
              "properties": {
 			 "type": "AzureStorage",
-				"account": "edcionosstorage",
+				"account": "<storage-account-name>",
 				"container": "src-container",
 				"blobname": "device1-data.csv",
-				"keyName" : "edcionosstorage-key1"
+				"keyName" : "<storage-account-name>-key1"
              }
            }
          }'  -H 'X-API-Key: password' \
