@@ -19,6 +19,6 @@ public interface IonosBucketSchema {
     String STORAGE_NAME = "storage";
     String BUCKET_NAME = "bucketName";
     String BLOB_NAME = "blobName";
-    String ACCESS_KEY_ID = "accessKeyId";
-    String SECRET_ACCESS_KEY = "secretAccessKey";
+    String ACCESS_KEY_ID = "accessKey";
+    String SECRET_ACCESS_KEY = "secretKey";
 }

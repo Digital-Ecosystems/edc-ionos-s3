@@ -27,25 +27,27 @@ import java.util.List;
 import static java.lang.String.format;
 
 public class IonosDataSink extends ParallelSink {
-    private String accountName;
-    private String containerName;
     private S3ConnectorApi s3Api;
     private String bucketName;
-    private String keyName;
-
+    private String blobName;
+    private String accessKey;
+    private String secretkey;
+    
     private IonosDataSink() {
 
     }
 
     @Override
     protected StatusResult<Void> transferParts(List<DataSource.Part> parts) {
-
         for (DataSource.Part part : parts) {
+        	 String blobName = part.name();
+        
             try (var input = part.openStream()) {
-                String blobName = part.name();
+               
+               
                 s3Api.uploadParts(bucketName, blobName, new ByteArrayInputStream(input.readAllBytes()));
             } catch (Exception e) {
-                return uploadFailure(e, keyName);
+                return uploadFailure(e, blobName);
             }
         }
 
@@ -53,8 +55,8 @@ public class IonosDataSink extends ParallelSink {
     }
 
     @NotNull
-    private StatusResult<Void> uploadFailure(Exception e, String keyName) {
-        var message = format("Error writing the %s object on the %s bucket: %s", keyName, bucketName, e.getMessage());
+    private StatusResult<Void> uploadFailure(Exception e, String blobName) {
+        var message = format("Error writing the %s object on the %s bucket: %s", blobName, bucketName, e.getMessage());
         monitor.severe(message, e);
         return StatusResult.failure(ResponseStatus.FATAL_ERROR, message);
     }
@@ -79,10 +81,21 @@ public class IonosDataSink extends ParallelSink {
             return this;
         }
 
-        public Builder keyName(String keyName) {
-            sink.keyName = keyName;
+        public Builder blobName(String blobName) {
+            sink.blobName = blobName;
             return this;
         }
+        
+        public Builder accessKey(String accessKey) {
+            sink.accessKey = accessKey;
+            return this;
+        }
+        public Builder secretkey(String secretkey) {
+            sink.secretkey = secretkey;
+            return this;
+        }
+
+
 
         @Override
         protected void validate() {

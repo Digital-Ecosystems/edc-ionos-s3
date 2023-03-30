@@ -40,9 +40,6 @@ val metaModelVersion: String by project
 dependencies {
 
 	implementation("${edcGroup}:control-plane-core:${edcVersion}")
-	
-
-	
 
 	implementation("${edcGroup}:api-observability:${edcVersion}")
 	
@@ -59,10 +56,11 @@ dependencies {
 	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
 	
 	implementation(project(":edc-ionos-extension:provision-ionos-s3"))
-	
-	implementation("${edcGroup}:catalog-api:${edcVersion}")
-		
+			
 	implementation("${edcGroup}:iam-mock:${edcVersion}")
+	
+	
+
 }
 
 application {

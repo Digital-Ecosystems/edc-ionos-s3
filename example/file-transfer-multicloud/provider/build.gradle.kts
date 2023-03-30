@@ -25,44 +25,67 @@ repositories {
     maven {// while runtime-metamodel dependency is still a snapshot
 		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
     }
+
 	  maven {
         url = uri("https://maven.iais.fraunhofer.de/artifactory/eis-ids-public/")
     }
+	
+	  gradlePluginPortal()
 }
 val javaVersion: String by project
+val faaastVersion: String by project
 val edcGroup: String by project
 val edcVersion: String by project
 val okHttpVersion: String by project
 val rsApi: String by project
 val metaModelVersion: String by project
-
+val fraunhoferVersion: String by project
 
 dependencies {
 
 	implementation("${edcGroup}:control-plane-core:${edcVersion}")
 	
-
-	
-
 	implementation("${edcGroup}:api-observability:${edcVersion}")
 	
 	implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
 
 	implementation("${edcGroup}:http:${edcVersion}")
-	
+
 	implementation("${edcGroup}:auth-tokenbased:${edcVersion}")	
+
+    implementation("${edcGroup}:management-api:${edcVersion}")
+		
+	implementation("$edcGroup:vault-azure:$edcVersion")
+
+	implementation("de.fraunhofer.iais.eis.ids.infomodel:java:${fraunhoferVersion}")
 	
 	implementation("$edcGroup:ids:$edcVersion")
-	
-	implementation("${edcGroup}:management-api:${edcVersion}")
-	
-	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
-	
-	implementation(project(":edc-ionos-extension:provision-ionos-s3"))
-	
-	implementation("${edcGroup}:catalog-api:${edcVersion}")
 		
 	implementation("${edcGroup}:iam-mock:${edcVersion}")
+	
+    //implementation(project(":example:file-transfer-multicloud:transfer-file"))
+	
+	//adjust
+   // implementation("${edcGroup}:data-plane-selector-api:${edcVersion}")
+
+    //implementation("${edcGroup}:data-plane-api:${edcVersion}")
+    //implementation("${edcGroup}:data-plane-http:${edcVersion}")
+	
+	
+	//file-transfer
+	implementation("${edcGroup}:control-plane-core:${edcVersion}")
+	implementation("${edcGroup}:data-plane-core:${edcVersion}")
+	implementation(project(":edc-ionos-extension:data-plane-ionos-s3"))
+	implementation("${edcGroup}:data-plane-azure-storage:${edcVersion}")
+    implementation("${edcGroup}:data-plane-client:${edcVersion}")
+    implementation("${edcGroup}:data-plane-selector-client:${edcVersion}")
+    implementation("${edcGroup}:data-plane-selector-core:${edcVersion}")
+    implementation("${edcGroup}:transfer-data-plane:${edcVersion}")
+	
+	//implementation("${edcGroup}:contract-spi:${edcVersion}")	
+	//implementation("${edcGroup}:policy-model:${edcVersion}")		
+	//implementation("${edcGroup}:policy-spi:${edcVersion}")	
+	//implementation("${edcGroup}:core-spi:${edcVersion}")	
 }
 
 application {

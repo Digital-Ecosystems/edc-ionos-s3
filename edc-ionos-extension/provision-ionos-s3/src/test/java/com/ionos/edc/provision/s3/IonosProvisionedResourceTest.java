@@ -23,7 +23,7 @@ class IonosProvisionedResourceTest {
     void setUp() {
         proviResource = IonosS3ProvisionedResource.Builder.newInstance().id("test").transferProcessId("111")
                 .resourceDefinitionId("test-resource").resourceName("resource-name")
-                .storage("storage").bucketName("bucket").build();
+                .bucketName("bucket").build();
 
     }
 
@@ -37,7 +37,7 @@ class IonosProvisionedResourceTest {
         IonosS3ProvisionedResource deserialized = mapper.readValue(writer.toString(), IonosS3ProvisionedResource.class);
 
         assertNotNull(deserialized);
-        assertEquals("storage", deserialized.getStorage());
+
         assertEquals("bucket", deserialized.getBucketName());
     }
 

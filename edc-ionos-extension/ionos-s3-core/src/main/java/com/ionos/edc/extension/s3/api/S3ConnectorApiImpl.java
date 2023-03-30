@@ -15,6 +15,9 @@
 package com.ionos.edc.extension.s3.api;
 
 import com.ionos.edc.extension.s3.connector.MinioConnector;
+import com.ionos.edc.extension.s3.connector.ionosapi.HttpConnector;
+import com.ionos.edc.extension.s3.connector.ionosapi.TemporaryKey;
+
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
 import io.minio.ListObjectsArgs;
@@ -43,17 +46,23 @@ import java.security.NoSuchAlgorithmException;
 public class S3ConnectorApiImpl implements S3ConnectorApi {
 
     MinioConnector minConnector = new MinioConnector();
+    HttpConnector ionosApi = new HttpConnector();
+    
     private MinioClient minioClient;
+    private String token;
 
-    public S3ConnectorApiImpl(String endpoint, String accessKey, String secretKey) {
-        // TODO Auto-generated method stub
-        this.minioClient = minConnector.connect(endpoint, accessKey, secretKey);
+    
+    public S3ConnectorApiImpl(String endpoint, String accessKey, String secretKey, String token) {
+    	if(accessKey != null && secretKey  != null && endpoint !=null)
+    		this.minioClient = minConnector.connect(endpoint, accessKey, secretKey);
+        this.token = token; 
     }
 
     @Override
-    public void s3ConnectorApi(String endpoint, String accessKey, String secretKey) {
-        // TODO Auto-generated method stub
-        this.minioClient = minConnector.connect(endpoint, accessKey, secretKey);
+    public void s3ConnectorApi(String endpoint, String accessKey, String secretKey, String token) {
+    	if(accessKey != null && secretKey  != null && endpoint !=null)
+    		this.minioClient = minConnector.connect(endpoint, accessKey, secretKey);
+        this.token = token; 
     }
 
     @Override
@@ -66,7 +75,6 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
             } catch (InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException |
                     InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException |
                     IllegalArgumentException | IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -83,7 +91,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
             } catch (InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException |
                     InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException |
                     IllegalArgumentException | IOException e) {
-                // TODO Auto-generated catch block
+
                 e.printStackTrace();
             }
         }
@@ -123,7 +131,6 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
 
     @Override
     public byte[] getFile(String bucketName, String fileName) {
-        // TODO Auto-generated method stub
 
         if (!bucketExists(bucketName.toLowerCase())) {
             return null;
@@ -144,7 +151,6 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
 
     @Override
     public Result<Item> listItems(String bucketName) {
-        // TODO Auto-generated method stub
 
         Iterable<Result<Item>> results = minioClient
                 .listObjects(ListObjectsArgs.builder().bucket(bucketName.toLowerCase()).build());
@@ -170,6 +176,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
 
         boolean found = false;
         try {
+        	
             found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName.toLowerCase()).build());
         } catch (InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException |
                 InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException |
@@ -179,5 +186,19 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
         }
         return found;
     }
-
+    
+    @Override
+    public  TemporaryKey createTemporaryKey() {
+    	
+		return ionosApi.createTemporaryKey(token);
+    	
+    }
+ 
+	@Override
+	public void deleteTemporaryKey(String accessKey) {
+		
+		ionosApi.deleteTemporaryAccount(token,accessKey);
+		
+	}
+    
 }

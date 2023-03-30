@@ -55,10 +55,8 @@ dependencies {
 
     implementation("${edcGroup}:management-api:${edcVersion}")
 	
-	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
-	
-	implementation(project(":edc-ionos-extension:provision-ionos-s3"))	
-	
+	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")	
+
 	implementation("de.fraunhofer.iais.eis.ids.infomodel:java:${fraunhoferVersion}")
 	
 	implementation("$edcGroup:ids:$edcVersion")

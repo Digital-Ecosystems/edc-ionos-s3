@@ -23,6 +23,8 @@ import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
 import org.eclipse.edc.policy.model.Policy;
 
+
+
 import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
 
 public class IonosS3ConsumerResourceDefinitionGenerator implements ConsumerResourceDefinitionGenerator {
@@ -31,12 +33,15 @@ public class IonosS3ConsumerResourceDefinitionGenerator implements ConsumerResou
     public ResourceDefinition generate(DataRequest dataRequest, Policy policy) {
         Objects.requireNonNull(dataRequest, "dataRequest must always be provided");
         Objects.requireNonNull(policy, "policy must always be provided");
-
+     
         var destination = dataRequest.getDataDestination();
         var id = randomUUID().toString();
-        var storage = destination.getProperty(IonosBucketSchema.STORAGE_NAME);
-        var bucket = destination.getProperty(IonosBucketSchema.BUCKET_NAME);       
-        return IonosS3ResourceDefinition.Builder.newInstance().id(id).storage(storage).bucketName(bucket).build();
+        var accessKey = destination.getProperty(IonosBucketSchema.ACCESS_KEY_ID);
+        var secretKey = destination.getProperty(IonosBucketSchema.SECRET_ACCESS_KEY);
+        var bucket = destination.getProperty(IonosBucketSchema.BUCKET_NAME);
+        var acc = destination.getProperty("account");
+        System.out.println("IonosS3ConsumerResourceDefinitionGenerator" + accessKey + " " + secretKey + " " + acc + " " + bucket);
+        return IonosS3ResourceDefinition.Builder.newInstance().id(id).accessKey(accessKey).secretKey(secretKey).bucketName(bucket).build();
 
     }
 

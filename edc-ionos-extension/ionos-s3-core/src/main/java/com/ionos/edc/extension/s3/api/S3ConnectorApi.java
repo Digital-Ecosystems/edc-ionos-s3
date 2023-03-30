@@ -18,6 +18,8 @@ import io.minio.Result;
 import io.minio.messages.Item;
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 
+import com.ionos.edc.extension.s3.connector.ionosapi.TemporaryKey;
+
 import java.io.ByteArrayInputStream;
 
 
@@ -25,7 +27,7 @@ import java.io.ByteArrayInputStream;
 @ExtensionPoint
 public interface S3ConnectorApi {
 
-    void s3ConnectorApi(String endpoint, String accessKey, String secretKey);
+    void s3ConnectorApi(String endpoint, String accessKey, String secretKey, String token);
 
     void createBucket(String bucketName);
 
@@ -42,5 +44,9 @@ public interface S3ConnectorApi {
     Result<Item> listItems(String bucketName);
 
     void deleteFile(String bucketName, String fileName);
+    
+    TemporaryKey createTemporaryKey();
+    
+    void deleteTemporaryKey(String accessKey);
 
 }
