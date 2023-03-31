@@ -31,7 +31,7 @@ In order to configure this example, please follow this steps:
 - Execute the terraform script to create the required infrastructure for the provider connector;
 ```console
 az login
-cd TBD
+cd terraform
 terraform init --upgrade
 terraform apply
 ```
