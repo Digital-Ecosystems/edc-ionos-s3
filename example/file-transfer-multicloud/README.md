@@ -40,7 +40,7 @@ terraform apply
 ```console
 terraform output -raw certificate | base64 --decode > cert.pfx
 ```
-- Edit the file `TBD`, which is the config properties for the provider, and put the terraform generated fields: 
+- Edit the file `provider/resources`, which is the config properties for the provider, and put the terraform generated fields: 
 ```console
 edc.vault.clientid=<client_id>
 edc.vault.tenantid=<tenant_id>
@@ -49,12 +49,12 @@ edc.vault.name=<vault-name>
 ```
 Note:
 - the Azure vault will be created for the provider and the required data will be kept inside;
-- the file `TBD` will be put into the `src-container` in the Azure storage; 
+- the file `terraform/device1-data.csv` will be put into the `src-container` in the Azure storage; 
 
 `IONOS S3`
 - Create a token that the consumer will use to do the provisioning. Take a look at this [documentation](../../ionos_token.md);
 - Put the token inside the Hashicorp vault instance (you can run it locally or in the IONOS Cloud). Take a look at this [documentation](../../hashicorp/README.md);
-- Edit the file `TBD`, which is the config properties for the consumer, and put the following fields: 
+- Edit the file `consumer/resources`, which is the config properties for the consumer, and put the following fields: 
 ```console
 edc.vault.hashicorp.url=<VAULT_ADDRESS:VAULT_PORT>
 edc.vault.hashicorp.token=<ROOT_TOKEN>
@@ -67,8 +67,9 @@ Note:
 
 Local execution:
 ```bash
-java -Dedc.fs.config=example/consumer/resources/consumer-config.properties -jar example/consumer/build/libs/dataspace-connector.jar
-java -Dedc.fs.config=example/provider/resources/provider-config.properties -jar example/provider/build/libs/dataspace-connector.jar
+java -Dedc.fs.config=example/file-transfer-multicloud/consumer/resources/consumer-config.properties -jar example/file-transfer-multicloud/consumer/build/libs/dataspace-connector.jar
+
+java -Dedc.fs.config=example/file-transfer-multicloud/provider/resources/provider-config.properties -jar example/file-transfer-multicloud/provider/build/libs/dataspace-connector.jar
 ```
 
 We will have to call some URL's in order to transfer the file:

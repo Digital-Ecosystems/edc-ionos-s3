@@ -37,8 +37,8 @@ Note: by design, S3 technology allows only unique names for the buckets. You may
 
 Local execution:
 ```bash
-java -Dedc.fs.config=example/consumer/resources/consumer-config.properties -jar example/consumer/build/libs/dataspace-connector.jar
-java -Dedc.fs.config=example/provider/resources/provider-config.properties -jar example/provider/build/libs/dataspace-connector.jar
+java -Dedc.fs.config=example/file-transfer-push/consumer/resources/consumer-config.properties -jar example/file-transfer-push/consumer/build/libs/dataspace-connector.jar
+java -Dedc.fs.config=example/file-transfer-push/provider/resources/provider-config.properties -jar example/file-transfer-push/provider/build/libs/dataspace-connector.jar
 ```
 
 We will have to call some URL's in order to transfer the file:

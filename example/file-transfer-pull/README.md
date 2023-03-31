@@ -32,8 +32,10 @@ Note: by design, S3 technology allows only unique names for the buckets. You may
 
 Local execution:
 ```bash
-java -Dedc.fs.config=example/consumer/resources/consumer-config.properties -jar example/consumer/build/libs/dataspace-connector.jar
-java -Dedc.fs.config=example/provider/resources/provider-config.properties -jar example/provider/build/libs/dataspace-connector.jar
+java -Dedc.keystore=example/file-transfer-pull/certs/cert.pfx -Dedc.keystore.password=123456 -Dedc.vault=example/file-transfer-pull/consumer/resources/consumer-vault.properties -Dedc.fs.config=example/file-transfer-pull/consumer/resources/consumer-config.properties -jar example/file-transfer-pull/consumer/build/libs/dataspace-connector.jar
+
+java -Dedc.keystore=example/file-transfer-pull/certs/cert.pfx -Dedc.keystore.password=123456 -Dedc.vault=example/file-transfer-pull/provider/resources/provider-vault.properties -Dedc.fs.config=example/file-transfer-pull/provider/resources/provider-config.properties -jar example/file-transfer-pull/provider/build/libs/dataspace-connector.jar
+
 java -jar ./example/file-transfer-pull/backend-service/build/libs/http-pull-connector.jar
 ```
 
