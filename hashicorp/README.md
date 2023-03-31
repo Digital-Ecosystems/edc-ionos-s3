@@ -54,7 +54,7 @@ kubectl exec -it vault-0 -- vault login $(jq -r ".root_token" vault-keys.json)
 kubectl exec -it vault-0 -- vault secrets enable -version=2 -path=secret kv
 ```
 Note:
-- you may have to configure the `KUECONFIG` variable to connect to your Kubernetes cluster;
+- you may have to configure the `KUBECONFIG` variable to connect to your Kubernetes cluster;
 
 ## Populate the Hashicorp vault
 ### Using vault CLI
