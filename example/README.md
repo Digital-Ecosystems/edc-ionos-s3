@@ -5,7 +5,7 @@ This folder contains several examples of the IONOS S3 Extension usage.
 
 ## Folder Description
 
-### `file-transfer-multicoud`
+### `file-transfer-multicloud`
 
 Example of a file transfer between 1 connector using Azure Storage and another connector using IONOS S3.
 
