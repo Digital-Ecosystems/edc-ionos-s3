@@ -32,7 +32,6 @@ dependencies {
 
     implementation(project(":extensions:control-plane:api:management-api"))
     
-	// implementation("org.eclipse.edc:vault-hashicorp:0.0.1-milestone-8")
 	implementation(project(":extensions:common:vault:vault-hashicorp"))
 
     testImplementation(libs.junit.jupiter.api)

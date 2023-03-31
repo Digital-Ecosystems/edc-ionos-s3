@@ -66,7 +66,8 @@ dependencies {
 	
 	implementation("${edcGroup}:iam-mock:${edcVersion}")
 	
-	// implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
+	implementation(project(":extensions:common:vault:vault-hashicorp"))
+    implementation(project(":extensions:common:vault:vault-filesystem"))
 
     implementation(project(":extensions:common:iam:oauth2:oauth2-service"))
     implementation(project(":extensions:common:iam:oauth2:oauth2-daps"))
