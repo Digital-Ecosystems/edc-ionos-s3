@@ -2,8 +2,6 @@
 
 This document explain how to deploy an EDC with IONOS S3 Extension into a Kubernetes using IONOS's Cloud.
 
-Note: at the time of this writing. EDC has still no deployment using Helm charts;
-
 ## Requirements
 - IONOS Account;
 - IONOS Running Kubernetes cluster (if you don't have it, take a look at [this](https://gist.github.com/bozakov/ae289c0f84dc88a75a6b426540dca29d));
