@@ -41,6 +41,15 @@ java -Dedc.fs.config=example/file-transfer-push/consumer/resources/consumer-conf
 java -Dedc.fs.config=example/file-transfer-push/provider/resources/provider-config.properties -jar example/file-transfer-push/provider/build/libs/dataspace-connector.jar
 ```
 
+or
+
+```bash
+docker compose -f "docker-compose.yml" up --build
+```
+If you use docker to do the deployment of this example, please consider the following:
+- sdfsdf
+- dgdfg
+
 We will have to call some URL's in order to transfer the file:
 1) Contract offers
 ```console
