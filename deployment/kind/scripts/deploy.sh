@@ -65,13 +65,13 @@ TF_VAR_s3_endpoint=$S3_ENDPOINT
 ../terraform/vault-init/vault-init.sh
 
 # Deploy IONOS-S3
-helm install -n edc-ionos-s3 edc-ionos-s3 ../helm/edc-ionos-s3 \
+helm install -n edc-ionos-s3 --wait edc-ionos-s3 ../helm/edc-ionos-s3 \
     -f ./scripts/edc-s3-values.yaml \
     --create-namespace \
     --kubeconfig=$KUBECONFIG
 
 echo "$(kubectl get svc -n edc-ionos-s3 edc-ionos-s3 -o jsonpath='{.status.loadBalancer.ingress[0].ip}') edc-ionos-s3-service" | sudo tee -a /etc/hosts
-echo "$(kubectl get svc -n edc-ionos-s3 vault -o jsonpath='{.status.loadBalancer.ingress[0].ip}') vault-service" | sudo tee -a /etc/hosts
+echo "$(kubectl get svc -n edc-ionos-s3 vault-ui -o jsonpath='{.status.loadBalancer.ingress[0].ip}') vault-service" | sudo tee -a /etc/hosts
 
 echo "----------------------------------"
 
