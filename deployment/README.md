@@ -6,7 +6,7 @@ This document describes how to deploy EDC Ionos S3 on IONOS DCD.
 ***
 
 ### Kind
-For local kubernetes installation please refer to the ```kind``` directory's readme.
+For local kubernetes installation please refer to the ```kind``` directory's [readme](kind/README.md).
 
 ***
 
@@ -15,6 +15,7 @@ For local kubernetes installation please refer to the ```kind``` directory's rea
 - [Terraform](https://developer.hashicorp.com/terraform/downloads)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [Kubernetes cluster](https://kubernetes.io/docs/setup/) - **Note:** You can use the terraform script in [General-des-development](https://github.com/Digital-Ecosystems/general-des-development) repository to deploy a kubernetes cluster on IONOS DCD.
+- S3 account
 
 ***
 

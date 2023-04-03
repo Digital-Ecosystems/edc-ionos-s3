@@ -7,6 +7,7 @@ This directory contains Kubernetes YAML manifests for the deployment of EDC Iono
 - [Helm](https://helm.sh/docs/intro/install/)
 - [Docker](https://docs.docker.com/get-docker/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+- S3 account
 
 ***
 
