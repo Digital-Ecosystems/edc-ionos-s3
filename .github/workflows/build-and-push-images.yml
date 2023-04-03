@@ -2,11 +2,9 @@ name: Create and publish Docker images
 
 on:
   push:
-    # branches: [ "main" ]
-    branches: [ "build-package" ]
+    branches: [ "main" ]
   pull_request:
-    # branches: [ "main" ]
-    branches: [ "build-package" ]
+    branches: [ "main" ]
 
 env:
   REGISTRY: ghcr.io
