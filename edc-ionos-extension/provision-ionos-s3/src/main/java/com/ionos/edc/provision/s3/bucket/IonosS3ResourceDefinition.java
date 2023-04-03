@@ -16,12 +16,13 @@ package com.ionos.edc.provision.s3.bucket;
 
 import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
 
-import java.util.function.Supplier;
 
 public class IonosS3ResourceDefinition extends ResourceDefinition {
     private String storage;
+    private String accessKey;
+    private String secretKey;
     private String bucketName;
-    private Supplier<Boolean> checker;
+
 
     public IonosS3ResourceDefinition() {
         super();
@@ -35,7 +36,30 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
         this.storage = storage;
     }
 
-    public String getbucketName() {
+    public String getAccessKey() {
+		return accessKey;
+	}
+
+
+
+	public void setAccessKey(String accessKey) {
+		this.accessKey = accessKey;
+	}
+
+
+
+	public String getSecretKey() {
+		return secretKey;
+	}
+
+
+
+	public void setSecretKey(String secretKey) {
+		this.secretKey = secretKey;
+	}
+
+
+	public String getbucketName() {
         return bucketName;
     }
 
@@ -45,7 +69,7 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
 
     @Override
     public Builder toBuilder() {
-        return initializeBuilder(new Builder()).storage(storage).bucketName(bucketName);
+        return initializeBuilder(new Builder()).storage(storage).accessKey(accessKey).secretKey(secretKey).bucketName(bucketName);
     }
 
     public static class Builder extends ResourceDefinition.Builder<IonosS3ResourceDefinition, Builder> {
@@ -57,16 +81,28 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
         public static Builder newInstance() {
             return new Builder();
         }
-
+        
         public Builder storage(String storage) {
             resourceDefinition.storage = storage;
             return this;
         }
-
+        
+        public Builder accessKey(String accessKey) {
+            resourceDefinition.accessKey = accessKey;
+            return this;
+        }
+        
+        public Builder secretKey(String secretKey) {
+            resourceDefinition.secretKey = secretKey;
+            return this;
+        }
+        
         public Builder bucketName(String bucketName) {
             resourceDefinition.bucketName = bucketName;
             return this;
         }
+        
+        
 
         @Override
         protected void verify() {

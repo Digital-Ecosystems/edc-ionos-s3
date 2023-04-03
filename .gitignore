@@ -1,4 +1,11 @@
-.gradle/**
-connector/build/**
-**/bin/**
-**/build/**
+**/.terraform*
+**/terraform.tfstate*
+.gradle/
+**/bin
+**/build
+connector/.settings/org.eclipse.buildship.core.prefs
+connector/.project
+edc-ionos-extension/.project
+*.prefs
+*.project
+*.classpath

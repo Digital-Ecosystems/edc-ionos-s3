@@ -60,14 +60,17 @@ The credentials can be found/configured in one of the following:
 - Vault;
 - Properties file;
 - Java arguments;
-- Environment Variables (`IONOS_ACCESS_KEY` and `IONOS_SECRET_KEY`);
+- Environment Variables (`IONOS_ACCESS_KEY`, `IONOS_SECRET_KEY` and `IONOS_TOKEN`);
 
 It is required to configure those parameters:
 
-| Parameter name                          | Description                                                      |
-|-----------------------------------------|------------------------------------------------------------------|
-| `edc.ionos.access.key`                    | IONOS Access Key Id     |
-| `edc.ionos.secret.access.key`             | IONOS Secret Access Key |
+| Parameter name                          | Description                            | Mandatory  |
+|-----------------------------------------|----------------------------------------| ---------- |
+| `edc.ionos.access.key`                    | IONOS Access Key Id to access S3     | Yes if the context is accessing file |
+| `edc.ionos.secret.access.key`             | IONOS Secret Access Key to access S3 | Yes if the context is accessing file |
+| `edc.ionos.token`                         | IONOS token to allow S3 provisioning | Yes if the context is provisioning access for others |
+
+To create the token please take a look at the following [documentation](./ionos_token.md).
 
 ## Building and Running
 
@@ -83,7 +86,7 @@ java -Dedc.fs.config=resources/config.properties -jar build/libs/dataspace-conne
 ```
 
 ## Example
-In order to see a working example, go to the [example](./example) folder.
+In order to see a working example, go to the [example](./example/README.md) folder.
 
 ## Deploying to IONOS Kubernetes
 Check this [document](./k8s.md) to see how to deploy the Connector into a IONOS Kubernetes cluster.
