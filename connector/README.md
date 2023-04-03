@@ -22,7 +22,7 @@ Just check the `Building and Running` section of the previous [readme](../README
 
 Just check the `Configuration` section of the excample [readme](../example/README.md) to configure your IONOS S3 storage.
 
-Open the `resources/config.properties` file and insert the key and the secret of your IONOS S3 storage.
+Open the `resources/config.properties` file and insert the key and the secret of your IONOS S3 storage and the token.
 
 ## Building and running the docker
 
