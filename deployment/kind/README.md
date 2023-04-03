@@ -1,6 +1,6 @@
 # Kind 
 
-This directory contains Kubernetes YAML manifests for the deployment of EDC Ionos S3 on a local Kind cluster.
+This directory contains Kubernetes YAML manifests for the deployment a single instance of EDC Ionos S3 on a local Kind cluster.
 
 ### Requirements
 - [Kind](https://kind.sigs.k8s.io/)
@@ -23,6 +23,7 @@ Set environment variables
 
 ```sh
 # Required configuration
+export KUBECONFIG=path/to/kubeconfig
 export S3_ACCESS_KEY=''
 export S3_SECRET_KEY=''
 export S3_ENDPOINT=''

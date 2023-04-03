@@ -38,6 +38,11 @@ if [ -z `printenv S3_ENDPOINT` ]; then
     echo "Stopping because S3_ENDPOINT is undefined"
     exit 1
 fi
+if [ -z `printenv KUBECONFIG` ]; then
+    echo "Stopping because KUBECONFIG is undefined"
+    exit 1
+fi
+
 
 # clean old installation
 scripts/cleanup.sh
