@@ -5,6 +5,11 @@ This document describes how to deploy EDC Ionos S3 on IONOS DCD.
 
 ***
 
+### Kind
+For local kubernetes installation please refer to the ```kind``` directory's readme.
+
+***
+
 ### Requirements
 - [Helm](https://helm.sh/docs/intro/install/)
 - [Terraform](https://developer.hashicorp.com/terraform/downloads)
