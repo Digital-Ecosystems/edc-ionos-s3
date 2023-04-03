@@ -12,4 +12,4 @@ COPY ./resources /resources
 # Copy jar
 COPY ./build/libs/dataspace-connector.jar /app
 
-ENTRYPOINT java -jar dataspace-connector.jar
+ENTRYPOINT java  -Dedc.fs.config=./provider-config.properties -jar dataspace-connector.jar
