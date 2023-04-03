@@ -9,3 +9,4 @@ edc-ionos-extension/.project
 *.prefs
 *.project
 *.classpath
+deployment/kind/vault-keys.json
