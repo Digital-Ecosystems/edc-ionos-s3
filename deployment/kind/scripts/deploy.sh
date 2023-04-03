@@ -54,6 +54,13 @@ kubectl wait --for=condition=available --timeout=600s deployment -n metallb-syst
 kubectl apply -f ./metalLB/metalLB.yaml
 kubectl create namespace edc-ionos-s3
 
+# Build docker image
+cd ../../
+./gradlew clean build
+docker build -t ghcr.io/edc-ionos-s3/connector:1.0.0 ./connector/
+cd ./deployment/kind/
+kind load docker-image ghcr.io/edc-ionos-s3/connector:1.0.0 --name edc-ionos-s3
+
 # Deploy Vault
 helm repo add hashicorp https://helm.releases.hashicorp.com
 helm install -n edc-ionos-s3 --wait vault hashicorp/vault \
@@ -70,7 +77,7 @@ TF_VAR_s3_endpoint=$S3_ENDPOINT
 ../terraform/vault-init/vault-init.sh
 
 # Deploy IONOS-S3
-helm install -n edc-ionos-s3 --wait edc-ionos-s3 ../helm/edc-ionos-s3 \
+helm install -n edc-ionos-s3 edc-ionos-s3 ../helm/edc-ionos-s3 \
     -f ./scripts/edc-s3-values.yaml \
     --create-namespace \
     --kubeconfig=$KUBECONFIG
