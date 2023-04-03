@@ -8,7 +8,6 @@ WORKDIR /app
 
 
 # Copy config
-COPY ./configurations /configurations
 COPY ./resources /resources
 # Copy jar
 COPY ./build/libs/dataspace-connector.jar /app
