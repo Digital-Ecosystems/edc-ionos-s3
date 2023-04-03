@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  provider:
+    build:
+      context: ./provider/
+    ports:
+      - "8181:8181"
+      - "8182:8182"
+      - "8282:8282"
+    environment:
+      EDC_FS_CONFIG: /resources/provider-config.properties
+  consumer:
+    build:
+      context:  ./consumer/
+    ports:
+      - "9191:9191"
+      - "9192:9192"
+      - "9292:9292"
+    environment:
+      EDC_FS_CONFIG: /resources/consumer-config.properties
+  hashicorp-vault:
+    container_name: hashicorp-vault
+    image: vault:1.9.7
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: test-token
+      VAULT_ADDR: http://127.0.0.1:8200
+    cap_add:
+      - IPC_LOCK
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "sleep 1 && apk add --no-cache curl && curl --fail http://localhost:8200/v1/sys/health || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
