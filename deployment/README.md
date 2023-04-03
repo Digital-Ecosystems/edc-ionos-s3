@@ -41,6 +41,8 @@ export TF_VAR_s3_endpoint=''
 
 ## Deploy
 
+All commands paths are relative to the current directory where this readme is located.
+
 ### 1. Update the docker image and imagepullsecret in the helm chart
 ```sh
 vim helm/edc-ionos-s3/values.yaml
