@@ -24,6 +24,11 @@ services:
         - "29291:29291"  
     environment:
       EDC_FS_CONFIG: /resources/consumer-config.properties
+  backend-service:
+    build:
+      context:  ./backend-service/
+    ports:
+        - "4000:4000"      
   hashicorp-vault:
     container_name: hashicorp-vault
     image: vault:1.9.7
