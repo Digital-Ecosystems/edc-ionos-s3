@@ -3,7 +3,7 @@
 This document explain how to deploy an EDC with IONOS S3 Extension into a docker deamon.
 
 
-## Requirments
+## Requirements
 
 You will need the following:
 - IONOS account;
