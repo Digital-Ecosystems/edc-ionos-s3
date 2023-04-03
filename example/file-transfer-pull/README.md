@@ -39,6 +39,13 @@ java -Dedc.keystore=example/file-transfer-pull/certs/cert.pfx -Dedc.keystore.pas
 java -jar ./example/file-transfer-pull/backend-service/build/libs/http-pull-connector.jar
 ```
 
+or
+
+```bash
+docker compose -f "docker-compose.yml" up --build
+```
+If you use docker to do the deployment of this example, don't forget to replace `localhost` with `consumer` and `provider` in the curls below.
+
 We will have to call some URL's in order to transfer the file:
   
   (If you want, you can execute the `runDemo2.sh` script and jump to the step `10`)
