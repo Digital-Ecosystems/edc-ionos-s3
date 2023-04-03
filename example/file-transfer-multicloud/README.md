@@ -72,6 +72,13 @@ java -Dedc.fs.config=example/file-transfer-multicloud/consumer/resources/consume
 java -Dedc.fs.config=example/file-transfer-multicloud/provider/resources/provider-config.properties -jar example/file-transfer-multicloud/provider/build/libs/dataspace-connector.jar
 ```
 
+or
+
+```bash
+docker compose -f "docker-compose.yml" up --build
+```
+If you use docker to do the deployment of this example, don't forget to replace `localhost` with `consumer` and `provider` in the curls below.
+
 We will have to call some URL's in order to transfer the file:
   
   (If you want, you can adapt and execute the `runDemo3.sh` script)
