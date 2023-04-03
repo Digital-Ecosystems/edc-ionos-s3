@@ -5,3 +5,12 @@ image:
 
 service:
   type: LoadBalancer
+
+edc:
+  ionos:
+    accessKey: "edc"
+    secretKey: "edc"
+    endpoint: "edc"
+  vault:
+    hashicorp:
+      url: "http://vault-internal:8200"

@@ -65,16 +65,17 @@ helm install -n edc-ionos-s3 --wait vault hashicorp/vault \
     --kubeconfig=$KUBECONFIG
 
 # Init Vault
-TF_VAR_kubeconfig=$KUBECONFIG
-TF_VAR_s3_access_key=$S3_ACCESS_KEY
-TF_VAR_s3_secret_key=$S3_SECRET_KEY
-TF_VAR_s3_endpoint=$S3_ENDPOINT
+export TF_VAR_kubeconfig=$KUBECONFIG
+export TF_VAR_s3_access_key=$S3_ACCESS_KEY
+export TF_VAR_s3_secret_key=$S3_SECRET_KEY
+export TF_VAR_s3_endpoint=$S3_ENDPOINT
 ../terraform/vault-init/vault-init.sh
 
 # Deploy IONOS-S3
-helm install -n edc-ionos-s3 edc-ionos-s3 ../helm/edc-ionos-s3 \
+helm install -n edc-ionos-s3 --wait edc-ionos-s3 ../helm/edc-ionos-s3 \
     -f ./scripts/edc-s3-values.yaml \
     --create-namespace \
+    --set edc.vault.hashicorp.token=$(jq -r .root_token ./vault-keys.json) \
     --kubeconfig=$KUBECONFIG
 
 echo "$(kubectl get svc -n edc-ionos-s3 edc-ionos-s3 -o jsonpath='{.status.loadBalancer.ingress[0].ip}') edc-ionos-s3-service" | sudo tee -a /etc/hosts
