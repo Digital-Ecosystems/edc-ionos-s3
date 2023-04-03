@@ -46,9 +46,7 @@ or
 ```bash
 docker compose -f "docker-compose.yml" up --build
 ```
-If you use docker to do the deployment of this example, please consider the following:
-- sdfsdf
-- dgdfg
+If you use docker to do the deployment of this example, don't forget to change the curls below with `consumer`, `provider` and  `hashicorp-vault` instead of calling `localhost`.
 
 We will have to call some URL's in order to transfer the file:
 1) Contract offers
