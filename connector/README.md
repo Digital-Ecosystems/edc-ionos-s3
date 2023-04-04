@@ -24,9 +24,13 @@ Just check the `Configuration` section of the example [readme](../example/README
 
 Open the `resources/config.properties` file and insert the key and the secret of your IONOS S3 storage and the token.
 
+Replace the `resources/keystore.p12` with the one generated from the EDC.
+
+Change the value of `EDC_KEYSTORE_PASSWORD` in docker-compose.yml with the password for the keystore.
+
 ## Building and running the docker
 
 ```bash
-docker build -t ionos-connector .
+docker build -t edc-ionos-s3 .
 docker-compose up
 ```
