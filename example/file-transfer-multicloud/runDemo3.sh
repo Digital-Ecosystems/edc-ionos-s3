@@ -57,7 +57,7 @@ curl -X POST "http://localhost:9192/api/v1/management/catalog/request" \
 }'
 
 contractId=`curl -d '{
-           "connectorId": "http-push-provider",
+           "connectorId": "multicloud-push-provider",
            "connectorAddress": "http://localhost:8282/api/v1/ids/data",
            "protocol": "ids-multipart",
            "offer": {

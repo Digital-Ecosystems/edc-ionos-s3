@@ -1,0 +1,16 @@
+image:
+  repository: ghcr.io/edc-ionos-s3/connector
+  pullPolicy: IfNotPresent
+  tag: "1.0.0"
+
+service:
+  type: LoadBalancer
+
+edc:
+  ionos:
+    accessKey: "edc"
+    secretKey: "edc"
+    endpoint: "edc"
+  vault:
+    hashicorp:
+      url: "http://vault-internal:8200"

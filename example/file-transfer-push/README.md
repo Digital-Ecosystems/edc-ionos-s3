@@ -1,7 +1,8 @@
-# File transfer using with IONOS S3 Extension
+# File transfer using push method 
 
- This example shows how to exchange a data file between two EDC's. It is based on the sample of the official EDC respository and it also uses the `push` method to transfer the file.
+ This example shows how to exchange a data file between two EDC's. It is based on a sample of the official EDC respository.
 
+ You can execute this example by using only one IONOS account (more for development purpose) or by using two IONOS accounts (similar to production purpose).
 
 ## Requirements
 
@@ -16,15 +17,18 @@ You will need the following:
 
 ### Building the project
 
-Just check the `Building and Running` section of the previous [readme](../README.md).
+Just check the `Building and Running` section of the previous [readme](../../README.md).
 
 ### Configuration
 In order to configure this sample, please follow this steps:
 (We will use the [DCD](https://dcd.ionos.com))
 1) Create a S3 Key Management: access the `Storage\Object Storage\S3 Key Management` option and generate a Key. Keep the key and the secret;
-2) Create the required buckets: access the `Storage\Object Storage\S3 Web Console` option and create two buckets: company1 and company2;
-3) Upload a file named `device1-data.csv` into the company1 bucket. You can use the `example/device1-data.csv`;
-4) Open the `example/consumer/resources/consumer/config.properties` and `example/consumer/resources/provider/config.properties` files and insert the key and the secret (step 1);
+2) Create the required buckets: access the `Storage\Object Storage\S3 Web Console` option and create two buckets: company1;
+3) Upload a file named `device1-data.csv` into the company1 bucket. You can use the `example/file-transfer-push/device1-data.csv`;
+4) Create a token that the consumer will use to do the provisioning. Take a look at this [documentation](../../ionos_token.md);
+5) Copy the required configuration fields:  
+Consumer: open the `example/file-transfer-push/consumer/resources/consumer-config.properties` (or use an Hashicorp Vault instance) and add the field `edc.ionos.token` with the token;   
+Provider: open the `example/file-transfer-push/provider/resources/provider-config.properties` (or use an Hashicorp Vault instance) and insert the key - `edc.ionos.access.key` and the secret - `edc.ionos.secret.access.key` (step 1);
 
 Note: by design, S3 technology allows only unique names for the buckets. You may find an error saying that the bucket name already exists.
 
@@ -33,9 +37,16 @@ Note: by design, S3 technology allows only unique names for the buckets. You may
 
 Local execution:
 ```bash
-java -Dedc.fs.config=example/consumer/resources/consumer-config.properties -jar example/consumer/build/libs/dataspace-connector.jar
-java -Dedc.fs.config=example/provider/resources/provider-config.properties -jar example/provider/build/libs/dataspace-connector.jar
+java -Dedc.fs.config=example/file-transfer-push/consumer/resources/consumer-config.properties -jar example/file-transfer-push/consumer/build/libs/dataspace-connector.jar
+java -Dedc.fs.config=example/file-transfer-push/provider/resources/provider-config.properties -jar example/file-transfer-push/provider/build/libs/dataspace-connector.jar
 ```
+
+or
+
+```bash
+docker compose -f "docker-compose.yml" up --build
+```
+If you use docker to do the deployment of this example, don't forget to replace `localhost` with `consumer` and `provider` in the curls below.
 
 We will have to call some URL's in order to transfer the file:
 1) Contract offers
@@ -103,7 +114,7 @@ curl --location --request POST 'http://localhost:9192/api/v1/management/transfer
   "dataDestination": {
     "properties": {
       "type": "IonosS3",
- "storage":"s3-eu-central-1.ionoscloud.com",
+      "storage":"s3-eu-central-1.ionoscloud.com",
       "bucketName": "company2"
     },
     "type": "IonosS3"
@@ -119,4 +130,4 @@ You will have an answer like the following:
 ```
 {"createdAt":1673349183568,"id":"25df5c64-77c9-4e5a-8e4f-aa06aa434408"}
 ```
-After executing all the steps, we can now check the `company2 bucket` of our IONOS S3 to see if the file has been correctly transfered.
+After executing all the steps, we can now check the `company2` bucket of our IONOS S3 to see if the file has been correctly transfered.

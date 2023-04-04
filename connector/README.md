@@ -3,7 +3,7 @@
 This document explain how to deploy an EDC with IONOS S3 Extension into a docker deamon.
 
 
-## Requirments
+## Requirements
 
 You will need the following:
 - IONOS account;
@@ -20,9 +20,9 @@ Just check the `Building and Running` section of the previous [readme](../README
 
 ### Configuration
 
-Just check the `Configuration` section of the excample [readme](../example/README.md) to configure your IONOS S3 storage.
+Just check the `Configuration` section of the example [readme](../example/README.md) to configure your IONOS S3 storage.
 
-Open the `resources/config.properties` file and insert the key and the secret of your IONOS S3 storage.
+Open the `resources/config.properties` file and insert the key and the secret of your IONOS S3 storage and the token.
 
 ## Building and running the docker
 

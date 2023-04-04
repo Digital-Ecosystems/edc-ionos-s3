@@ -12,4 +12,4 @@ COPY ./resources/ /app
 # Copy jar
 COPY ./build/libs/http-pull-connector.jar /app
 
-ENTRYPOINT java -Dedc.keystore=./certs/cert.pfx -Dedc.keystore.password=123456 -Dedc.vault=./consumer-vault.properties -jar -Dedc.fs.config=./consumer-configuration.properties ./http-pull-connector.jar
+ENTRYPOINT java -Dedc.keystore=./cert.pfx -Dedc.keystore.password=123456 -Dedc.vault=./provider-vault.properties -Dedc.fs.config=./provider-configuration.properties -jar ./http-pull-connector.jar

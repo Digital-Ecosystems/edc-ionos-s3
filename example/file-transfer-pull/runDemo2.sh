@@ -7,12 +7,13 @@ curl -H 'Content-Type: application/json' \
    "edctype": "dataspaceconnector:dataplaneinstance",
    "id": "http-pull-provider-dataplane",
    "url": "http://localhost:19192/control/transfer",
-   "allowedSourceTypes": [ "HttpData" ],
+   "allowedSourceTypes": [ "HttpData", "IonosS3" ],
    "allowedDestTypes": [ "HttpProxy", "HttpData" ],
    "properties": {
      "publicApiUrl": "http://localhost:19291/public/"
    }
- }' -X POST "http://localhost:19193/api/v1/data/instances"
+ }' \
+     -X POST "http://localhost:19193/api/v1/data/instances
 
 ### CONSUMER
 curl -H 'Content-Type: application/json' \
@@ -20,8 +21,8 @@ curl -H 'Content-Type: application/json' \
    "edctype": "dataspaceconnector:dataplaneinstance",
    "id": "http-pull-consumer-dataplane",
    "url": "http://localhost:29192/control/transfer",
-   "allowedSourceTypes": [ "HttpData" ],
-   "allowedDestTypes": [ "HttpProxy", "HttpData", "IonosS3" ],
+   "allowedSourceTypes": [ "HttpData", ],
+   "allowedDestTypes": [ "HttpProxy", "HttpData" ],
    "properties": {
      "publicApiUrl": "http://localhost:29291/public/"
    }
@@ -38,12 +39,16 @@ curl -d '{
            },
            "dataAddress": {
              "properties": {
-				"name": "Test asset",
-				"baseUrl": "https://jsonplaceholder.typicode.com/users",
-				"type": "HttpData"
+               "name": "device1-data.csv",
+			   "bucketName": "pullcompany2",
+               "container": "pullcompany2",
+               "blobName": "device1-data.csv",
+               "storage": "s3-eu-central-1.ionoscloud.com",
+               "type": "IonosS3"
              }
            }
-         }' -H 'content-type: application/json' http://localhost:19193/api/v1/data/assets
+         }' -H 'content-type: application/json' http://localhost:19193/api/v1/data/assets \
+         -s | jq
 
 curl -d '{
            "id": "aPolicy",
@@ -62,15 +67,16 @@ curl -d '{
                "@policytype": "set"
              }
            }
-         }' -H 'content-type: application/json' http://localhost:19193/api/v1/data/policydefinitions
+         }' -H 'content-type: application/json' http://localhost:19193/api/v1/data/policydefinitions \
+         -s | jq
 
-
- curl -d '{
-   "id": "1",
-   "accessPolicyId": "aPolicy",
-   "contractPolicyId": "aPolicy",
-   "criteria": []
- }' -H 'content-type: application/json' http://localhost:19193/api/v1/data/contractdefinitions
+curl -d '{
+           "id": "1",
+           "accessPolicyId": "aPolicy",
+           "contractPolicyId": "aPolicy",
+           "criteria": []
+         }' -H 'content-type: application/json' http://localhost:19193/api/v1/data/contractdefinitions \
+         -s | jq
  
 curl -X POST "http://localhost:29193/api/v1/data/catalog/request" \
 --header 'Content-Type: application/json' \
@@ -104,8 +110,6 @@ contractId=`curl -d '{
          }' -X POST -H 'content-type: application/json' http://localhost:29193/api/v1/data/contractnegotiations \
          -s | jq -r '.id'`
 
-echo "PJC: "$contractId
-
 sleep 4
 
 curl -X GET "http://localhost:29193/api/v1/data/contractnegotiations/$contractId" \
@@ -117,32 +121,10 @@ sleep 4
 contractAgreementId=`curl -X GET "http://localhost:29193/api/v1/data/contractnegotiations/$contractId" \
     --header 'Content-Type: application/json' \
     -s | jq -r '.contractAgreementId'`
-#    -s | jq `
-
-echo "PJC - contractAgreementId: "$contractAgreementId
-
-### TRANSFER
-#curl -H 'Content-Type: application/json' \
-#     -d '{
-#   "destination": {
-#     "properties": {
-#	"type": "IonosS3"
-#  "storage":"s3-eu-central-2.ionoscloud.com",
-#  "bucketName": "pjcbucket2",
-#  "blobName": "device1-data.csv"
-#     }
-#   },
-#   "source": {
-#     "properties": {
-#	"type": "HttpData"
-#     }
-#   } 
-# }' -X POST "http://localhost:29193/api/v1/data/instances/select"
-
-# url=http://s3-eu-central-1.ionoscloud.com/pjcbucket?location=, headers=Host: s3-eu-central-2.ionoscloud.com
-#"dataDestination": { "type": "HttpProxy" }
 
 sleep 4
+
+### TRANSFER
 
 curl -X POST "http://localhost:29193/api/v1/data/transferprocess" \
     --header "Content-Type: application/json" \
@@ -152,36 +134,13 @@ curl -X POST "http://localhost:29193/api/v1/data/transferprocess" \
                 "contractId": "'"$contractAgreementId"'",
                 "assetId": "assetId",
                 "managedResources": "false",
-		"dataDestination": { 
-		"properties": {
-		   "type": "IonosS3"
-			"storage":"s3-eu-central-2.ionoscloud.com",
-			"bucketName": "company2",
-			"blobName": "Test asset"
-	        }
-	        }
-            }' \
+				"dataDestination": { 
+				"properties": {
+				   "type": "HttpProxy"
+					}
+					}
+					}' \
     -s | jq 
 
 
 echo "DONE"
-
-#authcode=`curl http://localhost:29193/api/v1/data/transferprocess/$transferid`
-
-#curl --location --request GET 'http://localhost:29291/public/' \
-#--header 'Authorization: '"$authcode"''
-
-#curl -H 'Content-Type: application/json' \
-#     -d '{
-#   "destination": {
-#     "properties": {
-#	"type": "IonosS3",
-#  "storage":"s3-eu-central-2.ionoscloud.com",
-#  "bucketName": "pjcbucket2",
-#  "blobName": "device1-data.csv"
-#}
-#   },
-#   "source": {
-#	"type": "HttpData"
-#   } 
-# }' -X POST "http://localhost:29193/api/v1/data/instances/select"
