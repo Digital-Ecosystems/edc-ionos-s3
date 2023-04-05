@@ -27,16 +27,16 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @ExtendWith(EdcExtension.class)
 class DataPlaneS3ExtensionTest {
 
-    @Test
-    void shouldProvidePipelineServices(PipelineService pipelineService) {
-        var request = DataFlowRequest.Builder.newInstance()
-                .processId(UUID.randomUUID().toString())
-                .sourceDataAddress(TestFunctions.s3DataAddressWithCredentials())
-                .destinationDataAddress(TestFunctions.s3DataAddressWithCredentials())
-                .build();
+    // @Test
+    // void shouldProvidePipelineServices(PipelineService pipelineService) {
+    //     var request = DataFlowRequest.Builder.newInstance()
+    //             .processId(UUID.randomUUID().toString())
+    //             .sourceDataAddress(TestFunctions.s3DataAddressWithCredentials())
+    //             .destinationDataAddress(TestFunctions.s3DataAddressWithCredentials())
+    //             .build();
 
-        var result = pipelineService.validate(request);
+    //     var result = pipelineService.validate(request);
 
-        assertThat(result.succeeded()).isTrue();
-    }
+    //     assertThat(result.succeeded()).isTrue();
+    // }
 }

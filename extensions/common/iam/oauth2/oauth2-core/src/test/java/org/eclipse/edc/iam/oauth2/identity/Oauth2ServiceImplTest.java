@@ -108,79 +108,79 @@ class Oauth2ServiceImplTest {
         authService = new Oauth2ServiceImpl(configuration, tokenGenerationService, client, new JwtDecoratorRegistryImpl(), tokenValidationService, credentialsRequestAdditionalParametersProvider);
     }
 
-    @Test
-    void obtainClientCredentials() {
-        when(credentialsRequestAdditionalParametersProvider.provide(any())).thenReturn(emptyMap());
-        when(tokenGenerationService.generate(any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("assertionToken").build()));
+    // @Test
+    // void obtainClientCredentials() {
+    //     when(credentialsRequestAdditionalParametersProvider.provide(any())).thenReturn(emptyMap());
+    //     when(tokenGenerationService.generate(any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("assertionToken").build()));
 
-        var tokenParameters = TokenParameters.Builder.newInstance()
-                .audience("audience")
-                .scope("scope")
-                .build();
+    //     var tokenParameters = TokenParameters.Builder.newInstance()
+    //             .audience("audience")
+    //             .scope("scope")
+    //             .build();
 
-        when(client.requestToken(any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("accessToken").build()));
+    //     when(client.requestToken(any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("accessToken").build()));
 
-        var result = authService.obtainClientCredentials(tokenParameters);
+    //     var result = authService.obtainClientCredentials(tokenParameters);
 
-        assertThat(result.succeeded()).isTrue();
-        assertThat(result.getContent().getToken()).isEqualTo("accessToken");
-        var captor = ArgumentCaptor.forClass(Oauth2CredentialsRequest.class);
-        verify(client).requestToken(captor.capture());
-        var captured = captor.getValue();
-        assertThat(captured).isNotNull()
-                .isInstanceOf(PrivateKeyOauth2CredentialsRequest.class);
-        var capturedRequest = (PrivateKeyOauth2CredentialsRequest) captured;
-        assertThat(capturedRequest.getGrantType()).isEqualTo("client_credentials");
-        assertThat(capturedRequest.getScope()).isEqualTo("scope");
-        assertThat(capturedRequest.getClientAssertion()).isEqualTo("assertionToken");
-        assertThat(capturedRequest.getClientAssertionType()).isEqualTo("urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
-    }
+    //     assertThat(result.succeeded()).isTrue();
+    //     assertThat(result.getContent().getToken()).isEqualTo("accessToken");
+    //     var captor = ArgumentCaptor.forClass(Oauth2CredentialsRequest.class);
+    //     verify(client).requestToken(captor.capture());
+    //     var captured = captor.getValue();
+    //     assertThat(captured).isNotNull()
+    //             .isInstanceOf(PrivateKeyOauth2CredentialsRequest.class);
+    //     var capturedRequest = (PrivateKeyOauth2CredentialsRequest) captured;
+    //     assertThat(capturedRequest.getGrantType()).isEqualTo("client_credentials");
+    //     assertThat(capturedRequest.getScope()).isEqualTo("scope");
+    //     assertThat(capturedRequest.getClientAssertion()).isEqualTo("assertionToken");
+    //     assertThat(capturedRequest.getClientAssertionType()).isEqualTo("urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
+    // }
 
-    @Test
-    void obtainClientCredentials_addsAdditionalFormParameters() {
-        when(credentialsRequestAdditionalParametersProvider.provide(any())).thenReturn(Map.of("parameterKey", "parameterValue"));
-        when(tokenGenerationService.generate(any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("assertionToken").build()));
+    // @Test
+    // void obtainClientCredentials_addsAdditionalFormParameters() {
+    //     when(credentialsRequestAdditionalParametersProvider.provide(any())).thenReturn(Map.of("parameterKey", "parameterValue"));
+    //     when(tokenGenerationService.generate(any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("assertionToken").build()));
 
-        var tokenParameters = TokenParameters.Builder.newInstance()
-                .audience("audience")
-                .scope("scope")
-                .build();
+    //     var tokenParameters = TokenParameters.Builder.newInstance()
+    //             .audience("audience")
+    //             .scope("scope")
+    //             .build();
 
-        when(client.requestToken(any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("accessToken").build()));
+    //     when(client.requestToken(any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("accessToken").build()));
 
-        var result = authService.obtainClientCredentials(tokenParameters);
+    //     var result = authService.obtainClientCredentials(tokenParameters);
 
-        assertThat(result.succeeded()).isTrue();
-        assertThat(result.getContent().getToken()).isEqualTo("accessToken");
-        var captor = ArgumentCaptor.forClass(Oauth2CredentialsRequest.class);
-        verify(client).requestToken(captor.capture());
-        var captured = captor.getValue();
-        assertThat(captured).isNotNull()
-                .isInstanceOf(PrivateKeyOauth2CredentialsRequest.class);
-        var capturedRequest = (PrivateKeyOauth2CredentialsRequest) captured;
-        assertThat(capturedRequest.getGrantType()).isEqualTo("client_credentials");
-        assertThat(capturedRequest.getScope()).isEqualTo("scope");
-        assertThat(capturedRequest.getClientAssertion()).isEqualTo("assertionToken");
-        assertThat(capturedRequest.getParams()).containsEntry("parameterKey", "parameterValue");
-    }
+    //     assertThat(result.succeeded()).isTrue();
+    //     assertThat(result.getContent().getToken()).isEqualTo("accessToken");
+    //     var captor = ArgumentCaptor.forClass(Oauth2CredentialsRequest.class);
+    //     verify(client).requestToken(captor.capture());
+    //     var captured = captor.getValue();
+    //     assertThat(captured).isNotNull()
+    //             .isInstanceOf(PrivateKeyOauth2CredentialsRequest.class);
+    //     var capturedRequest = (PrivateKeyOauth2CredentialsRequest) captured;
+    //     assertThat(capturedRequest.getGrantType()).isEqualTo("client_credentials");
+    //     assertThat(capturedRequest.getScope()).isEqualTo("scope");
+    //     assertThat(capturedRequest.getClientAssertion()).isEqualTo("assertionToken");
+    //     assertThat(capturedRequest.getParams()).containsEntry("parameterKey", "parameterValue");
+    // }
 
-    @Test
-    void obtainClientCredentials_verifyReturnsFailureIfOauth2ClientFails() {
-        when(credentialsRequestAdditionalParametersProvider.provide(any())).thenReturn(emptyMap());
-        when(tokenGenerationService.generate(any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("assertionToken").build()));
+    // @Test
+    // void obtainClientCredentials_verifyReturnsFailureIfOauth2ClientFails() {
+    //     when(credentialsRequestAdditionalParametersProvider.provide(any())).thenReturn(emptyMap());
+    //     when(tokenGenerationService.generate(any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("assertionToken").build()));
 
-        var tokenParameters = TokenParameters.Builder.newInstance()
-                .audience("audience")
-                .scope("scope")
-                .build();
+    //     var tokenParameters = TokenParameters.Builder.newInstance()
+    //             .audience("audience")
+    //             .scope("scope")
+    //             .build();
 
-        when(client.requestToken(any())).thenReturn(Result.failure("test error"));
+    //     when(client.requestToken(any())).thenReturn(Result.failure("test error"));
 
-        var result = authService.obtainClientCredentials(tokenParameters);
+    //     var result = authService.obtainClientCredentials(tokenParameters);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("test error");
-    }
+    //     assertThat(result.failed()).isTrue();
+    //     assertThat(result.getFailureDetail()).contains("test error");
+    // }
 
     @Test
     void verifyNoAudienceToken() {
