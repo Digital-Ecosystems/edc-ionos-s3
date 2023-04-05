@@ -49,6 +49,13 @@ All commands paths are relative to the current directory where this readme is lo
 vim helm/edc-ionos-s3/values.yaml
 ```
 
+### 2. Create ImagePullSecret
+Before executing the command replace ```<path to docker config json file>``` with real path.
+
+```sh
+kubectl create secret -n edc-ionos-s3 generic regcred --from-file=.dockerconfigjson=<path to docker config json file> --type=kubernetes.io/dockerconfigjson
+```
+
 ### 2. Install the EDC Ionos S3 services
 
 To install the services run the script ```deploy-services.sh``` in ```terraform``` directory.
