@@ -24,6 +24,10 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.security.CertificateResolver;
+import org.eclipse.edc.spi.security.PrivateKeyResolver;
+import org.eclipse.edc.spi.system.vault.NoopCertificateResolver;
+import org.eclipse.edc.spi.system.vault.NoopPrivateKeyResolver;
 
 @Provides(S3ConnectorApi.class)
 @Extension(value = S3CoreExtension.NAME)
@@ -66,6 +70,12 @@ public class S3CoreExtension implements ServiceExtension {
 		
         var s3Api = new S3ConnectorApiImpl(endPoint, accessKey, secretKey, token);
         context.registerService(S3ConnectorApi.class, s3Api);
+
+        // var privateKeyResolver = new NoopPrivateKeyResolver();
+        // context.registerService(PrivateKeyResolver.class, privateKeyResolver);
+
+        // var certificateResolver = new NoopCertificateResolver();
+        // context.registerService(CertificateResolver.class, certificateResolver);
     }
 
 }

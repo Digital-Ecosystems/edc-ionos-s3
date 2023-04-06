@@ -23,6 +23,8 @@ dependencies {
 
 	api("${edcGroup}:runtime-metamodel:${metaModelVersion}")
 	implementation("${edcGroup}:transfer-spi:${edcVersion}")
+
+	implementation(project(":core:common:util"))
 	
 	//implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
 	

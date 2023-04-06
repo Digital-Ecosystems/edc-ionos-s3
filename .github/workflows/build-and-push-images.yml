@@ -34,7 +34,7 @@ jobs:
           buildkitd-flags: --debug
 
       - name: Prepare required files
-        run: ./gradlew clean build
+        run: ./gradlew clean build --parallel --configure-on-demand connector:build -x test -x checkstyleTestFixtures -x checkstyleTest -x checkstyleMain
 
       - name: Docker "connector" meta
         id: connector-meta
