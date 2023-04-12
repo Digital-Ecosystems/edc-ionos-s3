@@ -32,10 +32,12 @@ Set environment variables
 
 ```sh
 # Required configuration
+export TF_VAR_s3_namespace='edc-ionos-s3'
 export TF_VAR_kubeconfig='path to kubeconfig'
 export TF_VAR_s3_access_key=''
 export TF_VAR_s3_secret_key=''
 export TF_VAR_s3_endpoint=''
+export TF_VAR_s3_token=''
 ```
 
 ***
@@ -44,7 +46,7 @@ export TF_VAR_s3_endpoint=''
 
 All commands paths are relative to the current directory where this readme is located.
 
-### 1. Change the docker image, imagepullsecret and the edc configurations in the `values.yaml` file of the helm chart
+### 1. Change the docker image, imagepullsecret and the edc configurations in the `values.yaml` file of the helm chart. The vault configurations will be set by the terraform script.
 ```sh
 vim helm/edc-ionos-s3/values.yaml
 ```

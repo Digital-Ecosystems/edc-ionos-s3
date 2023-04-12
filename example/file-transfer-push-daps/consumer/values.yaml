@@ -5,12 +5,13 @@
 replicaCount: 1
 
 image:
-  repository: ionos-connector
-  pullPolicy: IfNotPresent
+  repository: example.cr.de-fra.ionos.com/edc-ionos-s3
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "consumer"
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: regcred
 nameOverride: ""
 fullnameOverride: ""
 
@@ -120,12 +121,6 @@ edc:
     certificate: /resources/
     name: ionos
     hashicorp:
-      url: http://vault:8200
-      token:
+      url: http://vault.edc-ionos-s3-vault.svc.cluster.local:8200
       timeout:
         seconds: 30
-  ionos:
-    accessKey: <YOUR-KEY>
-    secretKey: <YOUR-SECRET-KEY>
-    endpoint: <IONOS-ENDPOINT>
-    token: <IONOS-TOKEN>
