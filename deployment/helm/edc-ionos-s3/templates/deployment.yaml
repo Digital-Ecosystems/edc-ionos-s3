@@ -36,12 +36,6 @@ spec:
           env:
           - name: EDC_FS_CONFIG
             value: "/resources/config.properties"
-          - name: EDC_VAULT
-            value: "/resources/config.properties"
-          - name: EDC_KEYSTORE
-            value: "/resources/keystore.p12"
-          - name: EDC_KEYSTORE_PASSWORD
-            value: {{ .Values.edc.keystorePassword | quote }}
           ports:
             - name: api
               containerPort: {{ .Values.service.apiPort }}
@@ -70,9 +64,6 @@ spec:
             - name: config
               mountPath: /resources/config.properties
               subPath: config.properties
-            - name: keystore
-              mountPath: /resources/keystore.p12
-              subPath: keystore.p12
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -89,6 +80,3 @@ spec:
         - name: config
           configMap:
             name: {{ include "edc-ionos-s3.fullname" . }}-config
-        - name: keystore
-          secret:
-            secretName: {{ include "edc-ionos-s3.fullname" . }}-keystore
