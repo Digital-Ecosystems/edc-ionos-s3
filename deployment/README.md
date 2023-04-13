@@ -1,14 +1,15 @@
 ***
-# EDC Ionos S3 deployment
+# EDC Ionos S3 deployment on external kubernetes cluster
 
-This document describes how to deploy EDC Ionos S3 on IONOS DCD.
-
-***
-
-### Kind
+### Local Deployment
 For local kubernetes installation please refer to the ```kind``` directory's [readme](kind/README.md).
 
 ***
+### External Deployment
+To deploy the EDC Ionos S3 connector to external kubernetes cluster on IONOS cloud, follow this readme below.
+
+***
+
 
 ### Requirements
 - [Helm](https://helm.sh/docs/intro/install/)
@@ -16,7 +17,6 @@ For local kubernetes installation please refer to the ```kind``` directory's [re
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [Kubernetes cluster](https://kubernetes.io/docs/setup/) - **Note:** You can use the terraform script in [General-des-development](https://github.com/Digital-Ecosystems/general-des-development) repository to deploy a kubernetes cluster on IONOS DCD.
 - S3 account
-- [DAPS](https://github.com/Digital-Ecosystems/general-des-development/tree/main/omejdn-daps)
 
 ***
 

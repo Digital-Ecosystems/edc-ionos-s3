@@ -9,6 +9,3 @@ services:
       - "8282:8282"
     environment:
       EDC_FS_CONFIG: /resources/config.properties
-      EDC_VAULT: /resources/config.properties
-      EDC_KEYSTORE: /resources/keystore.p12
-      EDC_KEYSTORE_PASSWORD: <keystore-password>
