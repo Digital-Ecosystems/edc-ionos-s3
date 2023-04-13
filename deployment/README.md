@@ -1,11 +1,11 @@
 ***
-# EDC Ionos S3 deployment
+# EDC Ionos S3 deployment on external kubernetes cluster
 
-This document describes how to deploy EDC Ionos S3 on IONOS DCD.
+This document describes how to deploy EDC Ionos S3 on external IONOS DCD kubernetes cluster.
 
 ***
 
-### Kind
+### Local Deployment
 For local kubernetes installation please refer to the ```kind``` directory's [readme](kind/README.md).
 
 ***
