@@ -22,6 +22,9 @@ variable "s3_secret_key" {
 variable "s3_endpoint" {
   type = string
 }
+variable "s3_token" {
+  type = string
+}
 
 variable "namespace" {
   type = string
