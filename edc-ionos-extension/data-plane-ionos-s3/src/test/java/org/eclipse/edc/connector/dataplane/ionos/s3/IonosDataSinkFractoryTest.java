@@ -16,23 +16,23 @@ import java.util.UUID;
 
 
 
-// class IonosDataSinkFractoryTest {
+class IonosDataSinkFractoryTest {
 
-//     @Test
-//     void shouldProvidePipelineServices(PipelineService pipelineService) {
-//         var request = DataFlowRequest.Builder.newInstance().processId(UUID.randomUUID().toString())
-//                 .sourceDataAddress(getDataAddress("company-1")).destinationDataAddress(getDataAddress("company-2"))
-//                 .build();
-//         System.out.println("IonosDataSinkFractoryTest");
-//         var result = pipelineService.validate(request);
+    @Test
+    void shouldProvidePipelineServices(PipelineService pipelineService) {
+        var request = DataFlowRequest.Builder.newInstance().processId(UUID.randomUUID().toString())
+                .sourceDataAddress(getDataAddress("company-1")).destinationDataAddress(getDataAddress("company-2"))
+                .build();
+        System.out.println("IonosDataSinkFractoryTest");
+        var result = pipelineService.validate(request);
 
-//         assertThat(result.succeeded()).isTrue();
-//     }
+        assertThat(result.succeeded()).isTrue();
+    }
 
-//     private DataAddress getDataAddress(String bucketName) {
-//         return DataAddress.Builder.newInstance().type(IonosBucketSchema.TYPE).keyName("111")
-//                 .property(IonosBucketSchema.BUCKET_NAME, bucketName)
-//                 .property(IonosBucketSchema.STORAGE_NAME, "s3-eu-central-1.ionos.com").build();
-//     }
+    private DataAddress getDataAddress(String bucketName) {
+        return DataAddress.Builder.newInstance().type(IonosBucketSchema.TYPE).keyName("111")
+                .property(IonosBucketSchema.BUCKET_NAME, bucketName)
+                .property(IonosBucketSchema.STORAGE_NAME, "s3-eu-central-1.ionos.com").build();
+    }
 
-// }
+}
