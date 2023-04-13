@@ -16,27 +16,11 @@ public class HttpConnector {
 	String basicUrl = "https://api.ionos.com/cloudapi/v6/um/users/";
 	
 	public String retrieveUserID(String token)  {		
-		
-		Request request = new Request.Builder()
-				   .url(basicUrl)
-				   //This adds the token to the header.
-				   .addHeader("Authorization", "Bearer " + token)
-				   .build();
-				    try (Response response = client.newCall(request).execute()) {
-				         if (!response.isSuccessful()){
-				            throw new IOException("Unexpected code " + response);
-				         }
+		String[] jwtParts = token.split("\\.");
+		String jwtPayload = new String(java.util.Base64.getDecoder().decode(jwtParts[1]));
+		String uuid = jwtPayload.split("\"uuid\":\"")[1].split("\"")[0];
 
-				        ObjectMapper objectMapper = new ObjectMapper();
-				        ResponseIonosApi resp = objectMapper.readValue(response.body().string(), ResponseIonosApi.class);
-				        System.out.println("Server: " + resp.getItems().get(0).getId());
-				        return  resp.getItems().get(0).getId();		  
-				     }catch (Exception e) {
-				    	e.printStackTrace();
-				    	return "";
-					}
-				    
-		   
+		return uuid;
 	}
 	
 		
