@@ -27,6 +27,6 @@ Open the `resources/config.properties` file and insert the key and the secret of
 ## Building and running the docker
 
 ```bash
-docker build -t ionos-connector .
+docker build -t edc-ionos-s3 .
 docker-compose up
 ```
