@@ -91,5 +91,5 @@ In order to see a working example, go to the [example](./example/README.md) fold
 ## Deploying to IONOS Kubernetes
 Check this [document](./k8s.md) to see how to deploy the Connector into a IONOS Kubernetes cluster.
 
-Check the [Deployment Readme](./deployment/README.md) to see how to deploy the Connector locally or to an external Kubernetes cluster.
+Check the [deployment readme](./deployment/README.md) to see how to deploy the Connector locally or to an external Kubernetes cluster.
 
