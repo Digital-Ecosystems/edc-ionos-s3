@@ -29,7 +29,7 @@ include(":edc-ionos-extension:data-plane-ionos-s3")
 
 include(":edc-ionos-extension:provision-ionos-s3")
 
-include(":edc-ionos-extension:ionos-s3-core")
+include(":edc-ionos-extension:core-ionos-s3")
 
 include(":edc-ionos-extension:vault-hashicorp")
 
