@@ -22,10 +22,3 @@ data:
     edc.ionos.secret.key={{ .Values.edc.ionos.secretKey }}
     edc.ionos.endpoint={{ .Values.edc.ionos.endpoint }}
     ids.webhook.address={{ .Values.ids.webhook.address }}
-
-    edc.oauth.token.url={{ .Values.edc.oauth.tokenUrl }}
-    edc.oauth.client.id={{ .Values.edc.oauth.clientId }}
-    edc.oauth.provider.audience={{ .Values.edc.oauth.providerAudience }}
-    edc.oauth.provider.jwks.url={{ .Values.edc.oauth.providerJwksUrl }}
-    edc.oauth.certificate.alias={{ .Values.edc.oauth.certificateAlias }}
-    edc.oauth.private.key.alias={{ .Values.edc.oauth.privateKeyAlias }}

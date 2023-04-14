@@ -36,6 +36,7 @@ export TF_VAR_kubeconfig='path to kubeconfig'
 export TF_VAR_s3_access_key=''
 export TF_VAR_s3_secret_key=''
 export TF_VAR_s3_endpoint=''
+export TF_VAR_s3_token=''
 ```
 
 ***

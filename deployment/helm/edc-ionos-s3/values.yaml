@@ -102,15 +102,6 @@ web:
       port: 8282
       path: /api/v1/ids
 edc:
-  keystore: # keystore value base64 encoded
-  keystorePassword: # keystore password as string
-  oauth:
-    tokenUrl: https://omejdn-nginx.example.com/auth/token
-    clientId: # from the daps clients.yml
-    providerAudience: idsc:IDS_CONNECTORS_ALL
-    providerJwksUrl: https://omejdn-nginx.example.com/auth/jwks.json
-    certificateAlias: 1
-    privateKeyAlias: 1
   api:
     auth:
       key: password
