@@ -21,6 +21,8 @@ dependencyResolutionManagement {
             from("org.eclipse.edc:edc-versions:0.0.1-SNAPSHOT")
             // this is not part of the published EDC Version Catalog, so we'll just "amend" it
             library("dnsOverHttps", "com.squareup.okhttp3", "okhttp-dnsoverhttps").versionRef("okhttp")
+
+            version("okhttp", "4.9.3") // Replace with the desired version
         }
     }
 }
