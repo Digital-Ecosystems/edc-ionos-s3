@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: ionos-connector
+  repository: ghcr.io/edc-ionos-s3/connector
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"

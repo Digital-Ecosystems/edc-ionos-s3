@@ -28,6 +28,7 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 
 
 public class CloudTransferExtension implements ServiceExtension {
@@ -37,6 +38,12 @@ public class CloudTransferExtension implements ServiceExtension {
     private PolicyDefinitionStore policyDefinitionStore;
     @Inject
     private ContractDefinitionStore contractDefinitionStore;
+
+    @Setting
+    private static final String IONOS_BUCKET_NAME = "edc.file.transfer.bucket.name";
+
+    @Setting
+    private static final String IONOS_BLOB_NAME = "edc.file.transfer.blob.name";
 
     @Override
     public String name() {
@@ -48,20 +55,23 @@ public class CloudTransferExtension implements ServiceExtension {
         var policy = createPolicy();
         policyDefinitionStore.save(policy);
 
-        registerDataEntries();
+        var bucketName = context.getSetting(IONOS_BUCKET_NAME, IONOS_BUCKET_NAME);
+        var blobName = context.getSetting(IONOS_BLOB_NAME, IONOS_BLOB_NAME);
+
+        registerDataEntries(bucketName, blobName);
         registerContractDefinition(policy.getUid());
     }
 
-    public void registerDataEntries() {
+    public void registerDataEntries(String bucketName, String blobName) {
         try {
             var asset = Asset.Builder.newInstance().id("1").build();
             var dataAddress = DataAddress.Builder.newInstance().type("IonosS3")
                     .property("storage", "s3-eu-central-1.ionoscloud.com")
-                    .property("bucketName", System.getenv("IONOS_BUCKET_NAME"))
-                    .property("container", System.getenv("IONOS_BUCKET_NAME"))
-                    .property("blobName", System.getenv("IONOS_BLOB_NAME"))
-                    .keyName(System.getenv("IONOS_BLOB_NAME")).build();
-            
+                    .property("bucketName", bucketName)
+                    .property("container", bucketName)
+                    .property("blobName", blobName)
+                    .keyName(blobName).build();
+
             assetIndex.accept(asset, dataAddress);
         } catch (Exception e) {
             // TODO: handle exception

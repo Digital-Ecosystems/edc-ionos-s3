@@ -13,7 +13,7 @@ You will need the following:
 - GIT;
 - Linux shell or PowerShell;
 - [Kubernetes cluster](https://kubernetes.io/docs/setup/) - **Note:** You can use the terraform script in [General-des-development](https://github.com/Digital-Ecosystems/general-des-development) repository to deploy a kubernetes cluster on IONOS DCD.
-- [DAPS](https://github.com/Digital-Ecosystems/general-des-development/tree/main/omejdn-daps)
+- [DAPS server](https://github.com/Digital-Ecosystems/general-des-development/tree/main/omejdn-daps) - **Note:** You can follow the instructions in the [General-des-development](https://github.com/Digital-Ecosystems/general-des-development/tree/main/omejdn-daps) repository to deploy a DAPS server on IONOS DCD.
 
 
 ## Deployment
@@ -30,53 +30,45 @@ In order to configure this sample, please follow this steps:
 3) Create the required buckets: access the `Storage\Object Storage\S3 Web Console` option and create two buckets: company1 and company2;
 4) Upload a file named `device1-data.csv` into the company1 bucket. You can use the `example/file-transfer-push-daps/device1-data.csv`;
 5) Create a token that the consumer will use to do the provisioning. Take a look at this [documentation](../../ionos_token.md);
-6) Copy the required configuration fields:
-
-Consumer: open the `example/file-transfer-push-daps/consumer/values.yaml` and add the following fields:
-- `ids.webhook.address` - The address of the IDS Webhook
-- `edc.keystore` - The keystore from the DAPS server in base64 encoded format
-- `edc.keystorePassword` - The password of the keystore
-- `edc.oauth.tokenUrl` - The token url of the DAPS server
-- `edc.oauth.clientId` - The client id from the DAPS server
-- `edc.oauth.providerJwksUrl` - The jwks url of the DAPS server
-- `image.repository` - The repository of the consumer image
-
-Provider: open the `example/file-transfer-push-daps/provider/values.yaml` and insert the key - `edc.ionos.accessKey` and the secret - `edc.ionos.secretKey` (step 1);
-- `edc.ionos.token` with the token generated in step 5;
-- `ids.webhook.address` - The address of the IDS Webhook
-- `edc.keystore` - The keystore from the DAPS server in base64 encoded format
-- `edc.keystorePassword` - The password of the keystore
-- `edc.oauth.tokenUrl` - The token url of the DAPS server
-- `edc.oauth.clientId` - The client id from the DAPS server
-- `edc.oauth.providerJwksUrl` - The jwks url of the DAPS server
-- `image.repository` - The repository of the provider image
+6) Open `example/file-transfer-push-daps/terraform/.env` and set all the variables.
 
 Note: by design, S3 technology allows only unique names for the buckets. You may find an error saying that the bucket name already exists.
 
 ## Usage
 
 ```bash
-export TF_VAR_kubeconfig='path/to/kubeconfig'
-export TF_VAR_s3_access_key='<YOUR-KEY>'
-export TF_VAR_s3_secret_key='<YOUR-SECRET-KEY>'
-export TF_VAR_s3_endpoint='<IONOS-S3-ENDPOINT>' # e.g. s3-eu-central-1.ionoscloud.com
-export TF_VAR_s3_token='<IONOS-TOKEN>'
-
+# Navigate to the terraform folder
 cd terraform
+
+# Load the environment variables
+source .env
+
+# Deploy the services
 ./deploy-services.sh
+```
 
-# Forward the consumer port to your local machine
-kubectl port-forward -n edc-ionos-s3-consumer svc/edc-ionos-s3-consumer 8182:8182
+```bash
+export KUBECONFIG=/path/to/kubeconfig
 
-# Set the provider address which is accessible from the consumer
-export PROVIDER_ADDRESS=edc-ionos-s3-provider.edc-ionos-s3-provider.svc.cluster.local
+# Set the provider and consumer addresses
+export PROVIDER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-provider edc-ionos-s3-provider -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-consumer -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+
+# Change the ids.webhook.address in the config.properties in the configmap
+kubectl -n edc-ionos-s3-provider get configmap edc-ionos-s3-provider-config -o yaml | sed "s/ids.webhook.address=.*/ids.webhook.address=http:\/\/$PROVIDER_ADDRESS:8282/g" | kubectl apply -f -
+kubectl -n edc-ionos-s3-consumer get configmap edc-ionos-s3-consumer-config -o yaml | sed "s/ids.webhook.address=.*/ids.webhook.address=http:\/\/$CONSUMER_ADDRESS:8282/g" | kubectl apply -f -
+
+# Restart the pods
+kubectl -n edc-ionos-s3-provider delete pod -l app.kubernetes.io/name=edc-ionos-s3
+kubectl -n edc-ionos-s3-consumer delete pod -l app.kubernetes.io/name=edc-ionos-s3
+
 ```
 
 
 We will have to call some URL's in order to transfer the file:
 1) Contract offers
 ```bash
-curl -X GET -H 'X-Api-Key: password' "http://localhost:8182/api/v1/management/catalog?providerUrl=http://$PROVIDER_ADDRESS:8282/api/v1/ids/data"
+curl -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/api/v1/management/catalog?providerUrl=http://$PROVIDER_ADDRESS:8282/api/v1/ids/data"
 
 ```
 
@@ -91,7 +83,7 @@ You will have an output like the following:
 Copy the bracket of the `policy` from the response of the first curl into this curl and execute it.
 
 ```bash
-curl --location --request POST "http://localhost:8182/api/v1/management/contractnegotiations" \
+curl --location --request POST "http://$CONSUMER_ADDRESS:8182/api/v1/management/contractnegotiations" \
 --header 'X-API-Key: password' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -115,7 +107,7 @@ You will have an answer like the following:
 
 Copy the value of the `id` from the response of the previous curl into this curl and execute it.
 ```bash
-curl -X GET -H 'X-Api-Key: password' "http://localhost:9192/api/v1/management/contractnegotiations/{<ID>}"
+curl -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/api/v1/management/contractnegotiations/<ID>"
 ```
 You will have an answer like the following:
 ```bash
@@ -126,7 +118,7 @@ You will have an answer like the following:
 
 Copy the value of the `contractAgreementId` from the response of the previous curl into this curl and execute it.
 ```bash
-curl --location --request POST "http://localhost:8182/api/v1/management/transferprocess" \
+curl --location --request POST "http://$CONSUMER_ADDRESS:8182/api/v1/management/transferprocess" \
 --header 'X-API-Key: password' \
 --header 'Content-Type: application/json' \
 --data-raw '
@@ -140,10 +132,7 @@ curl --location --request POST "http://localhost:8182/api/v1/management/transfer
     "properties": {
       "type": "IonosS3",
       "storage":"s3-eu-central-1.ionoscloud.com",
-      "bucketName": "daiteap-test2",
-      "accessKey": "00ff8c8b6eda8b2789ea",
-      "secretKey": "SxYwd9Od9mIFH9QtDLtSwZ1dnd1W0XG7BE1h6Jda",
-      "account": "daiteap-test2"
+      "bucketName": "company2",
     },
     "type": "IonosS3"
   },

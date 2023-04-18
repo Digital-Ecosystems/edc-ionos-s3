@@ -1,3 +1,13 @@
+provider "helm" {
+  kubernetes {
+    config_path = "${var.kubeconfig}"
+  }
+}
+
+variable "kubeconfig" {
+  type = string
+}
+
 variable "namespace_vault" {
   default = "edc-ionos-s3-vault"
 }

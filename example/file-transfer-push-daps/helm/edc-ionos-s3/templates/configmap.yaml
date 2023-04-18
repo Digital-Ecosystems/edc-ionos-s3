@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "edc-ionos-s3.fullname" . }}-config
+data:
+  config.properties: |
+    web.http.port={{ .Values.web.http.port }}
+    web.http.path={{ .Values.web.http.path }}
+    web.http.management.port={{ .Values.web.http.management.port }}
+    web.http.management.path={{ .Values.web.http.management.path }}
+    web.http.ids.port={{ .Values.web.http.ids.port }}
+    web.http.ids.path={{ .Values.web.http.ids.path }}
+    edc.api.auth.key={{ .Values.edc.api.auth.key }}
+    edc.vault.clientid={{ .Values.edc.vault.clientid }}
+    edc.vault.tenantid={{ .Values.edc.vault.tenantid }}
+    edc.vault.certificate={{ .Values.edc.vault.certificate }}
+    edc.vault.name={{ .Values.edc.vault.name }}
+    edc.vault.hashicorp.url={{ .Values.edc.vault.hashicorp.url }}
+    edc.vault.hashicorp.token={{ .Values.edc.vault.hashicorp.token }}
+    edc.vault.hashicorp.timeout.seconds={{ .Values.edc.vault.hashicorp.timeout.seconds }}
+    ids.webhook.address={{ .Values.ids.webhook.address }}
+    edc.ionos.access.key=accessKey
+    edc.ionos.secret.key=secretKey
+    edc.ionos.endpoint=endpoint
+    edc.ionos.token=token
+
+    edc.oauth.token.url={{ .Values.edc.oauth.tokenUrl }}
+    edc.oauth.client.id={{ .Values.edc.oauth.clientId }}
+    edc.oauth.provider.audience={{ .Values.edc.oauth.providerAudience }}
+    edc.oauth.provider.jwks.url={{ .Values.edc.oauth.providerJwksUrl }}
+    edc.oauth.certificate.alias={{ .Values.edc.oauth.certificateAlias }}
+    edc.oauth.private.key.alias={{ .Values.edc.oauth.privateKeyAlias }}
+
+    edc.file.transfer.bucket.name={{ .Values.edc.file.transfer.bucket.name }}
+    edc.file.transfer.blob.name={{ .Values.edc.file.transfer.blob.name }}
