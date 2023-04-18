@@ -60,7 +60,7 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
     	
         String storage = resourceDefinition.getStorage();
         String bucketName = resourceDefinition.getbucketName();
-        monitor.debug(" storage " + storage +" bucketName " + bucketName  );
+
         OffsetDateTime expiryTime = OffsetDateTime.now().plusHours(1);
 
         if (storage == null) {

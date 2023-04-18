@@ -36,6 +36,7 @@ The IONOS S3 Extension can be deployed to a Kubernetes cluster using the Helm ch
     kubectl exec --namespace edc-ionos-s3 -it vault-0 -- vault kv put secret/edc.ionos.access.key content=
     kubectl exec --namespace edc-ionos-s3 -it vault-0 -- vault kv put secret/edc.ionos.secret.key content=
     kubectl exec --namespace edc-ionos-s3 -it vault-0 -- vault kv put secret/edc.ionos.endpoint content=
+    kubectl exec --namespace edc-ionos-s3 -it vault-0 -- vault kv put secret/edc.ionos.token content=
     ```
 
 1. Install IONOS S3 Extension Helm chart

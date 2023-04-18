@@ -38,6 +38,10 @@ if [ -z `printenv S3_ENDPOINT` ]; then
     echo "Stopping because S3_ENDPOINT is undefined"
     exit 1
 fi
+if [ -z `printenv S3_TOKEN` ]; then
+    echo "Stopping because S3_TOKEN is undefined"
+    exit 1
+fi
 
 # clean old installation
 scripts/cleanup.sh

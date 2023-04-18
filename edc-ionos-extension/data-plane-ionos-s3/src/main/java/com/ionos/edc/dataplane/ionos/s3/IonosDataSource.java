@@ -59,7 +59,6 @@ class IonosDataSource implements DataSource {
         @Override
         public InputStream openStream() {
             InputStream targetStream = new ByteArrayInputStream(s3Api.getFile(bucketName, blobName));
-            System.out.println("DataSource 64 " + targetStream.hashCode());
             return targetStream;
         }
 
