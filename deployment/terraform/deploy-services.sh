@@ -8,6 +8,23 @@ if [ -z `printenv TF_VAR_kubeconfig` ]; then
     exit 1
 fi
 
+if [ -z `printenv TF_VAR_s3_access_key` ]; then
+    echo "Stopping because TF_VAR_s3_access_key is undefined"
+    exit 1
+fi
+if [ -z `printenv TF_VAR_s3_secret_key` ]; then
+    echo "Stopping because TF_VAR_s3_secret_key is undefined"
+    exit 1
+fi
+if [ -z `printenv TF_VAR_s3_endpoint` ]; then
+    echo "Stopping because TF_VAR_s3_endpoint is undefined"
+    exit 1
+fi
+if [ -z `printenv TF_VAR_ionos_token` ]; then
+    echo "Stopping because TF_VAR_ionos_token is undefined"
+    exit 1
+fi
+
 # Deploy vault
 cd vault-deploy
 terraform init
