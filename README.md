@@ -89,7 +89,5 @@ java -Dedc.fs.config=resources/config.properties -jar build/libs/dataspace-conne
 In order to see a working example, go to the [example](./example/README.md) folder.
 
 ## Deploying to IONOS Kubernetes
-Check this [document](./k8s.md) to see how to deploy the Connector into a IONOS Kubernetes cluster.
-
 Check the [deployment readme](./deployment/README.md) to see how to deploy the Connector locally or to an external Kubernetes cluster.
 
