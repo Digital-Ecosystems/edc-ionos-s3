@@ -11,14 +11,14 @@ fi
 # Deploy vault
 cd vault-deploy
 terraform init
-terraform apply -auto-approve
+terraform destroy -auto-approve
 
 # Initialize vault
 cd ../vault-init
 terraform init
-terraform apply -auto-approve
+terraform destroy -auto-approve
 
 # Deploy ionos s3
 cd ../ionos-s3-deploy
 terraform init
-terraform apply -auto-approve
+terraform destroy -auto-approve

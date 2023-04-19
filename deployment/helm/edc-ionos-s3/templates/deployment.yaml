@@ -36,6 +36,8 @@ spec:
           env:
           - name: EDC_FS_CONFIG
             value: "/resources/config.properties"
+          - name: EDC_VAULT
+            value: "/resources/config.properties"
           ports:
             - name: api
               containerPort: {{ .Values.service.apiPort }}

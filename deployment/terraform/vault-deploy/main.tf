@@ -1,3 +1,13 @@
+provider "helm" {
+  kubernetes {
+    config_path = "${var.kubeconfig}"
+  }
+}
+
+variable "kubeconfig" {
+  type = string
+}
+
 variable "namespace" {
   default = "edc-ionos-s3"
 }
@@ -10,6 +20,6 @@ resource "helm_release" "vault" {
   chart      = "vault"
   version = "v0.19.0"
 
-  namespace = "${var.namespace}"
+  namespace = var.namespace
   create_namespace = true
 }

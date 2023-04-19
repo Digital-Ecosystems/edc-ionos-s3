@@ -33,6 +33,10 @@ Set environment variables
 ```sh
 # Required configuration
 export TF_VAR_kubeconfig='path to kubeconfig'
+
+export TF_VAR_image_repository=''
+export TF_VAR_image_tag=''
+
 export TF_VAR_s3_access_key=''
 export TF_VAR_s3_secret_key=''
 export TF_VAR_s3_endpoint=''
@@ -45,15 +49,11 @@ export TF_VAR_s3_token=''
 
 All commands paths are relative to the current directory where this readme is located.
 
-### 1. Change the docker image, imagepullsecret and the edc configurations in the `values.yaml` file of the helm chart
-```sh
-vim helm/edc-ionos-s3/values.yaml
-```
-
-### 2. Create ImagePullSecret
+### 1. Create ImagePullSecret
 Before executing the command replace ```<path to docker config json file>``` with real path.
 
 ```sh
+kubectl create namespace edc-ionos-s3
 kubectl create secret -n edc-ionos-s3 generic regcred --from-file=.dockerconfigjson=<path to docker config json file> --type=kubernetes.io/dockerconfigjson
 ```
 
