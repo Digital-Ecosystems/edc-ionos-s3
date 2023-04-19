@@ -40,7 +40,7 @@ export TF_VAR_image_tag=''
 export TF_VAR_s3_access_key=''
 export TF_VAR_s3_secret_key=''
 export TF_VAR_s3_endpoint=''
-export TF_VAR_s3_token=''
+export TF_VAR_ionos_token=''
 ```
 
 ***

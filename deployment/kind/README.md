@@ -27,7 +27,7 @@ export KUBECONFIG=path/to/kubeconfig
 export S3_ACCESS_KEY=''
 export S3_SECRET_KEY=''
 export S3_ENDPOINT=''
-export S3_TOKEN=''
+export IONOS_TOKEN=''
 ```
 
 ***

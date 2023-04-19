@@ -22,7 +22,7 @@ variable "image_tag" {}
 variable "s3_access_key" {}
 variable "s3_secret_key" {}
 variable "s3_endpoint" {}
-variable "s3_token" {}
+variable "ionos_token" {}
 
 locals {
   root_token = fileexists("../vault-init/vault-keys.json") ? "${jsondecode(file("../vault-init/vault-keys.json")).root_token}" : ""
@@ -58,7 +58,7 @@ resource "helm_release" "edc-ionos-s3" {
 
   set {
     name  = "edc.ionos.token"
-    value = var.s3_token
+    value = var.ionos_token
   }
 
   set {
