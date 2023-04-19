@@ -31,17 +31,21 @@ These are the services that are deployed:
 
 Set environment variables
 
+**Note:** You will need docker image of the EDC Ionos S3 connector pushed to a repository. If you don't have one, you can build it following the instructions in the [readme](/connector/README.md).
+
+**Note:** To create the IONOS token please take a look at the following [documentation](/ionos_token.md).
+
 ```sh
 # Required configuration
 export TF_VAR_kubeconfig='path to kubeconfig'
 
-export TF_VAR_image_repository=''
-export TF_VAR_image_tag=''
+export TF_VAR_image_repository='' # docker image repository e.g. example.cr.de-fra.ionos.com/edc-ionos-s3
+export TF_VAR_image_tag='' # docker image tag e.g. latest
 
-export TF_VAR_s3_access_key=''
-export TF_VAR_s3_secret_key=''
-export TF_VAR_s3_endpoint='' # e.g. s3-eu-central-1.ionoscloud.com
-export TF_VAR_s3_token='' # curl -s -u 'USERNAME:PASSWORD' https://api.ionos.com/auth/v1/tokens/generate | jq -r '.token'
+export TF_VAR_s3_access_key='' # S3 access key
+export TF_VAR_s3_secret_key='' # S3 secret key
+export TF_VAR_s3_endpoint='' # s3 endpoint (e.g. s3-eu-central-1.ionoscloud.com)
+export TF_VAR_ionos_token='' # IONOS Cloud token
 ```
 
 ***
