@@ -40,8 +40,8 @@ export TF_VAR_image_tag=''
 
 export TF_VAR_s3_access_key=''
 export TF_VAR_s3_secret_key=''
-export TF_VAR_s3_endpoint=''
-export TF_VAR_ionos_token=''
+export TF_VAR_s3_endpoint='' # e.g. s3-eu-central-1.ionoscloud.com
+export TF_VAR_s3_token='' # curl -s -u 'USERNAME:PASSWORD' https://api.ionos.com/auth/v1/tokens/generate | jq -r '.token'
 ```
 
 ***
