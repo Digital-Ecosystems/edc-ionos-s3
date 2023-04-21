@@ -21,7 +21,7 @@ spec:
         {{- include "edc-ionos-s3.selectorLabels" . | nindent 8 }}
     spec:
       imagePullSecrets:
-        - name: regcred
+        - name: {{ .Values.imagePullSecret.name }}
       serviceAccountName: {{ include "edc-ionos-s3.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}

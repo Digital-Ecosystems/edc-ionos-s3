@@ -5,12 +5,16 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/edc-ionos-s3/connector
+  repository: example.cr.de-fra.ionos.com/ionos-connector
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
-imagePullSecretDockerConfigJson: "" # base64 encoded config.json for accessing the private docker registry
+imagePullSecret:
+  name: "regcred"
+  server: ""
+  username: ""
+  password: ""
 nameOverride: ""
 fullnameOverride: ""
 

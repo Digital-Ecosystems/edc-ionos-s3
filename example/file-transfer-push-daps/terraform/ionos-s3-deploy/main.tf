@@ -29,31 +29,35 @@ variable "edc_file_transfer_bucket_name" {
 variable "consumer_ids_webhook_address" {
   default = "http://localhost:8282"
 }
+
+variable "daps_url" {}
+variable "container_registry_url" {}
+variable "container_repository_username" {}
+variable "container_repository_password" {}
+
+# Consumer
+variable "consumer_edc_oauth_clientId" {}
 variable "consumer_edc_keystore" {}
 variable "consumer_edc_keystorePassword" {}
-variable "consumer_edc_oauth_tokenUrl" {}
-variable "consumer_edc_oauth_clientId" {}
-variable "consumer_edc_oauth_providerJwksUrl" {}
-variable "consumer_image_repository" {}
-variable "consumer_image_tag" {}
-variable "consumer_image_pull_secret_docker_config_json" {}
+variable "consumer_image_tag" {
+  default = "consumer"
+}
 
+# Provider
 variable "provider_ids_webhook_address" {
   default = "http://localhost:8282"
 }
+variable "provider_edc_oauth_clientId" {}
 variable "provider_edc_keystore" {}
 variable "provider_edc_keystorePassword" {}
-variable "provider_edc_oauth_tokenUrl" {}
-variable "provider_edc_oauth_clientId" {}
-variable "provider_edc_oauth_providerJwksUrl" {}
-variable "provider_image_repository" {}
-variable "provider_image_tag" {}
-variable "provider_image_pull_secret_docker_config_json" {}
+variable "provider_image_tag" {
+  default = "provider"
+}
 
 variable "s3_access_key" {}
 variable "s3_secret_key" {}
 variable "s3_endpoint" {}
-variable "s3_token" {}
+variable "ionos_token" {}
 
 locals {
   root_token = fileexists("../vault-init/vault-keys.json") ? "${jsondecode(file("../vault-init/vault-keys.json")).root_token}" : ""
@@ -89,7 +93,7 @@ resource "helm_release" "edc-ionos-s3-consumer" {
 
   set {
     name  = "edc.ionos.token"
-    value = var.s3_token
+    value = var.ionos_token
   }
 
   set {
@@ -109,7 +113,7 @@ resource "helm_release" "edc-ionos-s3-consumer" {
 
   set {
     name  = "edc.oauth.tokenUrl"
-    value = var.consumer_edc_oauth_tokenUrl
+    value = "${var.daps_url}/auth/token"
   }
 
   set {
@@ -119,12 +123,12 @@ resource "helm_release" "edc-ionos-s3-consumer" {
 
   set {
     name  = "edc.oauth.providerJwksUrl"
-    value = var.consumer_edc_oauth_providerJwksUrl
+    value = "${var.daps_url}/auth/jwks.json"
   }
 
   set {
     name  = "image.repository"
-    value = var.consumer_image_repository
+    value = "${var.container_registry_url}/edc-ionos-s3"
   }
 
   set {
@@ -133,8 +137,18 @@ resource "helm_release" "edc-ionos-s3-consumer" {
   }
 
   set {
-    name  = "imagePullSecretDockerConfigJson"
-    value = var.consumer_image_pull_secret_docker_config_json
+    name  = "imagePullSecret.username"
+    value = "${var.container_repository_username}"
+  }
+
+  set {
+    name  = "imagePullSecret.password"
+    value = "${var.container_repository_password}"
+  }
+
+  set {
+    name  = "imagePullSecret.server"
+    value = "${var.container_registry_url}"
   }
 
   set {
@@ -208,7 +222,7 @@ resource "helm_release" "edc-ionos-s3-provider" {
 
   set {
     name  = "edc.oauth.tokenUrl"
-    value = var.provider_edc_oauth_tokenUrl
+    value = "${var.daps_url}/auth/token"
   }
 
   set {
@@ -218,12 +232,12 @@ resource "helm_release" "edc-ionos-s3-provider" {
 
   set {
     name  = "edc.oauth.providerJwksUrl"
-    value = var.provider_edc_oauth_providerJwksUrl
+    value = "${var.daps_url}/auth/jwks.json"
   }
 
   set {
     name  = "image.repository"
-    value = var.provider_image_repository
+    value = "${var.container_registry_url}/edc-ionos-s3"
   }
 
   set {
@@ -232,8 +246,18 @@ resource "helm_release" "edc-ionos-s3-provider" {
   }
 
   set {
-    name  = "imagePullSecretDockerConfigJson"
-    value = var.provider_image_pull_secret_docker_config_json
+    name  = "imagePullSecret.username"
+    value = "${var.container_repository_username}"
+  }
+
+  set {
+    name  = "imagePullSecret.password"
+    value = "${var.container_repository_password}"
+  }
+
+  set {
+    name  = "imagePullSecret.server"
+    value = "${var.container_registry_url}"
   }
 
   set {

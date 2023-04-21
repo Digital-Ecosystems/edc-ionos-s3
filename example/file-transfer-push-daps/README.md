@@ -18,23 +18,41 @@ You will need the following:
 
 ## Deployment
 
-### Building the project
+### Build the project
+Follow the `Building and Running` section of the previous [readme](../../README.md).
 
-Just check the `Building and Running` section of the previous [readme](../../README.md).
+### Create registry and token
+In order to to build and push the docker images, you will need to follow the steps below:
+(We will use the [DCD](https://dcd.ionos.com)
+1) Create a Container Registry: access the `Containers/Container Registry` option and create a new registry;
+2) Create a token: access the `Containers/Container Registry/<REGISTRY_NAME>/Tokens` and click on `Add` button. Set the `Name`, and add `push` and `pull` permissions on the repository. Store the username and password;
+
+### Build the docker images
+```bash
+docker build -t example.cr.de-fra.ionos.com/edc-ionos-s3:consumer consumer
+docker build -t example.cr.de-fra.ionos.com/edc-ionos-s3:provider provider
+```
+
+### Push the docker images
+```bash
+docker push example.cr.de-fra.ionos.com/edc-ionos-s3:consumer
+docker push example.cr.de-fra.ionos.com/edc-ionos-s3:provider
+```
 
 ### Configuration
 In order to configure this sample, please follow this steps:
 (We will use the [DCD](https://dcd.ionos.com))
 1) Create a Kubernetes cluster and deploy DAPS service. Follow the instructions from the [general-des-development](https://github.com/Digital-Ecosystems/general-des-development/tree/main/omejdn-daps).
-2) Create a S3 Key Management: access the `Storage\Object Storage\S3 Key Management` option and generate a Key. Keep the key and the secret;
-3) Create the required buckets: access the `Storage\Object Storage\S3 Web Console` option and create two buckets: company1 and company2;
+2) Create a S3 Key Management: access the `Storage/Object Storage/S3 Key Management` option and generate a Key. Keep the key and the secret;
+3) Create the required buckets: access the `Storage/Object Storage/S3 Web Console` option and create two buckets: company1 and company2;
 4) Upload a file named `device1-data.csv` into the company1 bucket. You can use the `example/file-transfer-push-daps/device1-data.csv`;
 5) Create a token that the consumer will use to do the provisioning. Take a look at this [documentation](../../ionos_token.md);
-6) Open `example/file-transfer-push-daps/terraform/.env` and set all the variables.
 
 Note: by design, S3 technology allows only unique names for the buckets. You may find an error saying that the bucket name already exists.
 
 ## Usage
+
+Open `example/file-transfer-push-daps/terraform/.env` and set all the variables.
 
 ```bash
 # Navigate to the terraform folder
