@@ -5,12 +5,13 @@
 replicaCount: 1
 
 image:
-  repository: ionos-connector
+  repository: edc-ionos-s3
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
-imagePullSecrets: []
+imagePullSecrets: 
+  - name: regcred
 nameOverride: ""
 fullnameOverride: ""
 
@@ -116,6 +117,7 @@ edc:
       timeout:
         seconds: 30
   ionos:
-    accessKey:
-    secretKey:
-    endpoint:
+    accessKey: <YOUR-KEY>
+    secretKey: <YOUR-SECRET-KEY>
+    endpoint: <IONOS-ENDPOINT>
+    token: <IONOS-TOKEN>

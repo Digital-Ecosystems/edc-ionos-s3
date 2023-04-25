@@ -21,4 +21,5 @@ data:
     edc.ionos.access.key={{ .Values.edc.ionos.accessKey }}
     edc.ionos.secret.key={{ .Values.edc.ionos.secretKey }}
     edc.ionos.endpoint={{ .Values.edc.ionos.endpoint }}
+    edc.ionos.token={{ .Values.edc.ionos.token }}
     ids.webhook.address={{ .Values.ids.webhook.address }}
