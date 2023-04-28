@@ -2,6 +2,8 @@
 
 This example shows how to exchange a data file between two EDC's. It is based on a sample of the official EDC respository.
 
+The connectors are deployed on Kubernetes cluster and use IDS DAPS as Identity Provider.
+
 You can execute this example by using only one IONOS account (more for development purpose) or by using two IONOS accounts (similar to production purpose).
 
 ## Requirements
@@ -18,34 +20,13 @@ You will need the following:
 
 ## Deployment
 
-### Build the project
-Follow the `Building and Running` section of the previous [readme](../../README.md).
-
-### Create registry and token
-In order to to build and push the docker images, you will need to follow the steps below:
-(We will use the [DCD](https://dcd.ionos.com)
-1) Create a Container Registry: access the `Containers/Container Registry` option and create a new registry;
-2) Create a token: access the `Containers/Container Registry/<REGISTRY_NAME>/Tokens` and click on `Add` button. Set the `Name`, and add `push` and `pull` permissions on the repository. Store the username and password;
-
-### Build the docker images
-```bash
-docker build -t example.cr.de-fra.ionos.com/edc-ionos-s3:consumer consumer
-docker build -t example.cr.de-fra.ionos.com/edc-ionos-s3:provider provider
-```
-
-### Push the docker images
-```bash
-docker push example.cr.de-fra.ionos.com/edc-ionos-s3:consumer
-docker push example.cr.de-fra.ionos.com/edc-ionos-s3:provider
-```
-
 ### Configuration
 In order to configure this sample, please follow this steps:
 (We will use the [DCD](https://dcd.ionos.com))
 1) Create a Kubernetes cluster and deploy DAPS service. Follow the instructions from the [general-des-development](https://github.com/Digital-Ecosystems/general-des-development/tree/main/omejdn-daps).
 2) Create a S3 Key Management: access the `Storage/Object Storage/S3 Key Management` option and generate a Key. Keep the key and the secret;
-3) Create the required buckets: access the `Storage/Object Storage/S3 Web Console` option and create two buckets: company1 and company2;
-4) Upload a file named `device1-data.csv` into the company1 bucket. You can use the `example/file-transfer-push-daps/device1-data.csv`;
+3) Create the required buckets: access the `Storage/Object Storage/S3 Web Console` option and create two buckets: one for the provider and another for the consumer;
+4) Upload a file named `device1-data.csv` into the provider bucket. You can use the `example/file-transfer-push-daps/device1-data.csv`;
 5) Create a token that the consumer will use to do the provisioning. Take a look at this [documentation](../../ionos_token.md);
 
 Note: by design, S3 technology allows only unique names for the buckets. You may find an error saying that the bucket name already exists.
@@ -72,19 +53,9 @@ source .env
 ```
 
 ```bash
-export KUBECONFIG=/path/to/kubeconfig
-
 # Set the provider and consumer addresses
 export PROVIDER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-provider edc-ionos-s3-provider -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-consumer -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-
-# Change the ids.webhook.address in the config.properties in the configmap
-kubectl -n edc-ionos-s3-provider get configmap edc-ionos-s3-provider-config -o yaml | sed "s/ids.webhook.address=.*/ids.webhook.address=http:\/\/$PROVIDER_ADDRESS:8282/g" | kubectl apply -f -
-kubectl -n edc-ionos-s3-consumer get configmap edc-ionos-s3-consumer-config -o yaml | sed "s/ids.webhook.address=.*/ids.webhook.address=http:\/\/$CONSUMER_ADDRESS:8282/g" | kubectl apply -f -
-
-# Restart the pods
-kubectl -n edc-ionos-s3-provider delete pod -l app.kubernetes.io/name=edc-ionos-s3
-kubectl -n edc-ionos-s3-consumer delete pod -l app.kubernetes.io/name=edc-ionos-s3
 
 ```
 
@@ -156,7 +127,7 @@ curl --location --request POST "http://$CONSUMER_ADDRESS:8182/api/v1/management/
     "properties": {
       "type": "IonosS3",
       "storage":"s3-eu-central-1.ionoscloud.com",
-      "bucketName": "company2",
+      "bucketName": "<CONSUMER_BUCKET_NAME>",
     },
     "type": "IonosS3"
   },

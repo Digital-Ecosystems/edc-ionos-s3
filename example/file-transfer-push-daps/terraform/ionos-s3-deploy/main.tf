@@ -22,7 +22,7 @@ variable "edc_file_transfer_blob_name" {
 }
 
 variable "edc_file_transfer_bucket_name" {
-  default = "company1"
+  default = "provider"
   type = string
 }
 
@@ -32,13 +32,14 @@ variable "consumer_ids_webhook_address" {
 
 variable "daps_url" {}
 variable "container_registry_url" {}
-variable "container_repository_username" {}
-variable "container_repository_password" {}
+variable "container_repository_username" {
+  default = "edc-ionos-s3"
+}
 
 # Consumer
-variable "consumer_edc_oauth_clientId" {}
-variable "consumer_edc_keystore" {}
-variable "consumer_edc_keystorePassword" {}
+variable "consumer_edc_keystore_password" {
+  default = "consumer"
+}
 variable "consumer_image_tag" {
   default = "consumer"
 }
@@ -47,9 +48,9 @@ variable "consumer_image_tag" {
 variable "provider_ids_webhook_address" {
   default = "http://localhost:8282"
 }
-variable "provider_edc_oauth_clientId" {}
-variable "provider_edc_keystore" {}
-variable "provider_edc_keystorePassword" {}
+variable "provider_edc_keystore_password" {
+  default = "provider"
+}
 variable "provider_image_tag" {
   default = "provider"
 }
@@ -60,7 +61,13 @@ variable "s3_endpoint" {}
 variable "ionos_token" {}
 
 locals {
-  root_token = fileexists("../vault-init/vault-keys.json") ? "${jsondecode(file("../vault-init/vault-keys.json")).root_token}" : ""
+  root_token = "${jsondecode(file("../vault-init/vault-keys.json")).root_token}"
+
+  consumer_edc_oauth_clientId = "${yamldecode(file("../create-daps-clients/connectors/consumer/config/clients.yml"))[0].client_id}"
+  consumer_edc_keystore = "${filebase64("../create-daps-clients/connectors/consumer/keystore.p12")}"
+
+  provider_edc_oauth_clientId = "${yamldecode(file("../create-daps-clients/connectors/provider/config/clients.yml"))[0].client_id}"
+  provider_edc_keystore = "${filebase64("../create-daps-clients/connectors/provider/keystore.p12")}"
 }
 
 resource "helm_release" "edc-ionos-s3-consumer" {
@@ -103,12 +110,12 @@ resource "helm_release" "edc-ionos-s3-consumer" {
 
   set {
     name  = "edc.keystore"
-    value = var.consumer_edc_keystore
+    value = local.consumer_edc_keystore
   }
 
   set {
     name  = "edc.keystorePassword"
-    value = var.consumer_edc_keystorePassword
+    value = var.consumer_edc_keystore_password
   }
 
   set {
@@ -118,7 +125,7 @@ resource "helm_release" "edc-ionos-s3-consumer" {
 
   set {
     name  = "edc.oauth.clientId"
-    value = var.consumer_edc_oauth_clientId
+    value = local.consumer_edc_oauth_clientId
   }
 
   set {
@@ -143,7 +150,7 @@ resource "helm_release" "edc-ionos-s3-consumer" {
 
   set {
     name  = "imagePullSecret.password"
-    value = "${var.container_repository_password}"
+    value = "${file("../build-and-push-docker-images/registry_password.txt")}"
   }
 
   set {
@@ -212,12 +219,12 @@ resource "helm_release" "edc-ionos-s3-provider" {
 
   set {
     name  = "edc.keystore"
-    value = var.provider_edc_keystore
+    value = local.provider_edc_keystore
   }
 
   set {
     name  = "edc.keystorePassword"
-    value = var.provider_edc_keystorePassword
+    value = var.provider_edc_keystore_password
   }
 
   set {
@@ -227,7 +234,7 @@ resource "helm_release" "edc-ionos-s3-provider" {
 
   set {
     name  = "edc.oauth.clientId"
-    value = var.provider_edc_oauth_clientId
+    value = local.provider_edc_oauth_clientId
   }
 
   set {
@@ -252,7 +259,7 @@ resource "helm_release" "edc-ionos-s3-provider" {
 
   set {
     name  = "imagePullSecret.password"
-    value = "${var.container_repository_password}"
+    value = "${file("../build-and-push-docker-images/registry_password.txt")}"
   }
 
   set {
