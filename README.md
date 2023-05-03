@@ -2,6 +2,10 @@
 
 This repository contains the IONOS S3 Extension that works with the Eclipse Dataspace Connector allowing operations into the IONOS S3 Storage.
 
+Disclaimer: The code of this repo is provided on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied, including, without limitation, any warranties or conditions of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE. You are solely responsible for determining the appropriateness of using or redistributing this code and assume any risks associated with Your exercise of permissions. For more information check the License.
+
+Please refer to the official [site](https://github.com/ionos-cloud/edc-ionos-s3).
+
 
 
 ## Based on the following
