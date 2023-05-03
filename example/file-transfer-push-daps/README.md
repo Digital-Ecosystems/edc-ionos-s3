@@ -145,3 +145,16 @@ You will have an answer like the following:
 {"createdAt":1673349183568,"id":"25df5c64-77c9-4e5a-8e4f-aa06aa434408"}
 ```
 After executing all the steps, we can now check the `company2` bucket of our IONOS S3 to see if the file has been correctly transfered.
+
+## Cleanup
+
+```bash
+# Navigate to the terraform folder
+cd terraform
+
+# Destroy the services
+./deploy-services.sh destroy
+```
+
+## References
+[deploy-services.sh documentation](./terraform/deploy-services.md)

@@ -52,9 +52,9 @@ fi
 
 if [ -z `printenv TF_VAR_registry_name` ]; then
     export TF_VAR_registry_name=edc-example-$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 8 | head -n 1)
-
-    export TF_VAR_container_registry_url=$TF_VAR_registry_name.cr.de-fra.ionos.com
 fi
+
+export TF_VAR_container_registry_url=$TF_VAR_registry_name.cr.de-fra.ionos.com
 
 # Build the project
 cd build-project
