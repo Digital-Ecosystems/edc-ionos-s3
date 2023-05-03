@@ -113,6 +113,8 @@ You will have an answer like the following:
 
 4) File transfer
 
+**Note:** This steps creates a temporary S3 key in Ionos. Make sure your account have enough quota for S3 keys.
+
 Copy the value of the `contractAgreementId` from the response of the previous curl into this curl and execute it.
 ```bash
 curl --location --request POST "http://$CONSUMER_ADDRESS:8182/api/v1/management/transferprocess" \
