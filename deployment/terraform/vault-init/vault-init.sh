@@ -17,8 +17,11 @@ INITIALIZED=$(kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPAC
 
 # initialize Vault if not already initialized
 if [[ "$INITIALIZED" == "false" ]]; then
+   echo "Initializing Vault"
    # Initialize Vault
    kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it vault-0 -- vault operator init -key-shares=1 -key-threshold=1 -format=json > vault-keys.json
+else
+   echo "Vault already initialized"
 fi
 
 # Unseal Vault
@@ -27,11 +30,14 @@ kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it vault-0 
 # Login to Vault
 kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it vault-0 -- vault login $(jq -r ".root_token" vault-keys.json)
 
-# Enable KV secrets engine
-kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it vault-0 -- vault secrets enable -version=2 -path=secret kv
+
+if [[ "$INITIALIZED" == "false" ]]; then
+   # Enable KV secrets engine
+   kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it vault-0 -- vault secrets enable -version=2 -path=secret kv
+fi
 
 # Add secrets to Vault
 kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it vault-0 -- vault kv put secret/edc.ionos.access.key content=$TF_VAR_s3_access_key
 kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it vault-0 -- vault kv put secret/edc.ionos.secret.key content=$TF_VAR_s3_secret_key
 kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it vault-0 -- vault kv put secret/edc.ionos.endpoint content=$TF_VAR_s3_endpoint
-kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it vault-0 -- vault kv put secret/edc.ionos.token content=$TF_VAR_s3_token
+kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it vault-0 -- vault kv put secret/edc.ionos.token content=$TF_VAR_ionos_token

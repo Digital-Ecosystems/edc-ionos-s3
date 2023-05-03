@@ -15,7 +15,8 @@ To deploy the EDC Ionos S3 connector to external kubernetes cluster on IONOS clo
 - [Helm](https://helm.sh/docs/intro/install/)
 - [Terraform](https://developer.hashicorp.com/terraform/downloads)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-- [Kubernetes cluster](https://kubernetes.io/docs/setup/) - **Note:** take a look at the requirements section of this [document](../k8s.md) if you want to deploy a kubernetes cluster on IONOS Cloud.
+- [Kubernetes cluster](https://kubernetes.io/docs/setup/) - **Note:** follow instructions in the [general-des-development
+](https://github.com/Digital-Ecosystems/general-des-development) directory to deploy a IONOS kubernetes cluster
 - S3 account
 
 ***
@@ -30,14 +31,22 @@ These are the services that are deployed:
 
 Set environment variables
 
+**Note:** You will need docker image of the EDC Ionos S3 connector pushed to a repository. If you don't have one, you can build it following the instructions in the [readme](/connector/README.md).
+
+**Note:** To create the IONOS token please take a look at the following [documentation](/ionos_token.md).
+
 ```sh
 # Required configuration
 export TF_VAR_s3_namespace='edc-ionos-s3'
 export TF_VAR_kubeconfig='path to kubeconfig'
-export TF_VAR_s3_access_key=''
-export TF_VAR_s3_secret_key=''
-export TF_VAR_s3_endpoint=''
-export TF_VAR_s3_token=''
+
+export TF_VAR_image_repository='' # docker image repository e.g. example.cr.de-fra.ionos.com/edc-ionos-s3
+export TF_VAR_image_tag='' # docker image tag e.g. latest
+
+export TF_VAR_s3_access_key='' # S3 access key
+export TF_VAR_s3_secret_key='' # S3 secret key
+export TF_VAR_s3_endpoint='' # s3 endpoint (e.g. s3-eu-central-1.ionoscloud.com)
+export TF_VAR_ionos_token='' # IONOS Cloud token
 ```
 
 ***
@@ -55,6 +64,7 @@ vim helm/edc-ionos-s3/values.yaml
 Before executing the command replace ```<path to docker config json file>``` with real path.
 
 ```sh
+kubectl create namespace edc-ionos-s3
 kubectl create secret -n edc-ionos-s3 generic regcred --from-file=.dockerconfigjson=<path to docker config json file> --type=kubernetes.io/dockerconfigjson
 ```
 
