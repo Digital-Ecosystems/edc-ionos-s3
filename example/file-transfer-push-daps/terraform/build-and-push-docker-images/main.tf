@@ -88,7 +88,7 @@ resource "null_resource" "docker_push" {
     depends_on = [
       docker_image.consumer,
       docker_image.provider,
-      ionoscloud_container_registry_token.container_registry_token
+      ionoscloud_container_registry_token.container_registry_token,
       ionoscloud_container_registry.container_registry
     ]
 }
