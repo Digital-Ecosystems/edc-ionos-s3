@@ -14,6 +14,42 @@ if [ -z `printenv TF_VAR_kubeconfig` ]; then
     exit 1
 fi
 
+if [ -z `printenv KUBECONFIG` ]; then
+    echo "Stopping because KUBECONFIG is undefined"
+    exit 1
+fi
+
+if [ -z `printenv TF_VAR_daps_url` ]; then
+    echo "Stopping because TF_VAR_daps_url is undefined"
+    exit 1
+fi
+
+if [ -z `printenv TF_VAR_edc_file_transfer_bucket_name` ]; then
+    echo "Stopping because TF_VAR_kubeconfig is TF_VAR_edc_file_transfer_bucket_name"
+    exit 1
+fi
+
+if [ -z `printenv TF_VAR_s3_access_key` ]; then
+    echo "Stopping because TF_VAR_s3_access_key is undefined"
+    exit 1
+fi
+
+if [ -z `printenv TF_VAR_s3_secret_key` ]; then
+    echo "Stopping because TF_VAR_s3_secret_key is undefined"
+    exit 1
+fi
+
+if [ -z `printenv TF_VAR_ionos_token` ]; then
+    echo "Stopping because TF_VAR_ionos_token is undefined"
+    exit 1
+fi
+
+if [ -z `printenv TF_VAR_s3_endpoint` ]; then
+    echo "Stopping because TF_VAR_s3_endpoint is undefined"
+    exit 1
+fi
+
+
 if [ -z `printenv TF_VAR_registry_name` ]; then
     export TF_VAR_registry_name=edc-example-$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 8 | head -n 1)
 
