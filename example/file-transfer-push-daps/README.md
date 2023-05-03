@@ -38,7 +38,7 @@ Note: by design, S3 technology allows only unique names for the buckets. You may
 Create `example/file-transfer-push-daps/terraform/.env` file from the `example/file-transfer-push-daps/terraform/.env-example` file.
 
 ```bash
-cp terraform/.env-example /terraform/.env
+cp terraform/.env-example terraform/.env
 ```
 
 Open `example/file-transfer-push-daps/terraform/.env` and set all the variables.
