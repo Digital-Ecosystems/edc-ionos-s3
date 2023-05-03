@@ -64,7 +64,7 @@ resource "null_resource" "docker_push" {
     command = <<-EOT
 
     attempts=0
-    max_attempts=60
+    max_attempts=120
     interval=30
 
     while true; do
