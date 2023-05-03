@@ -129,7 +129,7 @@ curl --location --request POST "http://$CONSUMER_ADDRESS:8182/api/v1/management/
     "properties": {
       "type": "IonosS3",
       "storage":"s3-eu-central-1.ionoscloud.com",
-      "bucketName": "<CONSUMER_BUCKET_NAME>",
+      "bucketName": "'$TF_VAR_consumer_bucketname'"
     },
     "type": "IonosS3"
   },
