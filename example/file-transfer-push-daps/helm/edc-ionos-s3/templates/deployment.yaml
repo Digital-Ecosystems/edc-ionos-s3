@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "edc-ionos-s3.fullname" . }}
+  labels:
+    {{- include "edc-ionos-s3.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "edc-ionos-s3.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "edc-ionos-s3.selectorLabels" . | nindent 8 }}
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecret.name }}
+      serviceAccountName: {{ include "edc-ionos-s3.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: EDC_FS_CONFIG
+            value: "/resources/config.properties"
+          - name: EDC_VAULT
+            value: "/resources/config.properties"
+          - name: EDC_KEYSTORE
+            value: "/resources/keystore.p12"
+          - name: EDC_KEYSTORE_PASSWORD
+            value: {{ .Values.edc.keystorePassword | quote }}
+          ports:
+            - name: api
+              containerPort: {{ .Values.service.apiPort }}
+              protocol: TCP
+            - name: management
+              containerPort: {{ .Values.service.managementPort }}
+              protocol: TCP
+            - name: ids
+              containerPort: {{ .Values.service.idsPort }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /api/check/health
+              port: api
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/check/health
+              port: api
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /resources/config.properties
+              subPath: config.properties
+            - name: keystore
+              mountPath: /resources/keystore.p12
+              subPath: keystore.p12
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "edc-ionos-s3.fullname" . }}-config
+        - name: keystore
+          secret:
+            secretName: {{ include "edc-ionos-s3.fullname" . }}-keystore
