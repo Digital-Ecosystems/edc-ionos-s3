@@ -61,26 +61,20 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
 
 ```
 
+## Transfer file
 
-We will have to call some URL's in order to transfer the file:
 1) Contract offers
-```bash
-curl -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/api/v1/management/catalog?providerUrl=http://$PROVIDER_ADDRESS:8282/api/v1/ids/data"
-
-```
-
-You will have an output like the following:
 
 ```bash
-{"id":"default","contractOffers":[{"id":"1:d285c5a4-aa7a-4e18-9c82-66eded1cd933","policy":{"permissions":[{"edctype":"dataspaceconnector:permission","uid":null,"target":"1","action":{"type":"USE","includedIn":null,"constraint":null},"assignee":null,"assigner":null,"constraints":[],"duties":[]}],"prohibitions":[],"obligations":[],"extensibleProperties":{},"inheritsFrom":null,"assigner":null,"assignee":null,"target":"1","@type":{"@policytype":"set"}},"asset":{"id":"1","createdAt":1672284626506,"properties":{"asset:prop:byteSize":null,"asset:prop:id":"1","asset:prop:fileName":null}},"provider":"urn:connector:provider","consumer":"urn:connector:consumer","offerStart":null,"offerEnd":null,"contractStart":"2022-12-29T03:30:26.055Z","contractEnd":"2022-12-29T04:30:26.055Z"},{"id":"2:c3dfbd92-7df5-46f5-a547-420bfde301e9","policy":{"permissions":[{"edctype":"dataspaceconnector:permission","uid":null,"target":"2","action":{"type":"USE","includedIn":null,"constraint":null},"assignee":null,"assigner":null,"constraints":[],"duties":[]}],"prohibitions":[],"obligations":[],"extensibleProperties":{},"inheritsFrom":null,"assigner":null,"assignee":null,"target":"2","@type":{"@policytype":"set"}},"asset":{"id":"2","createdAt":1672284626513,"properties":{"asset:prop:byteSize":null,"asset:prop:id":"2","asset:prop:fileName":null}},"provider":"urn:connector:provider","consumer":"urn:connector:consumer","offerStart":null,"offerEnd":null,"contractStart":"2022-12-29T03:30:26.055Z","contractEnd":"2022-12-29T04:30:26.055Z"}]}
+RESPONSE_POLICY=$(curl -s -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/api/v1/management/catalog?providerUrl=http://$PROVIDER_ADDRESS:8282/api/v1/ids/data" | jq '.contractOffers[].policy')
 ```
 
 2) Contract negotiation
 
-Copy the bracket of the `policy` from the response of the first curl into this curl and execute it.
+We use the value of `policy` from the previous request response to create a contract negotiation.
 
 ```bash
-curl --location --request POST "http://$CONSUMER_ADDRESS:8182/api/v1/management/contractnegotiations" \
+RESPONSE_ID=$(curl -s --location --request POST "http://$CONSUMER_ADDRESS:8182/api/v1/management/contractnegotiations" \
 --header 'X-API-Key: password' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -90,32 +84,23 @@ curl --location --request POST "http://$CONSUMER_ADDRESS:8182/api/v1/management/
   "offer": {
     "offerId": "1:3a75736e-001d-4364-8bd4-9888490edb58",
     "assetId": "1",
-    "policy": <POLICY>
+    "policy": '"$RESPONSE_POLICY"'
   }
-}'
-```
-
-You will have an answer like the following:
-```bash
-{"createdAt":1672280687517,"id":"f80e1c17-810c-4ed5-b066-b286c189bb92"}
+}' | jq -r '.id')
 ```
 
 3) Contact Agreement id
 
-Copy the value of the `id` from the response of the previous curl into this curl and execute it.
+We use the value of the `id` from the previous request response to get the `contractAgreementId`.
 ```bash
-curl -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/api/v1/management/contractnegotiations/<ID>"
-```
-You will have an answer like the following:
-```bash
-{"createdAt":1672280687517,"updatedAt":1672280688733,"contractAgreementId":"1:83fc5fb4-84a9-4764-beea-4ff5446f91a0","counterPartyAddress":"http://$PROVIDER_ADDRESS:8282/api/v1/ids/data","errorDetail":null,"id":"f80e1c17-810c-4ed5-b066-b286c189bb92","protocol":"ids-multipart","state":"CONFIRMED","type":"CONSUMER"}
+RESPONSE_CONTRACT_AGREEMENT_ID=$(curl -s -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/api/v1/management/contractnegotiations/$RESPONSE_ID" | jq -r '.contractAgreementId')
 ```
 
 4) File transfer
 
 **Note:** This steps creates a temporary S3 key in Ionos. Make sure your account have enough quota for S3 keys.
 
-Copy the value of the `contractAgreementId` from the response of the previous curl into this curl and execute it.
+We use the value of the `contractAgreementId` from the response to transfer the file.
 ```bash
 curl --location --request POST "http://$CONSUMER_ADDRESS:8182/api/v1/management/transferprocess" \
 --header 'X-API-Key: password' \
@@ -126,7 +111,7 @@ curl --location --request POST "http://$CONSUMER_ADDRESS:8182/api/v1/management/
   "protocol": "ids-multipart",
   "connectorId": "consumer",
   "assetId": "1",
-  "contractId": "<CONTRACT AGREEMENT ID>",
+  "contractId": "'$RESPONSE_CONTRACT_AGREEMENT_ID'",
   "dataDestination": {
     "properties": {
       "type": "IonosS3",
@@ -146,7 +131,7 @@ You will have an answer like the following:
 ```bash
 {"createdAt":1673349183568,"id":"25df5c64-77c9-4e5a-8e4f-aa06aa434408"}
 ```
-After executing all the steps, we can now check the `company2` bucket of our IONOS S3 to see if the file has been correctly transfered.
+After executing all the steps, we can now check the consumer bucket of our IONOS S3 to see if the file has been correctly transfered.
 
 ## Cleanup
 
