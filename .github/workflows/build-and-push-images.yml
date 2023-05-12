@@ -2,9 +2,9 @@ name: Create and publish Docker images
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 env:
   REGISTRY: ghcr.io
@@ -42,9 +42,9 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector
           tags: |
-            latest
+            type=raw,value=latest,enable={{is_default_branch}}
             ${{ github.sha }}
-      
+
       - uses: sigstore/cosign-installer@main
 
       - name: Write signing key to disk
@@ -59,7 +59,7 @@ jobs:
           push: true
           tags: ${{ steps.connector-meta.outputs.tags }}
           labels: ${{ steps.connector-meta.outputs.labels }}
-      
+
       - name: Sign "connector" image
         run: |
           cosign sign -y --key cosign.key \
