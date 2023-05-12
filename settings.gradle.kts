@@ -36,6 +36,10 @@ include(":edc-ionos-extension:core-ionos-s3")
 include(":edc-ionos-extension:vault-hashicorp")
 
 include(":connector")
+
+include(":example:file-transfer-push-daps:transfer-file")
+include(":example:file-transfer-push-daps:provider")
+include(":example:file-transfer-push-daps:consumer")
 include(":example:file-transfer-push:provider")
 include(":example:file-transfer-push:consumer")
 include(":example:file-transfer-push:transfer-file")

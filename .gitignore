@@ -50,7 +50,7 @@ launchers/demo-e2e/edc-config.properties
 **/out
 *.hprof
 
-.env
+**/vault-keys.json
 runtime_settings.properties
 generated_backend.tf
 
@@ -66,3 +66,5 @@ edc-ionos-extension/.project
 *.project
 *.classpath
 deployment/kind/vault-keys.json
+example/file-transfer-push-daps/terraform/create-daps-clients/connectors
+example/file-transfer-push-daps/terraform/build-and-push-docker-images/registry_password.txt

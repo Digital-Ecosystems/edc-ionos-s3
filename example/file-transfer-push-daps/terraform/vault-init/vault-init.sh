@@ -2,10 +2,10 @@
 
 set -e
 
-NAMESPACE="edc-ionos-s3"
+NAMESPACE="edc-ionos-s3-vault"
 
-if [[ -n "$TF_VAR_namespace" ]]; then
-   NAMESPACE=$TF_VAR_namespace
+if [[ -n "$TF_VAR_namespace_vault" ]]; then
+   NAMESPACE=$TF_VAR_namespace_vault
 fi
 
 while [[ $(kubectl --kubeconfig=$TF_VAR_kubeconfig -n $NAMESPACE get pods -l 'app.kubernetes.io/name'=vault -o 'jsonpath={...status.phase}') != "Running" ]]; do

@@ -5,13 +5,16 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/edc-ionos-s3/connector
-  pullPolicy: IfNotPresent
+  repository: example.cr.de-fra.ionos.com/ionos-connector
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
-imagePullSecrets: 
-  - name: regcred
+imagePullSecret:
+  name: "regcred"
+  server: ""
+  username: ""
+  password: ""
 nameOverride: ""
 fullnameOverride: ""
 
@@ -103,6 +106,21 @@ web:
       port: 8282
       path: /api/v1/ids
 edc:
+  file:
+    transfer:
+      bucket:
+        name:
+      blob:
+        name:
+  keystore: # keystore value base64 encoded
+  keystorePassword: # keystore password as string
+  oauth:
+    tokenUrl: https://omejdn-nginx.example.com/auth/token
+    clientId: # from the daps clients.yml
+    providerAudience: idsc:IDS_CONNECTORS_ALL
+    providerJwksUrl: https://omejdn-nginx.example.com/auth/jwks.json
+    certificateAlias: 1
+    privateKeyAlias: 1
   api:
     auth:
       key: password

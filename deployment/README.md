@@ -37,6 +37,7 @@ Set environment variables
 
 ```sh
 # Required configuration
+export TF_VAR_s3_namespace='edc-ionos-s3'
 export TF_VAR_kubeconfig='path to kubeconfig'
 
 export TF_VAR_image_repository='' # docker image repository e.g. example.cr.de-fra.ionos.com/edc-ionos-s3
@@ -54,7 +55,12 @@ export TF_VAR_ionos_token='' # IONOS Cloud token
 
 All commands paths are relative to the current directory where this readme is located.
 
-### 1. Create ImagePullSecret
+### 1. Change the docker image, imagepullsecret and the edc configurations in the `values.yaml` file of the helm chart. The vault configurations will be set by the terraform script.
+```sh
+vim helm/edc-ionos-s3/values.yaml
+```
+
+### 2. Create ImagePullSecret
 Before executing the command replace ```<path to docker config json file>``` with real path.
 
 ```sh
