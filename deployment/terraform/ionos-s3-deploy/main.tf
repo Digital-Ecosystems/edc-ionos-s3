@@ -16,9 +16,6 @@ variable "ids_webhook_address" {
   default = "http://localhost:8282"
 }
 
-variable "image_repository" {}
-variable "image_tag" {}
-
 variable "s3_access_key" {}
 variable "s3_secret_key" {}
 variable "s3_endpoint" {}
@@ -69,16 +66,6 @@ resource "helm_release" "edc-ionos-s3" {
   set {
     name  = "ids.webhook.address"
     value = var.ids_webhook_address
-  }
-
-  set {
-    name  = "image.repository"
-    value = var.image_repository
-  }
-
-  set {
-    name  = "image.tag"
-    value = var.image_tag
   }
 
 }
