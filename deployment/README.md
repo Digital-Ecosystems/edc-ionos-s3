@@ -40,9 +40,6 @@ Set environment variables
 export TF_VAR_s3_namespace='edc-ionos-s3'
 export TF_VAR_kubeconfig='path to kubeconfig'
 
-export TF_VAR_image_repository='' # docker image repository e.g. example.cr.de-fra.ionos.com/edc-ionos-s3
-export TF_VAR_image_tag='' # docker image tag e.g. latest
-
 export TF_VAR_s3_access_key='' # S3 access key
 export TF_VAR_s3_secret_key='' # S3 secret key
 export TF_VAR_s3_endpoint='' # s3 endpoint (e.g. s3-eu-central-1.ionoscloud.com)
@@ -55,20 +52,7 @@ export TF_VAR_ionos_token='' # IONOS Cloud token
 
 All commands paths are relative to the current directory where this readme is located.
 
-### 1. Change the docker image, imagepullsecret and the edc configurations in the `values.yaml` file of the helm chart. The vault configurations will be set by the terraform script.
-```sh
-vim helm/edc-ionos-s3/values.yaml
-```
-
-### 2. Create ImagePullSecret
-Before executing the command replace ```<path to docker config json file>``` with real path.
-
-```sh
-kubectl create namespace edc-ionos-s3
-kubectl create secret -n edc-ionos-s3 generic regcred --from-file=.dockerconfigjson=<path to docker config json file> --type=kubernetes.io/dockerconfigjson
-```
-
-### 2. Install the EDC Ionos S3 services
+### 1. Install the EDC Ionos S3 services
 
 To install the services run the script ```deploy-services.sh``` in ```terraform``` directory.
 
@@ -77,5 +61,5 @@ cd terraform
 ./deploy-services.sh
 ```
 
-### 3. Vault keys
+### 2. Vault keys
 After the services are installed you will have ```vault-keys.json``` file containing the vault keys in ```terraform``` directory.

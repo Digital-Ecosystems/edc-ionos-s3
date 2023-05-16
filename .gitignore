@@ -68,3 +68,4 @@ edc-ionos-extension/.project
 deployment/kind/vault-keys.json
 example/file-transfer-push-daps/terraform/create-daps-clients/connectors
 example/file-transfer-push-daps/terraform/build-and-push-docker-images/registry_password.txt
+**/.env
