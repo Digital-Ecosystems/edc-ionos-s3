@@ -116,7 +116,7 @@ edc:
       timeout:
         seconds: 30
   ionos:
-    accessKey: <YOUR-KEY>
-    secretKey: <YOUR-SECRET-KEY>
-    endpoint: <IONOS-ENDPOINT>
-    token: <IONOS-TOKEN>
+    endpoint: s3-eu-central-1.ionoscloud.com
+  #   accessKey: <YOUR-KEY>
+  #   secretKey: <YOUR-SECRET-KEY>
+  #   token: <IONOS-TOKEN>

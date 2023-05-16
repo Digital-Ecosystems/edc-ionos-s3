@@ -36,7 +36,7 @@ resource "helm_release" "edc-ionos-s3" {
 
   set {
     name  = "edc.vault.hashicorp.token"
-    value = "${jsondecode(file("./vault-keys.json")).root_token}"
+    value = "${jsondecode(file("../vault-init/vault-keys.json")).root_token}"
   }
 
   values = [
