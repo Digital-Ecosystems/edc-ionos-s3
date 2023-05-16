@@ -46,7 +46,7 @@ export TF_VAR_s3_endpoint='' # s3 endpoint (e.g. s3-eu-central-1.ionoscloud.com)
 export TF_VAR_ionos_token='' # IONOS Cloud token
 ```
 
-In case you want to configure this Connector without vault, you need to also set the parameters below in the helm [values.yaml](deployment/helm/edc-ionos-s3/values.yaml):
+In case you want to configure this Connector without Hashicorp Vault, you need to also set the parameters below in the helm [values.yaml](deployment/helm/edc-ionos-s3/values.yaml):
 
 ```yaml
   ionos:
@@ -56,7 +56,7 @@ In case you want to configure this Connector without vault, you need to also set
     token: <IONOS-TOKEN>
 ```
 
-They should be the same as the ones set in the environment variables.
+They should be the same as the ones set in the environment variables. The **ionos.endpoint** is set to the default S3 location, but it can be changed to any other location.
 ***
 
 ## Deploy
