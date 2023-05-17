@@ -94,9 +94,12 @@ curl -d '{
            },
            "dataAddress": {
              "properties": {
-               "name": "Test asset",
-               "baseUrl": "https://jsonplaceholder.typicode.com/users",
-               "type": "HttpData"
+               "name": "device1-data.csv",
+			   "bucketName": "pullcompany2",
+               "container": "pullcompany2",
+               "blobName": "device1-data.csv",
+               "storage": "s3-eu-central-1.ionoscloud.com",
+               "type": "IonosS3"
              }
            }
          }' -H 'content-type: application/json' http://localhost:19193/api/v1/data/assets \
