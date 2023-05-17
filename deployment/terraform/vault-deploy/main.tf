@@ -16,6 +16,10 @@ variable "namespace" {
   default = "edc-ionos-s3"
 }
 
+variable "vaultname" {
+  default = "vault"
+}
+
 resource "kubernetes_namespace" "edc-namespace" {
   metadata {
     name = var.namespace
@@ -24,7 +28,7 @@ resource "kubernetes_namespace" "edc-namespace" {
 
 # install helm vault
 resource "helm_release" "vault" {
-  name       = "vault"
+  name       = var.vaultname
 
   repository = "https://helm.releases.hashicorp.com"
   chart      = "vault"
