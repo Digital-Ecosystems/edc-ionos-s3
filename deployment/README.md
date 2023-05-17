@@ -37,7 +37,7 @@ Set environment variables
 
 ```sh
 # Required configuration
-export TF_VAR_s3_namespace='edc-ionos-s3'
+export TF_VAR_namespace='edc-ionos-s3'
 export TF_VAR_kubeconfig='path to kubeconfig'
 
 export TF_VAR_s3_access_key='' # S3 access key
@@ -57,6 +57,16 @@ In case you want to configure this Connector without Hashicorp Vault, you need t
 ```
 
 They should be the same as the ones set in the environment variables. The **ionos.endpoint** is set to the default S3 location, but it can be changed to any other location.
+
+
+If you want to make the Connector externally accessible, you need to set the following parameters in the helm [values.yaml](deployment/helm/edc-ionos-s3/values.yaml):
+
+```yaml
+  service:
+    type: LoadBalancer
+```
+
+This will allocate a public IP address to the Connector. You can then access it on the ports 8181, 8182, and 8282.
 ***
 
 ## Deploy
