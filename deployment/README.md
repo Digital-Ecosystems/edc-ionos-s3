@@ -40,7 +40,6 @@ Set environment variables
 export TF_VAR_namespace='edc-ionos-s3'
 export TF_VAR_kubeconfig='path to kubeconfig'
 export TF_VAR_vaultname='vault'  # optional if only 1 connector per cluster
-export TF_VAR_ids_webhook_address='http://EDC_IP:8282' # the external endpoint for the connector
 
 export TF_VAR_s3_access_key='' # S3 access key
 export TF_VAR_s3_secret_key='' # S3 secret key
