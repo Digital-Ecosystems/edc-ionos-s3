@@ -21,6 +21,10 @@ variable "s3_secret_key" {}
 variable "s3_endpoint" {}
 variable "ionos_token" {}
 
+variable "vaultname" {
+  default = "vault"
+}
+
 locals {
   root_token = fileexists("../vault-init/vault-keys.json") ? "${jsondecode(file("../vault-init/vault-keys.json")).root_token}" : ""
 }
@@ -45,7 +49,7 @@ resource "helm_release" "edc-ionos-s3" {
 
   set {
     name  = "edc.vault.hashicorp.url"
-    value = "http://vault:8200"
+    value = "http://${var.vaultname}:8200"
   }
 
   set {

@@ -22,3 +22,7 @@ terraform destroy -auto-approve
 cd ../ionos-s3-deploy
 terraform init
 terraform destroy -auto-approve
+
+kubectl --kubeconfig $TF_VAR_kubeconfig delete namespace $TF_VAR_namespace
+rm vault-init/vault-keys.json
+

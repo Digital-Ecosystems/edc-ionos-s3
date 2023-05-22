@@ -31,14 +31,16 @@ These are the services that are deployed:
 
 Set environment variables
 
-**Note:** You will need docker image of the EDC Ionos S3 connector pushed to a repository. If you don't have one, you can build it following the instructions in the [readme](/connector/README.md).
-
-**Note:** To create the IONOS token please take a look at the following [documentation](/ionos_token.md).
+**Some notes:**  
+- You will need docker image of the EDC Ionos S3 connector pushed to a repository. If you don't have one, you can build it following the instructions in the [readme](/connector/README.md);
+- To create the IONOS token please take a look at the following [documentation](/ionos_token.md);
+- If you are deploying multiple EDC Connectors on the same Kubernetes cluster, make sure **TF_VAR_namespace** and **TF_VAR_vaultname** parameters are unique for each Connector.
 
 ```sh
 # Required configuration
-export TF_VAR_s3_namespace='edc-ionos-s3'
+export TF_VAR_namespace='edc-ionos-s3'
 export TF_VAR_kubeconfig='path to kubeconfig'
+export TF_VAR_vaultname='vault'  # optional if only 1 connector per cluster
 
 export TF_VAR_s3_access_key='' # S3 access key
 export TF_VAR_s3_secret_key='' # S3 secret key
@@ -57,6 +59,17 @@ In case you want to configure this Connector without Hashicorp Vault, you need t
 ```
 
 They should be the same as the ones set in the environment variables. The **ionos.endpoint** is set to the default S3 location, but it can be changed to any other location.
+
+
+If you don't want the Connector to be externally accessible, you need to set the following parameters in the helm [values.yaml](deployment/helm/edc-ionos-s3/values.yaml):
+
+```yaml
+  service:
+    type: ClusterIP
+```
+
+This will allocate a public IP address to the Connector. You can then access it on the ports 8181, 8182, and 8282.
+
 ***
 
 ## Deploy
@@ -74,3 +87,10 @@ cd terraform
 
 ### 2. Vault keys
 After the services are installed you will have ```vault-keys.json``` file containing the vault keys in ```terraform``` directory.
+
+### 3. Destroy the services
+
+```sh
+cd terraform
+./destroy-services.sh
+```

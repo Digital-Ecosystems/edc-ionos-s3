@@ -37,7 +37,7 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: ClusterIP
+  type: LoadBalancer
   apiPort: 8181
   managementPort: 8182
   idsPort: 8282
@@ -97,7 +97,7 @@ web:
     path: /api
     management:
       port: 8182
-      path: /api/v1/management
+      path: /api/v1/data
     ids:
       port: 8282
       path: /api/v1/ids
@@ -117,6 +117,7 @@ edc:
         seconds: 30
   ionos:
     endpoint: s3-eu-central-1.ionoscloud.com
-  #   accessKey: <YOUR-KEY>
-  #   secretKey: <YOUR-SECRET-KEY>
-  #   token: <IONOS-TOKEN>
+    accessKey: notnull
+    secretKey: notnull
+    token: notnull
+
