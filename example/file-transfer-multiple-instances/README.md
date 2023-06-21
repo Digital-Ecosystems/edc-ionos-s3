@@ -172,8 +172,7 @@ curl -X POST "http://$CONSUMER_IP:8182/api/v1/data/transferprocess" \
             "properties": {
                 "type": "IonosS3",
                 "storage":"s3-eu-central-1.ionoscloud.com",
-                "bucketName": "bucket-provider-1",
-                "container": "bucket-consumer-1"
+                "bucketName": "<IONOS S3 Destination Bucket>"
             }
         }
     }
