@@ -12,12 +12,12 @@ Example:
 `Consumer`
 ```bash
 export TF_VAR_namespace="edc_consumer"
-export TF_VAR_vaulname="vaultconsumer"
+export TF_VAR_vaultname="vaultconsumer"
 ```
 `Provider`
 ```bash
 export TF_VAR_namespace="edc_provider"
-export TF_VAR_vaulname="vaultprovider"
+export TF_VAR_vaultname="vaultprovider"
 ```
 
 ## Usage
@@ -51,8 +51,8 @@ curl --header 'X-API-Key: password' \
            },
            "dataAddress": {
              "properties": {
-			   "bucketName": "<IONOS S3 bucket>",
-			   "container": "<IONOS S3 bucket>",
+			   "bucketName": "<SOURCE IONOS S3 bucket>",
+			   "container": "<SOURCE IONOS S3 bucket>",
                "blobName": "device1-data.csv",
                "storage": "s3-eu-central-1.ionoscloud.com",
                "keyName": "device1-data.csv",
@@ -172,7 +172,8 @@ curl -X POST "http://$CONSUMER_IP:8182/api/v1/data/transferprocess" \
             "properties": {
                 "type": "IonosS3",
                 "storage":"s3-eu-central-1.ionoscloud.com",
-                "bucketName": "<IONOS S3 Destination Bucket>"
+                "bucketName": "bucket-provider-1",
+                "container": "bucket-consumer-1"
             }
         }
     }
