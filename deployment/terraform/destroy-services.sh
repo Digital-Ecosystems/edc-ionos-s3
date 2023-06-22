@@ -46,5 +46,5 @@ rm -f ./vault-deploy/terraform.tfstate
 rm -f ./vault-deploy/.terraform.lock.hcl
 rm -f ./vault-deploy/terraform.tfstate.backup
 
+rm -f vault-init/vault-keys.json
 kubectl --kubeconfig $TF_VAR_kubeconfig delete namespace $TF_VAR_namespace
-rm vault-init/vault-keys.json
