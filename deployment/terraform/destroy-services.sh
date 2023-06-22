@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 # Check for environment variables
 if [ -z `printenv TF_VAR_kubeconfig` ]; then
     echo "Stopping because TF_VAR_kubeconfig is undefined"
