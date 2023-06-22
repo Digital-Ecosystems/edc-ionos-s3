@@ -6,7 +6,7 @@ This example shows how to do a simple deployment of two EDC's using a Terraform 
 
 You will create 2 `folders` called `Consumer` and `Provider`, for each of them do the checkout of this repository and follow this [readme](../../deployment/README.md).
 
-Don't forget to create unique parameters for each connector.
+**Don't forget to create unique parameters for each connector.**
 
 Example:  
 `Consumer`
@@ -55,8 +55,8 @@ curl --header 'X-API-Key: password' \
            },
            "dataAddress": {
              "properties": {
-               "bucketName": "'$CONSUMER_BUCKET'",
-               "container": "'$CONSUMER_BUCKET'",
+               "bucketName": "'$PROVIDER_BUCKET'",
+               "container": "'$PROVIDER_BUCKET'",
                "blobName": "device1-data.csv",
                "storage": "s3-eu-central-1.ionoscloud.com",
                "keyName": "device1-data.csv",
@@ -176,7 +176,7 @@ curl -X POST "http://$CONSUMER_IP:8182/api/v1/data/transferprocess" \
             "properties": {
                 "type": "IonosS3",
                 "storage":"s3-eu-central-1.ionoscloud.com",
-                "bucketName": "$PROVIDER_BUCKET"
+                "bucketName": "$CONSUMER_BUCKET"
             }
         }
     }
