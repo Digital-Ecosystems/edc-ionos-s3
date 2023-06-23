@@ -6,18 +6,18 @@ This example shows how to do a simple deployment of two EDC's using a Terraform 
 
 You will create 2 `folders` called `Consumer` and `Provider`, for each of them do the checkout of this repository and follow this [readme](../../deployment/README.md).
 
-Don't forget to create unique parameters for each connector.
+**Don't forget to create unique parameters for each connector.**
 
 Example:  
 `Consumer`
 ```bash
-export TF_VAR_namespace="edc_consumer"
-export TF_VAR_vaulname="vaultconsumer"
+export TF_VAR_namespace="edc-consumer"
+export TF_VAR_vaultname="vaultconsumer"
 ```
 `Provider`
 ```bash
-export TF_VAR_namespace="edc_provider"
-export TF_VAR_vaulname="vaultprovider"
+export TF_VAR_namespace="edc-provider"
+export TF_VAR_vaultname="vaultprovider"
 ```
 
 ## Usage
@@ -30,6 +30,10 @@ First, we need to open a `shell console` to execute the following instructions.
 # external IPs
 CONSUMER_IP=<IP ADDRESS OF THE CONSUMER CONNECTOR>
 PROVIDER_IP=<IP ADDRESS OF THE PROVIDER CONNECTOR>
+
+# buckets
+export CONSUMER_BUCKET=<CONSUMER BUCKET NAME>
+export PROVIDER_BUCKET=<PROVIDER BUCKET NAME>
 
 # healthcheck
 curl http://$PROVIDER_IP:8181/api/check/health
@@ -51,8 +55,8 @@ curl --header 'X-API-Key: password' \
            },
            "dataAddress": {
              "properties": {
-			   "bucketName": "<IONOS S3 bucket>",
-			   "container": "<IONOS S3 bucket>",
+               "bucketName": "'$PROVIDER_BUCKET'",
+               "container": "'$PROVIDER_BUCKET'",
                "blobName": "device1-data.csv",
                "storage": "s3-eu-central-1.ionoscloud.com",
                "keyName": "device1-data.csv",
@@ -63,7 +67,7 @@ curl --header 'X-API-Key: password' \
          -s | jq
 ```
 
-2) Policy creation
+1) Policy creation
 ```console
 curl -d '{
            "id": "aPolicy",
@@ -83,10 +87,10 @@ curl -d '{
              }
            }
          }' -H 'X-API-Key: password' \
-		 -H 'content-type: application/json' http://$PROVIDER_IP:8182/api/v1/data/policydefinitions		
+		 -H 'content-type: application/json' http://$PROVIDER_IP:8182/api/v1/data/policydefinitions
 ```
 
-3) Contract creation
+1) Contract creation
 ```console
 curl -d '{
    "id": "1",
@@ -97,7 +101,7 @@ curl -d '{
  -H 'content-type: application/json' http://$PROVIDER_IP:8182/api/v1/data/contractdefinitions
 ```
 
-4) Fetching the catalog
+1) Fetching the catalog
 ```console
 curl -X POST "http://$CONSUMER_IP:8182/api/v1/data/catalog/request" \
 --header 'X-API-Key: password' \
@@ -109,7 +113,7 @@ curl -X POST "http://$CONSUMER_IP:8182/api/v1/data/catalog/request" \
 EOF
 ```
 
-5) Contract negotiation
+1) Contract negotiation
 ```console
 JSON_PAYLOAD=$(cat <<-EOF
 {
@@ -142,7 +146,7 @@ ID=$(curl -s --header 'X-API-Key: password' -X POST -H 'content-type: applicatio
 echo $ID
 ```
 
-6) Contract agreement
+1) Contract agreement
 ```console
 CONTRACT_AGREEMENT_ID=$(curl -X GET "http://$CONSUMER_IP:8182/api/v1/data/contractnegotiations/$ID" \
 	--header 'X-API-Key: password' \
@@ -151,11 +155,11 @@ CONTRACT_AGREEMENT_ID=$(curl -X GET "http://$CONSUMER_IP:8182/api/v1/data/contra
 echo $CONTRACT_AGREEMENT_ID
 ```
 
-7) Transfering the asset
+1) Transfering the asset
 ```console
 curl -X POST "http://$CONSUMER_IP:8182/api/v1/data/transferprocess" \
     --header "Content-Type: application/json" \
-	--header 'X-API-Key: password' \
+	  --header 'X-API-Key: password' \
     -d @- <<-EOF
     {
         "connectorId": "consumer",
@@ -172,7 +176,7 @@ curl -X POST "http://$CONSUMER_IP:8182/api/v1/data/transferprocess" \
             "properties": {
                 "type": "IonosS3",
                 "storage":"s3-eu-central-1.ionoscloud.com",
-                "bucketName": "<IONOS S3 Destination Bucket>"
+                "bucketName": "$CONSUMER_BUCKET"
             }
         }
     }

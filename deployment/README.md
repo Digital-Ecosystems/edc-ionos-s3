@@ -35,6 +35,9 @@ Set environment variables
 - You will need docker image of the EDC Ionos S3 connector pushed to a repository. If you don't have one, you can build it following the instructions in the [readme](/connector/README.md);
 - To create the IONOS token please take a look at the following [documentation](/ionos_token.md);
 - If you are deploying multiple EDC Connectors on the same Kubernetes cluster, make sure **TF_VAR_namespace** and **TF_VAR_vaultname** parameters are unique for each Connector.
+- The *TF_VAR_ionos_token*, *TF_VAR_s3_access_key* and *TF_VAR_s3_secret_key* parameters must be connected to the same IONOS DCD user and account.
+- The IONOS_S3 connector automatically creates S3 access keys for each file transfer. The limit in DCD is usually 5, some make sure there are less than 5 keys in before initiating a file transfer.
+- 
 
 ```sh
 # Required configuration
