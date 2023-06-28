@@ -57,7 +57,7 @@ curl -H 'Content-Type: application/json' \
    "edctype": "dataspaceconnector:dataplaneinstance",
    "id": "http-pull-provider-dataplane",
    "url": "http://localhost:19192/control/transfer",
-   "allowedSourceTypes": [  "IonosS3" ],
+   "allowedSourceTypes": [  "HttpData", "IonosS3" ],
    "allowedDestTypes": [ "HttpProxy", "HttpData" ],
     "properties": {
      "publicApiUrl": "http://localhost:19291/public/"
@@ -196,20 +196,23 @@ curl -X GET "http://localhost:29193/api/v1/data/contractnegotiations/{<ID>}" \
 
 Copy the value of the `contractAgreementId` from the response of the previous curl into this curl and execute it.
 ```console
-curl -X POST "http://localhost:29193/api/v1/data/transferprocess" \
-    --header "Content-Type: application/json" \
-    --data '{
-                "connectorId": "http-pull-provider",
-				"connectorAddress": "http://localhost:19194/api/v1/ids/data",
-                "contractId": "<CONTRACT AGREEMENT ID>",
-                "assetId": "assetId",
-                "managedResources": "false",
-				"dataDestination": {
-				"properties": {
-				  "type":"HttpProxy"
-				    }  
-				}
-			}' \
+curl -X POST "http://localhost:29193/management/v2/transferprocesses" \
+    -H "Content-Type: application/json" \
+    -d '{
+        "@context": {
+          "edc": "https://w3id.org/edc/v0.0.1/ns/"
+        },
+        "@type": "TransferRequestDto",
+        "connectorId": "provider",
+        "connectorAddress": "http://localhost:19194/protocol",
+        "contractId": "1:assetId:f756c7bd-3e66-4b6c-b01d-b20d925058a2",
+        "assetId": "assetId",
+        "managedResources": false,
+        "protocol": "dataspace-protocol-http",
+        "dataDestination": { 
+          "type": "HttpProxy" 
+        }
+    }' \
     -s | jq
 ```
 
