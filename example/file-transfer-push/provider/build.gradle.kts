@@ -59,11 +59,17 @@ dependencies {
 
 	implementation("de.fraunhofer.iais.eis.ids.infomodel:java:${fraunhoferVersion}")
 	
-	implementation("$edcGroup:ids:$edcVersion")
+	//implementation("$edcGroup:ids:+")
 		
 	implementation("${edcGroup}:iam-mock:${edcVersion}")
 	
     implementation(project(":example:file-transfer-push:transfer-file"))
+	
+	//new
+	implementation("${edcGroup}:dsp:${edcVersion}")
+	
+	
+	
 }
 
 application {

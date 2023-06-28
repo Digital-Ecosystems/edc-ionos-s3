@@ -10,7 +10,7 @@ Please refer to the official [site](https://github.com/ionos-cloud/edc-ionos-s3)
 
 ## Based on the following
 
-- [https://github.com/eclipse-dataspaceconnector/DataSpaceConnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector) - v0.0.1-milestone-8;
+- [https://github.com/eclipse-dataspaceconnector/DataSpaceConnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector) - v0.1.2;
 - [International Data Spaces](https://www.internationaldataspaces.org);
 - [GAIA-X](https://gaia-x.eu) project;
 
@@ -18,7 +18,7 @@ Please refer to the official [site](https://github.com/ionos-cloud/edc-ionos-s3)
 
 You will need the following:
 - IONOS account;
-- Java Development Kit (JDK) 11 or higher;
+- Java Development Kit (JDK) 17 or higher;
 - Docker;
 - GIT;
 - Linux shell or PowerShell;

@@ -59,7 +59,7 @@ dependencies {
 
 	implementation("de.fraunhofer.iais.eis.ids.infomodel:java:${fraunhoferVersion}")
 	
-	implementation("$edcGroup:ids:$edcVersion")
+	//implementation("$edcGroup:ids:+")
 		
 	implementation("${edcGroup}:iam-mock:${edcVersion}")
 	
@@ -71,7 +71,7 @@ dependencies {
     //implementation("${edcGroup}:data-plane-api:${edcVersion}")
     //implementation("${edcGroup}:data-plane-http:${edcVersion}")
 	
-	
+	implementation("${edcGroup}:dsp:${edcVersion}")
 	//file-transfer
 	implementation("${edcGroup}:control-plane-core:${edcVersion}")
 	implementation("${edcGroup}:data-plane-core:${edcVersion}")

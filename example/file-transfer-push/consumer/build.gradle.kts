@@ -41,9 +41,6 @@ dependencies {
 
 	implementation("${edcGroup}:control-plane-core:${edcVersion}")
 	
-
-	
-
 	implementation("${edcGroup}:api-observability:${edcVersion}")
 	
 	implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
@@ -52,7 +49,7 @@ dependencies {
 	
 	implementation("${edcGroup}:auth-tokenbased:${edcVersion}")	
 	
-	implementation("$edcGroup:ids:$edcVersion")
+	//implementation("$edcGroup:ids:+")
 	
 	implementation("${edcGroup}:management-api:${edcVersion}")
 	
@@ -60,9 +57,19 @@ dependencies {
 	
 	implementation(project(":edc-ionos-extension:provision-ionos-s3"))
 	
-	implementation("${edcGroup}:catalog-api:${edcVersion}")
+	implementation("${edcGroup}:data-plane-client:${edcVersion}")
+    implementation("${edcGroup}:data-plane-selector-client:${edcVersion}")
+    implementation("${edcGroup}:data-plane-selector-core:${edcVersion}")
+	//implementation("${edcGroup}:data-plane-selector-api:${edcVersion}")
+	//implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
+	
+
 		
 	implementation("${edcGroup}:iam-mock:${edcVersion}")
+	
+	
+	//new
+	implementation("${edcGroup}:dsp:${edcVersion}")
 }
 
 application {

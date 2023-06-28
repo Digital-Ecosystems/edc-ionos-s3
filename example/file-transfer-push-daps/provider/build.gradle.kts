@@ -63,7 +63,7 @@ dependencies {
 
 	implementation("de.fraunhofer.iais.eis.ids.infomodel:java:${fraunhoferVersion}")
 	
-	implementation("$edcGroup:ids:$edcVersion")
+	implementation("$edcGroup:dsp:$edcVersion")
 		
 	implementation("${edcGroup}:iam-mock:${edcVersion}")
 	

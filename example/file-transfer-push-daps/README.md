@@ -10,7 +10,7 @@ You can execute this example by using only one IONOS account (more for developme
 
 You will need the following:
 - IONOS account;
-- Java Development Kit (JDK) 11 or higher;
+- Java Development Kit (JDK) 17 or higher;
 - Docker;
 - GIT;
 - Linux shell or PowerShell;
@@ -68,7 +68,16 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     In order to offer any data, the consumer can fetch the catalog from the provider, that will contain all the contract offers available for negotiation. In our case, it will contain a single contract offer. To get the catalog from the consumer side, you can use the following command:
 
     ```bash
-    export OFFER_POLICY=$(curl -s -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/api/v1/management/catalog?providerUrl=http://$PROVIDER_ADDRESS:8282/api/v1/ids/data" | jq '.contractOffers[].policy')
+    export OFFER_POLICY=$(curl -X POST "http://$CONSUMER_ADDRESS:8182/management/v2/catalog/request" \
+    --header 'X-API-Key: password' \
+    --header 'Content-Type: application/json' \
+    -d '{
+          "@context": {
+            "edc": "https://w3id.org/edc/v0.0.1/ns/"
+          },
+          "providerUrl": "http://$PROVIDER_ADDRESS:8282/protocol",
+          "protocol": "dataspace-protocol-http"
+        }'-s | jq -r  '.["dcat:dataset"]["odrl:hasPolicy"]["@id"]')
     ```
 
     The offer policy is stored in the `OFFER_POLICY` variable.
@@ -76,55 +85,41 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     Sample output:
     ```json
     {
-      "id": "default",
-      "contractOffers": [
-        {
-          "id": "1:eade0787-41ce-4c72-bb9b-141c9671a14f",
-          "policy": {
-            "permissions": [
-              {
-                "edctype": "dataspaceconnector:permission",
-                "uid": null,
-                "target": "1",
-                "action": {
-                  "type": "USE",
-                  "includedIn": null,
-                  "constraint": null
-                },
-                "assignee": null,
-                "assigner": null,
-                "constraints": [],
-                "duties": []
-              }
-            ],
-            "prohibitions": [],
-            "obligations": [],
-            "extensibleProperties": {},
-            "inheritsFrom": null,
-            "assigner": null,
-            "assignee": null,
-            "target": "1",
-            "@type": {
-              "@policytype": "set"
+      "@id": "51dde18d-dc81-41ed-b110-591fdcea753f",
+      "@type": "dcat:Catalog",
+      "dcat:dataset": {
+        "@id": "6519fb05-c1f3-4a81-a4c5-93f5ab128a22",
+        "@type": "dcat:Dataset",
+        "odrl:hasPolicy": {
+          "@id": "1:1:67e38ac2-26e0-40c0-9628-e864f4e260f7",
+          "@type": "odrl:Set",
+          "odrl:permission": {
+            "odrl:target": "1",
+            "odrl:action": {
+              "odrl:type": "USE"
             }
           },
-          "asset": {
-            "id": "1",
-            "createdAt": 1683187807669,
-            "properties": {
-              "asset:prop:byteSize": null,
-              "asset:prop:id": "1",
-              "asset:prop:fileName": null
-            }
-          },
-          "provider": "urn:connector:edc",
-          "consumer": "urn:connector:edc",
-          "offerStart": null,
-          "offerEnd": null,
-          "contractStart": null,
-          "contractEnd": null
+          "odrl:prohibition": [],
+          "odrl:obligation": [],
+          "odrl:target": "1"
+        },
+        "dcat:distribution": [],
+        "edc:id": "1"
+      },
+      "dcat:service": {
+        "@id": "80e665f9-85f1-4ede-b2b5-0df6ed2d5ee3",
+        "@type": "dcat:DataService",
+        "dct:terms": "connector",
+        "dct:endpointUrl": "http://localhost:8282/protocol"
+      },
+      "edc:participantId": "provider",
+      "@context": {
+        "dct": "https://purl.org/dc/terms/",
+        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+        "dcat": "https://www.w3.org/ns/dcat/",
+        "odrl": "http://www.w3.org/ns/odrl/2/",
+        "dspace": "https://w3id.org/dspace/v0.8/"
         }
-      ]
     }
     ```
 
@@ -140,37 +135,60 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     In case of successful validation, provider and consumer store the received agreement for later reference
 
     ```bash
-    export CONTRACT_NEGOTIATION_ID=$(curl -s --location --request POST "http://$CONSUMER_ADDRESS:8182/api/v1/management/contractnegotiations" \
+    export CONTRACT_NEGOTIATION_ID=$(curl --location --request POST 'http://$CONSUMER_ADDRESS:8182/management/v2/contractnegotiations' \
     --header 'X-API-Key: password' \
     --header 'Content-Type: application/json' \
     --data-raw '{
+      "@context": {
+        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+        "odrl": "http://www.w3.org/ns/odrl/2/"
+      },
+      "@type": "NegotiationInitiateRequestDto",
       "connectorId": "provider",
-      "connectorAddress": "http://'$PROVIDER_ADDRESS':8282/api/v1/ids/data",
-      "protocol": "ids-multipart",
+      "connectorAddress": "http://$PROVIDER_ADDRESS:8282/protocol",
+      "protocol": "dataspace-protocol-http",
       "offer": {
-        "offerId": "1:3a75736e-001d-4364-8bd4-9888490edb58",
+        "offerId": "1:1:a345ad85-c240-4195-b954-13841a6331a1",
         "assetId": "1",
-        "policy": '"$OFFER_POLICY"'
+        "policy": {"@id":"$OFFER_POLICY",
+          "@type": "odrl:Set",
+          "odrl:permission": {
+            "odrl:target": "1",
+            "odrl:action": {
+              "odrl:type": "USE"
+            }
+          },
+          "odrl:prohibition": [],
+          "odrl:obligation": [],
+          "odrl:target": "1"}
       }
-    }' | jq -r '.id')
+    }' -s | jq -r '.["@id"]')
     ```
 
     The contract negotiation id is stored in the `CONTRACT_NEGOTIATION_ID` variable.
 
     Sample output:
     ```json
-    {
-      "createdAt": 1674585892398,
-      "id": "8ce50f33-25f3-42df-99e7-d6d72d83032c"
-    }
-    ```
+      {
+        "@type": "edc:IdResponseDto",
+        "@id": "a88180b3-0d66-41b5-8376-c91d8253afcf",
+        "edc:createdAt": 1687364689704,
+        "@context": {
+          "dct": "https://purl.org/dc/terms/",
+          "edc": "https://w3id.org/edc/v0.0.1/ns/",
+          "dcat": "https://www.w3.org/ns/dcat/",
+          "odrl": "http://www.w3.org/ns/odrl/2/",
+          "dspace": "https://w3id.org/dspace/v0.8/"
+        }
+      }
+ 
 
 3. Getting the contract agreement id
 
     After calling the endpoint for initiating a contract negotiation, we get a UUID as the response. This UUID is the ID of the ongoing contract negotiation between consumer and provider. The negotiation sequence between provider and consumer is executed asynchronously in the background by a state machine. Once both provider and consumer either reach the confirmed or the declined state, the negotiation is finished. We can now use the UUID to check the current status of the negotiation using an endpoint on the consumer side.
 
     ```bash
-    export CONTRACT_AGREEMENT_ID=$(curl -s -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/api/v1/management/contractnegotiations/$CONTRACT_NEGOTIATION_ID" | jq -r '.contractAgreementId')
+    export CONTRACT_AGREEMENT_ID=$(curl -s -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/management/v2/contractnegotiations/$CONTRACT_NEGOTIATION_ID" | jq -r '.contractAgreementId')
     ```
 
     The contract agreement id is stored in the `CONTRACT_AGREEMENT_ID` variable.
@@ -178,15 +196,21 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     Sample output:
     ```json
     {
-      "createdAt": 1674585892398,
-      "updatedAt": 1674585897476,
-      "contractAgreementId": "1:307a028a-b2b3-495e-ab6c-f6dad24dd098",
-      "counterPartyAddress": "http://provider:8282/api/v1/ids/data",
-      "errorDetail": null,
-      "id": "8ce50f33-25f3-42df-99e7-d6d72d83032c",
-      "protocol": "ids-multipart",
-      "state": "CONFIRMED",
-      "type": "CONSUMER"
+    "@type": "edc:ContractNegotiationDto",
+    "@id": "a88180b3-0d66-41b5-8376-c91d8253afcf",
+    "edc:type": "CONSUMER",
+    "edc:protocol": "dataspace-protocol-http",
+    "edc:state": "FINALIZED",
+    "edc:counterPartyAddress": "http://localhost:8282/protocol",
+    "edc:callbackAddresses": [],
+    "edc:contractAgreementId": "1:1:5c0a5d3c-69ea-4fb5-9d3d-e33ec280cde9",
+    "@context": {
+      "dct": "https://purl.org/dc/terms/",
+      "edc": "https://w3id.org/edc/v0.0.1/ns/",
+      "dcat": "https://www.w3.org/ns/dcat/",
+      "odrl": "http://www.w3.org/ns/odrl/2/",
+      "dspace": "https://w3id.org/dspace/v0.8/"
+      }
     }
     ```
 
@@ -197,30 +221,29 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     Now that we have a contract agreement, we can finally request the file. In the request body, we need to specify which asset we want transferred, the ID of the contract agreement, the address of the provider connector and where we want the file transferred. Execute the following command to start the file transfer:
 
     ```bash
-    export TRAINSFER_PROCESSS_ID=$(curl -s --location --request POST "http://$CONSUMER_ADDRESS:8182/api/v1/management/transferprocess" \
-    --header 'X-API-Key: password' \
-    --header 'Content-Type: application/json' \
-    --data-raw '
-    {
-      "connectorAddress": "http://'$PROVIDER_ADDRESS':8282/api/v1/ids/data",
-      "protocol": "ids-multipart",
-      "connectorId": "consumer",
-      "assetId": "1",
-      "contractId": "'$CONTRACT_AGREEMENT_ID'",
-      "dataDestination": {
-        "properties": {
-          "type": "IonosS3",
-          "storage":"s3-eu-central-1.ionoscloud.com",
-          "bucketName": "'$TF_VAR_consumer_bucketname'"
-        },
-        "type": "IonosS3"
-      },
-      "managedResources": true,
-      "transferType": {
-        "contentType": "application/octet-stream",
-        "isFinite": true
-      }
-    }' | jq -r '.id')
+    export TRANSFER_PROCESSS_ID=$(curl -X POST "http://$CONSUMER_ADDRESS:8182/management/v2/transferprocesses" \
+    --header "Content-Type: application/json" \
+	--header 'X-API-Key: password' \
+    --data '{	
+				"@context": {
+					"edc": "https://w3id.org/edc/v0.0.1/ns/"
+					},
+				"@type": "TransferRequestDto",
+                "connectorId": "consumer",
+                "connectorAddress": "http://$PROVIDER_ADDRESS:8282/protocol",
+				"protocol": "dataspace-protocol-http",
+                "contractId": "'$CONTRACT_AGREEMENT_ID'",
+                "assetId": "1",
+				"dataDestination": { 
+					"type": "IonosS3",
+					"storage":"s3-eu-central-1.ionoscloud.com",
+					"bucketName": "'$TF_VAR_consumer_bucketname'",
+					"keyName" : "device1-data.csv"
+				
+				
+				},
+				"managedResources": false
+        }'  | jq -r '.["@id"]')
     ```
 
     Then, we will get a UUID in the response. This time, this is the ID of the TransferProcess ( process id) created on the consumer side, because like the contract negotiation, the data transfer is handled in a state machine and performed asynchronously.
@@ -228,8 +251,16 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     You will have an answer like the following:
     ```bash
     {
-        "createdAt": 1673349183568,
-        "id": "25df5c64-77c9-4e5a-8e4f-aa06aa434408"
+      "@type": "edc:IdResponseDto",
+      "@id": "f9083e20-61a7-41c3-87f2-964de0ed2f52",
+      "edc:createdAt": 1687364842252,
+      "@context": {
+        "dct": "https://purl.org/dc/terms/",
+        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+        "dcat": "https://www.w3.org/ns/dcat/",
+        "odrl": "http://www.w3.org/ns/odrl/2/",
+        "dspace": "https://w3id.org/dspace/v0.8/"
+        }
     }
     ```
 
@@ -237,7 +268,7 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     Due to the nature of the transfer, it will be very fast and most likely already done by the time you read the UUID.
 
     ```bash
-    curl -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/api/v1/management/transferprocess/$TRAINSFER_PROCESSS_ID"
+    curl -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/api/v1/management/transferprocess/$TRANSFER_PROCESSS_ID"
     ```
 
 
