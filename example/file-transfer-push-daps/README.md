@@ -68,7 +68,16 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     In order to offer any data, the consumer can fetch the catalog from the provider, that will contain all the contract offers available for negotiation. In our case, it will contain a single contract offer. To get the catalog from the consumer side, you can use the following command:
 
     ```bash
-    export OFFER_POLICY=$(curl -s -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/api/v1/management/catalog?providerUrl=http://$PROVIDER_ADDRESS:8282/api/v1/ids/data" | jq '.contractOffers[].policy')
+    export OFFER_POLICY=$(curl -X POST "http://$CONSUMER_ADDRESS:8182/management/v2/catalog/request" \
+    --header 'X-API-Key: password' \
+    --header 'Content-Type: application/json' \
+    -d '{
+          "@context": {
+            "edc": "https://w3id.org/edc/v0.0.1/ns/"
+          },
+          "providerUrl": "http://$PROVIDER_ADDRESS:8282/protocol",
+          "protocol": "dataspace-protocol-http"
+        }'-s | jq -r  '.["dcat:dataset"]["odrl:hasPolicy"]["@id"]')
     ```
 
     The offer policy is stored in the `OFFER_POLICY` variable.
@@ -140,19 +149,34 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     In case of successful validation, provider and consumer store the received agreement for later reference
 
     ```bash
-    export CONTRACT_NEGOTIATION_ID=$(curl -s --location --request POST "http://$CONSUMER_ADDRESS:8182/api/v1/management/contractnegotiations" \
+    export CONTRACT_NEGOTIATION_ID=$(curl --location --request POST 'http://$CONSUMER_ADDRESS:8182/management/v2/contractnegotiations' \
     --header 'X-API-Key: password' \
     --header 'Content-Type: application/json' \
     --data-raw '{
+      "@context": {
+        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+        "odrl": "http://www.w3.org/ns/odrl/2/"
+      },
+      "@type": "NegotiationInitiateRequestDto",
       "connectorId": "provider",
-      "connectorAddress": "http://'$PROVIDER_ADDRESS':8282/api/v1/ids/data",
-      "protocol": "ids-multipart",
+      "connectorAddress": "http://$PROVIDER_ADDRESS:8282/protocol",
+      "protocol": "dataspace-protocol-http",
       "offer": {
-        "offerId": "1:3a75736e-001d-4364-8bd4-9888490edb58",
+        "offerId": "1:1:a345ad85-c240-4195-b954-13841a6331a1",
         "assetId": "1",
-        "policy": '"$OFFER_POLICY"'
+        "policy": {"@id":"$OFFER_POLICY",
+          "@type": "odrl:Set",
+          "odrl:permission": {
+            "odrl:target": "1",
+            "odrl:action": {
+              "odrl:type": "USE"
+            }
+          },
+          "odrl:prohibition": [],
+          "odrl:obligation": [],
+          "odrl:target": "1"}
       }
-    }' | jq -r '.id')
+    }' -s | jq -r '.["@id"]')
     ```
 
     The contract negotiation id is stored in the `CONTRACT_NEGOTIATION_ID` variable.
@@ -170,7 +194,7 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     After calling the endpoint for initiating a contract negotiation, we get a UUID as the response. This UUID is the ID of the ongoing contract negotiation between consumer and provider. The negotiation sequence between provider and consumer is executed asynchronously in the background by a state machine. Once both provider and consumer either reach the confirmed or the declined state, the negotiation is finished. We can now use the UUID to check the current status of the negotiation using an endpoint on the consumer side.
 
     ```bash
-    export CONTRACT_AGREEMENT_ID=$(curl -s -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/api/v1/management/contractnegotiations/$CONTRACT_NEGOTIATION_ID" | jq -r '.contractAgreementId')
+    export CONTRACT_AGREEMENT_ID=$(curl -s -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/management/v2/contractnegotiations/$CONTRACT_NEGOTIATION_ID" | jq -r '.contractAgreementId')
     ```
 
     The contract agreement id is stored in the `CONTRACT_AGREEMENT_ID` variable.
@@ -197,30 +221,32 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     Now that we have a contract agreement, we can finally request the file. In the request body, we need to specify which asset we want transferred, the ID of the contract agreement, the address of the provider connector and where we want the file transferred. Execute the following command to start the file transfer:
 
     ```bash
-    export TRAINSFER_PROCESSS_ID=$(curl -s --location --request POST "http://$CONSUMER_ADDRESS:8182/api/v1/management/transferprocess" \
-    --header 'X-API-Key: password' \
-    --header 'Content-Type: application/json' \
-    --data-raw '
-    {
-      "connectorAddress": "http://'$PROVIDER_ADDRESS':8282/api/v1/ids/data",
-      "protocol": "ids-multipart",
-      "connectorId": "consumer",
-      "assetId": "1",
-      "contractId": "'$CONTRACT_AGREEMENT_ID'",
-      "dataDestination": {
-        "properties": {
-          "type": "IonosS3",
-          "storage":"s3-eu-central-1.ionoscloud.com",
-          "bucketName": "'$TF_VAR_consumer_bucketname'"
-        },
-        "type": "IonosS3"
-      },
-      "managedResources": true,
-      "transferType": {
-        "contentType": "application/octet-stream",
-        "isFinite": true
-      }
-    }' | jq -r '.id')
+    export TRAINSFER_PROCESSS_ID=$(curl -X POST "http://$CONSUMER_ADDRESS:8182/management/v2/transferprocesses" \
+    --header "Content-Type: application/json" \
+	--header 'X-API-Key: password' \
+    --data '{	
+				"@context": {
+					"edc": "https://w3id.org/edc/v0.0.1/ns/"
+					},
+				"@type": "TransferRequestDto",
+                "connectorId": "consumer",
+                "connectorAddress": "http://$PROVIDER_ADDRESS:8282/protocol",
+				"protocol": "dataspace-protocol-http",
+                "contractId": "'$CONTRACT_AGREEMENT_ID'",
+                "assetId": "1",
+				"dataDestination": { 
+					"type": "IonosS3",
+					"storage":"s3-eu-central-1.ionoscloud.com",
+					"bucketName": "'$TF_VAR_consumer_bucketname'",
+					"keyName" : "device1-data.csv"
+				
+				
+				},
+				"managedResources": false
+        }'
+    
+    
+     | jq -r '.id')
     ```
 
     Then, we will get a UUID in the response. This time, this is the ID of the TransferProcess ( process id) created on the consumer side, because like the contract negotiation, the data transfer is handled in a state machine and performed asynchronously.

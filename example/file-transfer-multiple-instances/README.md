@@ -46,103 +46,114 @@ curl http://$CONSUMER_IP:8181/api/check/health
 ```console
 curl --header 'X-API-Key: password' \
 -d '{
+			"@context": {
+             "edc": "https://w3id.org/edc/v0.0.1/ns/"
+           },
            "asset": {
-             "properties": {
-               "asset:prop:id": "assetId",
-               "asset:prop:name": "product description",
-               "asset:prop:contenttype": "application/json"
+             "@id": "assetId",
+			 "properties": {
+              
+               "name": "product description",
+               "contenttype": "application/json"
              }
            },
            "dataAddress": {
              "properties": {
-               "bucketName": "'$PROVIDER_BUCKET'",
-               "container": "'$PROVIDER_BUCKET'",
-               "blobName": "device1-data.csv",
-               "storage": "s3-eu-central-1.ionoscloud.com",
-               "keyName": "device1-data.csv",
-               "type": "IonosS3"
+              "type": "AzureStorage",
+              "bucketName": "'$PROVIDER_BUCKET'",
+              "container": "'$PROVIDER_BUCKET'",
+              "blobName": "device1-data.csv",
+              "storage": "s3-eu-central-1.ionoscloud.com",
+              "keyName": "device1-data.csv",
+              "type": "IonosS3"
              }
            }
-         }' -H 'content-type: application/json' http://$PROVIDER_IP:8182/api/v1/data/assets \
+         }' -H 'content-type: application/json' http://$PROVIDER_IP:8182/management/v2/assets \
          -s | jq
 ```
 
 1) Policy creation
 ```console
 curl -d '{
-           "id": "aPolicy",
+			"@context": {
+				"edc": "https://w3id.org/edc/v0.0.1/ns/",
+				"odrl": "http://www.w3.org/ns/odrl/2/"
+			},
+           "@id": "aPolicy",
            "policy": {
-             "uid": "231802-bb34-11ec-8422-0242ac120002",
-             "permissions": [
-               {
-                 "target": "assetId",
-                 "action": {
-                   "type": "USE"
-                 },
-                 "edctype": "dataspaceconnector:permission"
-               }
-             ],
-             "@type": {
-               "@policytype": "set"
-             }
+             "@type": "set",
+             "odrl:permission": [],
+             "odrl:prohibition": [],
+             "odrl:obligation": []
            }
          }' -H 'X-API-Key: password' \
-		 -H 'content-type: application/json' http://$PROVIDER_IP:8182/api/v1/data/policydefinitions
+		 -H 'content-type: application/json' http://$PROVIDER_IP:8182/management/v2/policydefinitions
 ```
 
 1) Contract creation
 ```console
 curl -d '{
-   "id": "1",
-   "accessPolicyId": "aPolicy",
-   "contractPolicyId": "aPolicy",
-   "criteria": []
- }' -H 'X-API-Key: password' \
- -H 'content-type: application/json' http://$PROVIDER_IP:8182/api/v1/data/contractdefinitions
+           "@context": {
+             "edc": "https://w3id.org/edc/v0.0.1/ns/"
+           },
+           "@id": "1",
+           "accessPolicyId": "aPolicy",
+           "contractPolicyId": "aPolicy",
+           "assetsSelector": []
+         }' -H 'X-API-Key: password' \
+ -H 'content-type: application/json' http://$PROVIDER_IP:8182/management/v2/contractdefinitions
 ```
 
 1) Fetching the catalog
 ```console
-curl -X POST "http://$CONSUMER_IP:8182/api/v1/data/catalog/request" \
+curl -X POST "http://$CONSUMER_IP:8182/management/v2/catalog/request" \
 --header 'X-API-Key: password' \
 --header 'Content-Type: application/json' \
 -d @- <<-EOF
 {
-  "providerUrl": "http://$PROVIDER_IP:8282/api/v1/ids/data"
-}
+      "@context": {
+        "edc": "https://w3id.org/edc/v0.0.1/ns/"
+      },
+      "providerUrl": "http://localhost:8282/protocol",
+      "protocol": "dataspace-protocol-http"
+    }
 EOF
 ```
 
 1) Contract negotiation
 ```console
-JSON_PAYLOAD=$(cat <<-EOF
-{
-    "connectorId": "multicloud-push-provider",
-    "connectorAddress": "http://$PROVIDER_IP:8282/api/v1/ids/data",
-    "protocol": "ids-multipart",
-    "offer": {
-        "offerId": "1:50f75a7a-5f81-4764-b2f9-ac258c3628e2",
-        "assetId": "assetId",
-        "policy": {
-            "uid": "231802-bb34-11ec-8422-0242ac120002",
-            "permissions": [
-                {
-                "target": "assetId",
-                "action": {
-                    "type": "USE"
-                },
-                "edctype": "dataspaceconnector:permission"
-                }
-            ],
-            "@type": {
-                "@policytype": "set"
+
+    export JSON_PAYLOAD=$(curl --location --request POST 'http://$CONSUMER_ADDRESS:8182/management/v2/contractnegotiations' \
+    --header 'X-API-Key: password' \
+    --header 'Content-Type: application/json' \
+    --data-raw '{
+      "@context": {
+        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+        "odrl": "http://www.w3.org/ns/odrl/2/"
+      },
+      "@type": "NegotiationInitiateRequestDto",
+      "connectorId": "provider",
+      "connectorAddress": "http://$PROVIDER_ADDRESS:8282/protocol",
+      "protocol": "dataspace-protocol-http",
+      "offer": {
+        "offerId": "1:1:a345ad85-c240-4195-b954-13841a6331a1",
+        "assetId": "1",
+        "policy": {"@id":"$OFFER_POLICY",
+          "@type": "odrl:Set",
+          "odrl:permission": {
+            "odrl:target": "1",
+            "odrl:action": {
+              "odrl:type": "USE"
             }
-        }
-    }
-}
-EOF
-)
-ID=$(curl -s --header 'X-API-Key: password' -X POST -H 'content-type: application/json' -d "$JSON_PAYLOAD" "http://$CONSUMER_IP:8182/api/v1/data/contractnegotiations" | jq -r '.id')
+          },
+          "odrl:prohibition": [],
+          "odrl:obligation": [],
+          "odrl:target": "1"}
+      }
+    }' -s | jq -r '.["@id"]')
+```
+```console    
+ID=$(curl -s --header 'X-API-Key: password' -X POST -H 'content-type: application/json'  "http://$CONSUMER_IP:8182/management/v2/contractnegotiations/$CONTRACT_NEGOTIATION_ID" | jq -r '.contractAgreementId')
 echo $ID
 ```
 
@@ -151,34 +162,35 @@ echo $ID
 CONTRACT_AGREEMENT_ID=$(curl -X GET "http://$CONSUMER_IP:8182/api/v1/data/contractnegotiations/$ID" \
 	--header 'X-API-Key: password' \
     --header 'Content-Type: application/json' \
-    -s | jq -r '.contractAgreementId')
+    -s | jq -r '.["edc:contractAgreementId"]')
 echo $CONTRACT_AGREEMENT_ID
 ```
 
 1) Transfering the asset
 ```console
-curl -X POST "http://$CONSUMER_IP:8182/api/v1/data/transferprocess" \
+curl -X POST "http://$CONSUMER_IP:8182/management/v2/transferprocesses" \
     --header "Content-Type: application/json" \
 	  --header 'X-API-Key: password' \
     -d @- <<-EOF
-    {
-        "connectorId": "consumer",
-        "connectorAddress": "http://$PROVIDER_IP:8282/api/v1/ids/data",
+    {	
+				"@context": {
+					"edc": "https://w3id.org/edc/v0.0.1/ns/"
+					},
+				"@type": "TransferRequestDto",
+                "connectorId": "consumer",
+                "connectorAddress": "http://$PROVIDER_IP:8282/protocol",
+				"protocol": "dataspace-protocol-http",
         "contractId": "$CONTRACT_AGREEMENT_ID",
         "protocol": "ids-multipart",
         "assetId": "assetId",
-        "managedResources": "true",
-        "transferType": {
-            "contentType": "application/octet-stream",
-            "isFinite": true
-        },
-        "dataDestination": {
-            "properties": {
-                "type": "IonosS3",
-                "storage":"s3-eu-central-1.ionoscloud.com",
-                "bucketName": "$CONSUMER_BUCKET"
-            }
-        }
+        "dataDestination": { 
+					"type": "IonosS3",
+					"storage":"s3-eu-central-1.ionoscloud.com",
+					"bucketName": "multicloudexampledd",
+					"keyName" : "device1-data.csv"
+				
+				},
+				"managedResources": false
     }
 EOF
 ```
