@@ -49,7 +49,7 @@ dependencies {
 	
 	implementation("${edcGroup}:auth-tokenbased:${edcVersion}")	
 	
-	implementation("$edcGroup:ids:$edcVersion")
+	implementation("$edcGroup:dsp:$edcVersion")
 	
 	implementation("${edcGroup}:management-api:${edcVersion}")
 	

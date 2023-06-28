@@ -42,14 +42,18 @@ dependencies {
 	implementation("${edcGroup}:control-plane-core:${edcVersion}")
 
 	implementation("${edcGroup}:api-observability:${edcVersion}")
-	
+	  implementation("${edcGroup}:data-plane-client:${edcVersion}")
+    implementation("${edcGroup}:data-plane-selector-client:${edcVersion}")
+    implementation("${edcGroup}:data-plane-selector-core:${edcVersion}")
+	 implementation("${edcGroup}:data-plane-selector-api:${edcVersion}")
 	implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
 
 	implementation("${edcGroup}:http:${edcVersion}")
 	
+	implementation("${edcGroup}:dsp:${edcVersion}")
+	
 	implementation("${edcGroup}:auth-tokenbased:${edcVersion}")	
 	
-	implementation("$edcGroup:ids:$edcVersion")
 	
 	implementation("${edcGroup}:management-api:${edcVersion}")
 	

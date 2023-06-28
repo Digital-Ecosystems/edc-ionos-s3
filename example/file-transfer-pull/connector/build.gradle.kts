@@ -30,12 +30,12 @@ repositories {
 }
 
 val edcGroupId = "org.eclipse.edc"
-val edcVersion = "0.0.1-milestone-8"
+val edcVersion: String by project
 val fraunhoferVersion: String by project
 
 dependencies {
     implementation("${edcGroupId}:control-plane-core:${edcVersion}")
-    implementation("${edcGroupId}:ids:${edcVersion}")
+    implementation("${edcGroupId}:dsp:${edcVersion}")
     implementation("${edcGroupId}:configuration-filesystem:${edcVersion}")
     implementation("${edcGroupId}:vault-filesystem:${edcVersion}")
     implementation("${edcGroupId}:iam-mock:${edcVersion}")

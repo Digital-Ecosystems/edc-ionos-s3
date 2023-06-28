@@ -29,36 +29,38 @@ repositories {
     }
 }
 
-val edcGroupId = "org.eclipse.edc"
-val edcVersion = "0.0.1-milestone-8"
+val edcGroup: String by project
+val edcVersion: String by project
 val fraunhoferVersion: String by project
 
 dependencies {
-    implementation("${edcGroupId}:control-plane-core:${edcVersion}")
-    implementation("${edcGroupId}:ids:${edcVersion}")
-    implementation("${edcGroupId}:configuration-filesystem:${edcVersion}")
-    implementation("${edcGroupId}:vault-filesystem:${edcVersion}")
-    implementation("${edcGroupId}:iam-mock:${edcVersion}")
-    implementation("${edcGroupId}:management-api:${edcVersion}")
-    implementation("${edcGroupId}:transfer-data-plane:${edcVersion}")
-    implementation("${edcGroupId}:transfer-pull-http-receiver:${edcVersion}")
+    implementation("${edcGroup}:control-plane-core:${edcVersion}")
+    implementation("${edcGroup}:dsp:${edcVersion}")
+    implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
+    implementation("${edcGroup}:vault-filesystem:${edcVersion}")
+    implementation("${edcGroup}:iam-mock:${edcVersion}")
+    implementation("${edcGroup}:management-api:${edcVersion}")
+    implementation("${edcGroup}:transfer-data-plane:${edcVersion}")
+    implementation("${edcGroup}:transfer-pull-http-receiver:${edcVersion}")
 
-    implementation("${edcGroupId}:data-plane-selector-api:${edcVersion}")
-    implementation("${edcGroupId}:data-plane-selector-core:${edcVersion}")
-    implementation("${edcGroupId}:data-plane-selector-client:${edcVersion}")
+    implementation("${edcGroup}:data-plane-selector-api:${edcVersion}")
+    implementation("${edcGroup}:data-plane-selector-core:${edcVersion}")
+    implementation("${edcGroup}:data-plane-selector-client:${edcVersion}")
 
-    implementation("${edcGroupId}:data-plane-api:${edcVersion}")
-    implementation("${edcGroupId}:data-plane-core:${edcVersion}")
-    implementation("${edcGroupId}:data-plane-http:${edcVersion}")
+    implementation("${edcGroup}:data-plane-api:${edcVersion}")
+    implementation("${edcGroup}:data-plane-core:${edcVersion}")
+    implementation("${edcGroup}:data-plane-http:${edcVersion}")
 
 
 }
 
 application {
-    mainClass.set("${edcGroupId}.boot.system.runtime.BaseRuntime")
+    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
 }
 
+
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    exclude("**/pom.properties", "**/pom.xm")
     mergeServiceFiles()
-    archiveFileName.set("http-pull-connector.jar")
+    archiveFileName.set("dataspace-connector.jar")
 }

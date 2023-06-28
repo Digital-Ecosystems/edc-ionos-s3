@@ -23,13 +23,12 @@
  import org.eclipse.edc.policy.model.Policy;
  import org.eclipse.edc.runtime.metamodel.annotation.Inject;
  import org.eclipse.edc.spi.asset.AssetIndex;
- import org.eclipse.edc.spi.asset.AssetSelectorExpression;
  import org.eclipse.edc.spi.system.ServiceExtension;
  import org.eclipse.edc.spi.system.ServiceExtensionContext;
  import org.eclipse.edc.spi.types.domain.DataAddress;
  import org.eclipse.edc.spi.types.domain.asset.Asset;
  
- 
+ import static org.eclipse.edc.spi.query.Criterion.criterion;
  public class CloudTransferExtension implements ServiceExtension {
      @Inject
      private AssetIndex assetIndex;
@@ -46,7 +45,7 @@
      @Override
      public void initialize(ServiceExtensionContext context) {
          var policy = createPolicy();
-         policyDefinitionStore.save(policy);
+         policyDefinitionStore.create(policy);
  
          registerDataEntries();
          registerContractDefinition(policy.getUid());
@@ -63,7 +62,7 @@
                      .keyName("device1-data.csv").build();
  
              
-             assetIndex.accept(asset, dataAddress);
+             assetIndex.create(asset, dataAddress);
          } catch (Exception e) {
              // TODO: handle exception
              System.out.println(e);
@@ -73,9 +72,8 @@
      public void registerContractDefinition(String policyId) {
          var contractDefinition1 = ContractDefinition.Builder.newInstance().id("1").accessPolicyId(policyId)
                  .contractPolicyId(policyId)
-                 .selectorExpression(
-                         AssetSelectorExpression.Builder.newInstance().whenEquals(Asset.PROPERTY_ID, "1").build())
-                 .validity(31536000).build();
+                 .assetsSelectorCriterion(criterion(Asset.PROPERTY_ID, "=", "1"))
+                 .build();
  
          contractDefinitionStore.save(contractDefinition1);
      }

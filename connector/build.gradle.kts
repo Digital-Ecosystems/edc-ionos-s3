@@ -42,14 +42,16 @@ val fraunhoferVersion: String by project
 
 
 dependencies {
-
+	implementation("${edcGroup}:boot:${edcVersion}")
+	
     implementation("${edcGroup}:control-plane-core:${edcVersion}")
 	
 	implementation("${edcGroup}:api-observability:${edcVersion}")
 	
 	implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
 
-	implementation("${edcGroup}:http:${edcVersion}")	
+	implementation("${edcGroup}:http:${edcVersion}")
+	implementation("${edcGroup}:dsp:${edcVersion}")	
 	
 	implementation("${edcGroup}:auth-tokenbased:${edcVersion}")	
 
@@ -79,7 +81,7 @@ dependencies {
  
 	testImplementation ("${edcGroup}:junit:${edcVersion}")	
 	
-	implementation("$edcGroup:ids:$edcVersion")
+	
 	
 	implementation("de.fraunhofer.iais.eis.ids.infomodel:java:${fraunhoferVersion}")
 
