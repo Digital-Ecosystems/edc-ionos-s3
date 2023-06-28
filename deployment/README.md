@@ -15,8 +15,8 @@ To deploy the EDC Ionos S3 connector to external kubernetes cluster on IONOS clo
 - [Helm](https://helm.sh/docs/intro/install/)
 - [Terraform](https://developer.hashicorp.com/terraform/downloads)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-- [Kubernetes cluster](https://kubernetes.io/docs/setup/) - **Note:** follow instructions in the [general-des-development
-](https://github.com/Digital-Ecosystems/general-des-development) directory to deploy a IONOS kubernetes cluster
+- [Kubernetes cluster](https://kubernetes.io/docs/setup/) - **Note:** follow instructions of this [link
+](https://github.com/Digital-Ecosystems/ionos-kubernetes-cluster) to deploy a IONOS kubernetes cluster
 - S3 account
 
 ***

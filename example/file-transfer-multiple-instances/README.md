@@ -72,7 +72,7 @@ curl --header 'X-API-Key: password' \
          -s | jq
 ```
 
-1) Policy creation
+2) Policy creation
 ```console
 curl -d '{
 			"@context": {
@@ -90,7 +90,7 @@ curl -d '{
 		 -H 'content-type: application/json' http://$PROVIDER_IP:8182/management/v2/policydefinitions
 ```
 
-1) Contract creation
+3) Contract creation
 ```console
 curl -d '{
            "@context": {
@@ -104,7 +104,7 @@ curl -d '{
  -H 'content-type: application/json' http://$PROVIDER_IP:8182/management/v2/contractdefinitions
 ```
 
-1) Fetching the catalog
+4) Fetching the catalog
 ```console
 curl -X POST "http://$CONSUMER_IP:8182/management/v2/catalog/request" \
 --header 'X-API-Key: password' \
@@ -114,13 +114,13 @@ curl -X POST "http://$CONSUMER_IP:8182/management/v2/catalog/request" \
       "@context": {
         "edc": "https://w3id.org/edc/v0.0.1/ns/"
       },
-      "providerUrl": "http://localhost:8282/protocol",
+      "providerUrl": "http://PROVIDER_IP:8282/protocol",
       "protocol": "dataspace-protocol-http"
     }
 EOF
 ```
 
-1) Contract negotiation
+5) Contract negotiation
 ```console
 
     export JSON_PAYLOAD=$(curl --location --request POST 'http://$CONSUMER_ADDRESS:8182/management/v2/contractnegotiations' \
@@ -157,7 +157,7 @@ ID=$(curl -s --header 'X-API-Key: password' -X POST -H 'content-type: applicatio
 echo $ID
 ```
 
-1) Contract agreement
+6) Contract agreement
 ```console
 CONTRACT_AGREEMENT_ID=$(curl -X GET "http://$CONSUMER_IP:8182/api/v1/data/contractnegotiations/$ID" \
 	--header 'X-API-Key: password' \
@@ -166,7 +166,7 @@ CONTRACT_AGREEMENT_ID=$(curl -X GET "http://$CONSUMER_IP:8182/api/v1/data/contra
 echo $CONTRACT_AGREEMENT_ID
 ```
 
-1) Transfering the asset
+7) Transfering the asset
 ```console
 curl -X POST "http://$CONSUMER_IP:8182/management/v2/transferprocesses" \
     --header "Content-Type: application/json" \
@@ -186,7 +186,7 @@ curl -X POST "http://$CONSUMER_IP:8182/management/v2/transferprocesses" \
         "dataDestination": { 
 					"type": "IonosS3",
 					"storage":"s3-eu-central-1.ionoscloud.com",
-					"bucketName": "multicloudexampledd",
+					"bucketName": "$CONSUMER_BUCKET",
 					"keyName" : "device1-data.csv"
 				
 				},

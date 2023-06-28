@@ -8,7 +8,7 @@
 
 You will need the following:
 - IONOS account;
-- Java Development Kit (JDK) 11 or higher;
+- Java Development Kit (JDK) 17 or higher;
 - Docker;
 - GIT;
 - Linux shell or PowerShell;
@@ -126,7 +126,7 @@ curl --location --request POST 'http://localhost:9192/management/v2/contractnego
   "offer": {
     "offerId": "1:1:a345ad85-c240-4195-b954-13841a6331a1",
     "assetId": "1",
-    "policy": {"@id":<"REPLACE WHERE">,
+    "policy": {"@id":<"REPLACE HERE">,
 			"@type": "odrl:Set",
 			"odrl:permission": {
 				"odrl:target": "1",

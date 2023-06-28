@@ -12,7 +12,7 @@ You will need the following:
 - IONOS account;
 - Azure account;
 - Azure CLI;
-- Java Development Kit (JDK) 11 or higher;
+- Java Development Kit (JDK) 17 or higher;
 - Terraform;
 - Docker;
 - GIT;

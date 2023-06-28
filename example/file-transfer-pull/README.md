@@ -7,7 +7,7 @@
 
 You will need the following:
 - IONOS account;
-- Java Development Kit (JDK) 11 or higher;
+- Java Development Kit (JDK) 17 or higher;
 - Docker;
 - GIT;
 - Linux shell or PowerShell;
