@@ -64,7 +64,7 @@ jobs:
           push: true
           tags: ${{ steps.connector-meta.outputs.tags }}
           labels: ${{ steps.connector-meta.outputs.labels }}
-
+          distribution: 'registry-image'
       - name: Sign "connector" image
         run: |
           cosign sign -y --key cosign.key \
