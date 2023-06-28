@@ -10,7 +10,7 @@ You can execute this example by using only one IONOS account (more for developme
 
 You will need the following:
 - IONOS account;
-- Java Development Kit (JDK) 11 or higher;
+- Java Development Kit (JDK) 17 or higher;
 - Docker;
 - GIT;
 - Linux shell or PowerShell;
@@ -85,56 +85,42 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     Sample output:
     ```json
     {
-      "id": "default",
-      "contractOffers": [
-        {
-          "id": "1:eade0787-41ce-4c72-bb9b-141c9671a14f",
-          "policy": {
-            "permissions": [
-              {
-                "edctype": "dataspaceconnector:permission",
-                "uid": null,
-                "target": "1",
-                "action": {
-                  "type": "USE",
-                  "includedIn": null,
-                  "constraint": null
-                },
-                "assignee": null,
-                "assigner": null,
-                "constraints": [],
-                "duties": []
-              }
-            ],
-            "prohibitions": [],
-            "obligations": [],
-            "extensibleProperties": {},
-            "inheritsFrom": null,
-            "assigner": null,
-            "assignee": null,
-            "target": "1",
-            "@type": {
-              "@policytype": "set"
-            }
-          },
-          "asset": {
-            "id": "1",
-            "createdAt": 1683187807669,
-            "properties": {
-              "asset:prop:byteSize": null,
-              "asset:prop:id": "1",
-              "asset:prop:fileName": null
-            }
-          },
-          "provider": "urn:connector:edc",
-          "consumer": "urn:connector:edc",
-          "offerStart": null,
-          "offerEnd": null,
-          "contractStart": null,
-          "contractEnd": null
-        }
-      ]
-    }
+	"@id": "51dde18d-dc81-41ed-b110-591fdcea753f",
+	"@type": "dcat:Catalog",
+	"dcat:dataset": {
+		"@id": "6519fb05-c1f3-4a81-a4c5-93f5ab128a22",
+		"@type": "dcat:Dataset",
+		"odrl:hasPolicy": {
+			"@id": "1:1:67e38ac2-26e0-40c0-9628-e864f4e260f7",
+			"@type": "odrl:Set",
+			"odrl:permission": {
+				"odrl:target": "1",
+				"odrl:action": {
+					"odrl:type": "USE"
+				}
+			},
+			"odrl:prohibition": [],
+			"odrl:obligation": [],
+			"odrl:target": "1"
+		},
+		"dcat:distribution": [],
+		"edc:id": "1"
+	},
+	"dcat:service": {
+		"@id": "80e665f9-85f1-4ede-b2b5-0df6ed2d5ee3",
+		"@type": "dcat:DataService",
+		"dct:terms": "connector",
+		"dct:endpointUrl": "http://localhost:8282/protocol"
+	},
+	"edc:participantId": "provider",
+	"@context": {
+		"dct": "https://purl.org/dc/terms/",
+		"edc": "https://w3id.org/edc/v0.0.1/ns/",
+		"dcat": "https://www.w3.org/ns/dcat/",
+		"odrl": "http://www.w3.org/ns/odrl/2/",
+		"dspace": "https://w3id.org/dspace/v0.8/"
+	}
+}
     ```
 
 2. Negotiate a contract
@@ -183,11 +169,19 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
 
     Sample output:
     ```json
-    {
-      "createdAt": 1674585892398,
-      "id": "8ce50f33-25f3-42df-99e7-d6d72d83032c"
-    }
-    ```
+      {
+        "@type": "edc:IdResponseDto",
+        "@id": "a88180b3-0d66-41b5-8376-c91d8253afcf",
+        "edc:createdAt": 1687364689704,
+        "@context": {
+          "dct": "https://purl.org/dc/terms/",
+          "edc": "https://w3id.org/edc/v0.0.1/ns/",
+          "dcat": "https://www.w3.org/ns/dcat/",
+          "odrl": "http://www.w3.org/ns/odrl/2/",
+          "dspace": "https://w3id.org/dspace/v0.8/"
+        }
+      }
+ 
 
 3. Getting the contract agreement id
 
@@ -202,15 +196,21 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     Sample output:
     ```json
     {
-      "createdAt": 1674585892398,
-      "updatedAt": 1674585897476,
-      "contractAgreementId": "1:307a028a-b2b3-495e-ab6c-f6dad24dd098",
-      "counterPartyAddress": "http://provider:8282/api/v1/ids/data",
-      "errorDetail": null,
-      "id": "8ce50f33-25f3-42df-99e7-d6d72d83032c",
-      "protocol": "ids-multipart",
-      "state": "CONFIRMED",
-      "type": "CONSUMER"
+    "@type": "edc:ContractNegotiationDto",
+    "@id": "a88180b3-0d66-41b5-8376-c91d8253afcf",
+    "edc:type": "CONSUMER",
+    "edc:protocol": "dataspace-protocol-http",
+    "edc:state": "FINALIZED",
+    "edc:counterPartyAddress": "http://localhost:8282/protocol",
+    "edc:callbackAddresses": [],
+    "edc:contractAgreementId": "1:1:5c0a5d3c-69ea-4fb5-9d3d-e33ec280cde9",
+    "@context": {
+      "dct": "https://purl.org/dc/terms/",
+      "edc": "https://w3id.org/edc/v0.0.1/ns/",
+      "dcat": "https://www.w3.org/ns/dcat/",
+      "odrl": "http://www.w3.org/ns/odrl/2/",
+      "dspace": "https://w3id.org/dspace/v0.8/"
+      }
     }
     ```
 
@@ -243,10 +243,7 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
 				
 				},
 				"managedResources": false
-        }'
-    
-    
-     | jq -r '.id')
+        }'  | jq -r '.id')
     ```
 
     Then, we will get a UUID in the response. This time, this is the ID of the TransferProcess ( process id) created on the consumer side, because like the contract negotiation, the data transfer is handled in a state machine and performed asynchronously.
