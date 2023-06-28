@@ -154,7 +154,52 @@ curl -X POST "http://localhost:29193/management/v2/catalog/request" \
     }' -s | jq	
 ```
 
+You will have an output like the following:
+
+```
+{
+	"@id": "51dde18d-dc81-41ed-b110-591fdcea753f",
+	"@type": "dcat:Catalog",
+	"dcat:dataset": {
+		"@id": "6519fb05-c1f3-4a81-a4c5-93f5ab128a22",
+		"@type": "dcat:Dataset",
+		"odrl:hasPolicy": {
+			"@id": "1:1:67e38ac2-26e0-40c0-9628-e864f4e260f7",
+			"@type": "odrl:Set",
+			"odrl:permission": {
+				"odrl:target": "1",
+				"odrl:action": {
+					"odrl:type": "USE"
+				}
+			},
+			"odrl:prohibition": [],
+			"odrl:obligation": [],
+			"odrl:target": "1"
+		},
+		"dcat:distribution": [],
+		"edc:id": "1"
+	},
+	"dcat:service": {
+		"@id": "80e665f9-85f1-4ede-b2b5-0df6ed2d5ee3",
+		"@type": "dcat:DataService",
+		"dct:terms": "connector",
+		"dct:endpointUrl": "http://localhost:8282/protocol"
+	},
+	"edc:participantId": "provider",
+	"@context": {
+		"dct": "https://purl.org/dc/terms/",
+		"edc": "https://w3id.org/edc/v0.0.1/ns/",
+		"dcat": "https://www.w3.org/ns/dcat/",
+		"odrl": "http://www.w3.org/ns/odrl/2/",
+		"dspace": "https://w3id.org/dspace/v0.8/"
+	}
+}
+```
+
 7) Contract negotiation
+
+Copy the `policy{ @id` from the response of the first curl into this curl and execute it.
+
 ```console
 curl -d '{
   "@context": {
@@ -192,9 +237,31 @@ curl -X GET "http://localhost:29193/api/v1/data/contractnegotiations/{<ID>}" \
     -s | jq	
 ```
 
+You will have an answer like the following:
+```
+{
+	"@type": "edc:ContractNegotiationDto",
+	"@id": "a88180b3-0d66-41b5-8376-c91d8253afcf",
+	"edc:type": "CONSUMER",
+	"edc:protocol": "dataspace-protocol-http",
+	"edc:state": "FINALIZED",
+	"edc:counterPartyAddress": "http://localhost:8282/protocol",
+	"edc:callbackAddresses": [],
+	"edc:contractAgreementId": "1:1:5c0a5d3c-69ea-4fb5-9d3d-e33ec280cde9",
+	"@context": {
+		"dct": "https://purl.org/dc/terms/",
+		"edc": "https://w3id.org/edc/v0.0.1/ns/",
+		"dcat": "https://www.w3.org/ns/dcat/",
+		"odrl": "http://www.w3.org/ns/odrl/2/",
+		"dspace": "https://w3id.org/dspace/v0.8/"
+	}
+}
+```
+
 9) Transfering the asset
 
 Copy the value of the `contractAgreementId` from the response of the previous curl into this curl and execute it.
+
 ```console
 curl -X POST "http://localhost:29193/management/v2/transferprocesses" \
     -H "Content-Type: application/json" \
@@ -205,7 +272,7 @@ curl -X POST "http://localhost:29193/management/v2/transferprocesses" \
         "@type": "TransferRequestDto",
         "connectorId": "provider",
         "connectorAddress": "http://localhost:19194/protocol",
-        "contractId": "1:assetId:f756c7bd-3e66-4b6c-b01d-b20d925058a2",
+        "contractId": "<CONTRACT AGREEMENT ID>",
         "assetId": "assetId",
         "managedResources": false,
         "protocol": "dataspace-protocol-http",

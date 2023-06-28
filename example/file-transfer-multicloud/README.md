@@ -156,6 +156,26 @@ curl -X POST "http://localhost:9192/management/v2/catalog/request" \
       "protocol": "dataspace-protocol-http"
     }'
 ```
+You will have an answer like the following:
+```
+{
+	"@type": "edc:ContractNegotiationDto",
+	"@id": "a88180b3-0d66-41b5-8376-c91d8253afcf",
+	"edc:type": "CONSUMER",
+	"edc:protocol": "dataspace-protocol-http",
+	"edc:state": "FINALIZED",
+	"edc:counterPartyAddress": "http://localhost:8282/protocol",
+	"edc:callbackAddresses": [],
+	"edc:contractAgreementId": "1:1:5c0a5d3c-69ea-4fb5-9d3d-e33ec280cde9",
+	"@context": {
+		"dct": "https://purl.org/dc/terms/",
+		"edc": "https://w3id.org/edc/v0.0.1/ns/",
+		"dcat": "https://www.w3.org/ns/dcat/",
+		"odrl": "http://www.w3.org/ns/odrl/2/",
+		"dspace": "https://w3id.org/dspace/v0.8/"
+	}
+}
+```
 
 5) Contract negotiation
 Copy the `policy{ @id` from the response of the first curl into this curl and execute it.
@@ -202,6 +222,26 @@ curl -X GET "http://localhost:9192/management/v2/contractnegotiations/{<ID>}" \
     --header 'Content-Type: application/json' \
     -s | jq
 ```
+You will have an answer like the following:
+```
+{
+	"@type": "edc:ContractNegotiationDto",
+	"@id": "a88180b3-0d66-41b5-8376-c91d8253afcf",
+	"edc:type": "CONSUMER",
+	"edc:protocol": "dataspace-protocol-http",
+	"edc:state": "FINALIZED",
+	"edc:counterPartyAddress": "http://localhost:8282/protocol",
+	"edc:callbackAddresses": [],
+	"edc:contractAgreementId": "1:1:5c0a5d3c-69ea-4fb5-9d3d-e33ec280cde9",
+	"@context": {
+		"dct": "https://purl.org/dc/terms/",
+		"edc": "https://w3id.org/edc/v0.0.1/ns/",
+		"dcat": "https://www.w3.org/ns/dcat/",
+		"odrl": "http://www.w3.org/ns/odrl/2/",
+		"dspace": "https://w3id.org/dspace/v0.8/"
+	}
+}
+```
 
 Note: copy the `contractAgreementId` field;
 
@@ -220,7 +260,7 @@ curl -X POST "http://localhost:9192/management/v2/transferprocesses" \
                 "connectorId": "consumer",
                 "connectorAddress": "http://localhost:8282/protocol",
 				"protocol": "dataspace-protocol-http",
-                "contractId": "1:1:5c0a5d3c-69ea-4fb5-9d3d-e33ec280cde9",
+                "contractId": "<CONTRACT AGREEMENT ID>",
                 "assetId": "1",
 				"dataDestination": { 
 					"type": "IonosS3",

@@ -85,42 +85,42 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     Sample output:
     ```json
     {
-	"@id": "51dde18d-dc81-41ed-b110-591fdcea753f",
-	"@type": "dcat:Catalog",
-	"dcat:dataset": {
-		"@id": "6519fb05-c1f3-4a81-a4c5-93f5ab128a22",
-		"@type": "dcat:Dataset",
-		"odrl:hasPolicy": {
-			"@id": "1:1:67e38ac2-26e0-40c0-9628-e864f4e260f7",
-			"@type": "odrl:Set",
-			"odrl:permission": {
-				"odrl:target": "1",
-				"odrl:action": {
-					"odrl:type": "USE"
-				}
-			},
-			"odrl:prohibition": [],
-			"odrl:obligation": [],
-			"odrl:target": "1"
-		},
-		"dcat:distribution": [],
-		"edc:id": "1"
-	},
-	"dcat:service": {
-		"@id": "80e665f9-85f1-4ede-b2b5-0df6ed2d5ee3",
-		"@type": "dcat:DataService",
-		"dct:terms": "connector",
-		"dct:endpointUrl": "http://localhost:8282/protocol"
-	},
-	"edc:participantId": "provider",
-	"@context": {
-		"dct": "https://purl.org/dc/terms/",
-		"edc": "https://w3id.org/edc/v0.0.1/ns/",
-		"dcat": "https://www.w3.org/ns/dcat/",
-		"odrl": "http://www.w3.org/ns/odrl/2/",
-		"dspace": "https://w3id.org/dspace/v0.8/"
-	}
-}
+      "@id": "51dde18d-dc81-41ed-b110-591fdcea753f",
+      "@type": "dcat:Catalog",
+      "dcat:dataset": {
+        "@id": "6519fb05-c1f3-4a81-a4c5-93f5ab128a22",
+        "@type": "dcat:Dataset",
+        "odrl:hasPolicy": {
+          "@id": "1:1:67e38ac2-26e0-40c0-9628-e864f4e260f7",
+          "@type": "odrl:Set",
+          "odrl:permission": {
+            "odrl:target": "1",
+            "odrl:action": {
+              "odrl:type": "USE"
+            }
+          },
+          "odrl:prohibition": [],
+          "odrl:obligation": [],
+          "odrl:target": "1"
+        },
+        "dcat:distribution": [],
+        "edc:id": "1"
+      },
+      "dcat:service": {
+        "@id": "80e665f9-85f1-4ede-b2b5-0df6ed2d5ee3",
+        "@type": "dcat:DataService",
+        "dct:terms": "connector",
+        "dct:endpointUrl": "http://localhost:8282/protocol"
+      },
+      "edc:participantId": "provider",
+      "@context": {
+        "dct": "https://purl.org/dc/terms/",
+        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+        "dcat": "https://www.w3.org/ns/dcat/",
+        "odrl": "http://www.w3.org/ns/odrl/2/",
+        "dspace": "https://w3id.org/dspace/v0.8/"
+        }
+    }
     ```
 
 2. Negotiate a contract
@@ -221,7 +221,7 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     Now that we have a contract agreement, we can finally request the file. In the request body, we need to specify which asset we want transferred, the ID of the contract agreement, the address of the provider connector and where we want the file transferred. Execute the following command to start the file transfer:
 
     ```bash
-    export TRAINSFER_PROCESSS_ID=$(curl -X POST "http://$CONSUMER_ADDRESS:8182/management/v2/transferprocesses" \
+    export TRANSFER_PROCESSS_ID=$(curl -X POST "http://$CONSUMER_ADDRESS:8182/management/v2/transferprocesses" \
     --header "Content-Type: application/json" \
 	--header 'X-API-Key: password' \
     --data '{	
@@ -243,7 +243,7 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
 				
 				},
 				"managedResources": false
-        }'  | jq -r '.id')
+        }'  | jq -r '.["@id"]')
     ```
 
     Then, we will get a UUID in the response. This time, this is the ID of the TransferProcess ( process id) created on the consumer side, because like the contract negotiation, the data transfer is handled in a state machine and performed asynchronously.
@@ -251,8 +251,16 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     You will have an answer like the following:
     ```bash
     {
-        "createdAt": 1673349183568,
-        "id": "25df5c64-77c9-4e5a-8e4f-aa06aa434408"
+      "@type": "edc:IdResponseDto",
+      "@id": "f9083e20-61a7-41c3-87f2-964de0ed2f52",
+      "edc:createdAt": 1687364842252,
+      "@context": {
+        "dct": "https://purl.org/dc/terms/",
+        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+        "dcat": "https://www.w3.org/ns/dcat/",
+        "odrl": "http://www.w3.org/ns/odrl/2/",
+        "dspace": "https://w3id.org/dspace/v0.8/"
+        }
     }
     ```
 
@@ -260,7 +268,7 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     Due to the nature of the transfer, it will be very fast and most likely already done by the time you read the UUID.
 
     ```bash
-    curl -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/api/v1/management/transferprocess/$TRAINSFER_PROCESSS_ID"
+    curl -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/api/v1/management/transferprocess/$TRANSFER_PROCESSS_ID"
     ```
 
 
