@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  NAMESPACE: digital-ecosystems
+  NAMESPACE: ionos-cloud
 
 jobs:
   build-and-push-image:
