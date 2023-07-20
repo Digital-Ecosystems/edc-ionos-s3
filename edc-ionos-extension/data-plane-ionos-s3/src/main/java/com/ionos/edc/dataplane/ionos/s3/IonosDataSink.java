@@ -33,18 +33,12 @@ public class IonosDataSink extends ParallelSink {
     private String accessKey;
     private String secretkey;
     
-    private IonosDataSink() {
-
-    }
+    private IonosDataSink() {}
 
     @Override
     protected StreamResult<Void> transferParts(List<DataSource.Part> parts) {
         for (DataSource.Part part : parts) {
-        	 String blobName = part.name();
-        
             try (var input = part.openStream()) {
-               
-               
                 s3Api.uploadParts(bucketName, blobName, new ByteArrayInputStream(input.readAllBytes()));
             } catch (Exception e) {
                 return uploadFailure(e, blobName);
@@ -62,7 +56,6 @@ public class IonosDataSink extends ParallelSink {
     }
 
     public static class Builder extends ParallelSink.Builder<Builder, IonosDataSink> {
-
         private Builder() {
             super(new IonosDataSink());
         }
@@ -90,15 +83,13 @@ public class IonosDataSink extends ParallelSink {
             sink.accessKey = accessKey;
             return this;
         }
+
         public Builder secretkey(String secretkey) {
             sink.secretkey = secretkey;
             return this;
         }
 
-
-
         @Override
-        protected void validate() {
-        }
+        protected void validate() {}
     }
 }
