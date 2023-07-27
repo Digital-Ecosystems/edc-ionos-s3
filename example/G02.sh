@@ -97,38 +97,37 @@ echo ""
 echo "Negotiating the contract with OFFER_ID=$OFFER_ID ..."
 JSON_PAYLOAD=$(cat <<-EOF
 {
-  "@context": {
+	"@context": {
     "edc": "https://w3id.org/edc/v0.0.1/ns/",
     "odrl": "http://www.w3.org/ns/odrl/2/"
   },
   "@type": "NegotiationInitiateRequestDto",
   "connectorId": "provider",
-  "connectorAddress": "http://$PROVIDER_IP:8283/api/v1/ids/data",
+  "connectorAddress": "http://$PROVIDER_IP:8281/protocol",
   "protocol": "dataspace-protocol-http",
-  "consumerId": "consumer",
-  "providerId": "provider",
   "offer": {
     "offerId": "$OFFER_ID",
     "assetId": "$ASSET_ID",
-    "policy": {
-      "@id": "$POLICY_UUID",
-      "@type": "set",
-      "odrl:permission": [
-        {
-          "odrl:target": "$ASSET_ID",
-          "odrl:action": {
-            "odrl:type": "USE"
-          },
-          "edctype": "dataspaceconnector:permission"
-        }
-      ]
-    }
+    "policy": {"@id":"$POLICY_UUID",
+			"@type": "odrl:Set",
+			"odrl:permission": {
+				"odrl:target": "$ASSET_ID",
+				"odrl:action": {
+					"odrl:type": "USE"
+				}
+			},
+			"odrl:prohibition": [],
+			"odrl:obligation": [],
+			"odrl:target": "1"}
   }
 }
 EOF
 )
 ID=$(curl -s --header 'X-API-Key: password' -X POST -H 'content-type: application/json' -d "$JSON_PAYLOAD" "http://$CONSUMER_IP:8182/management/v2/contractnegotiations" | jq -r '.["@id"]')
 echo "Contract negitiation ID=$ID. JSON_PAYLOAD=$JSON_PAYLOAD"
+
+exit 0
+
 
 # get contract agreement ID
 sleep 5
@@ -140,7 +139,7 @@ echo ""
 echo "Contract agreement ID: $CONTRACT_AGREEMENT_ID"
 
 # file transfer
-curl -X POST "http://$CONSUMER_IP:8182/management/v2/transferprocesses" \
+curl -i -X POST "http://$CONSUMER_IP:8182/management/v2/transferprocesses" \
   --header "Content-Type: application/json" \
   --header 'X-API-Key: password' \
   -d @- <<-EOF
