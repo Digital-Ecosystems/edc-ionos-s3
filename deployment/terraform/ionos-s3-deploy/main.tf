@@ -58,16 +58,6 @@ resource "helm_release" "edc-ionos-s3" {
   }
 
   set {
-    name  = "edc.ionos.accessKey"
-    value = var.s3_access_key
-  }
-
-  set {
-    name  = "edc.ionos.secretKey"
-    value = var.s3_secret_key
-  }
-
-  set {
     name  = "edc.ionos.endpoint"
     value = var.s3_endpoint
   }
