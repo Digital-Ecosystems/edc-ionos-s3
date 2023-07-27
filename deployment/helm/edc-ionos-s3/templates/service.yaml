@@ -15,9 +15,17 @@ spec:
       targetPort: {{ .Values.web.http.management.port }}
       protocol: TCP
       name: management
-    - port: {{ .Values.service.idsPort }}
-      targetPort: {{ .Values.web.http.ids.port }}
+    - port: {{ .Values.service.protocolPort }}
+      targetPort: {{ .Values.web.http.protocol.port }}
       protocol: TCP
-      name: ids
+      name: protocol
+    - port: {{ .Values.service.publicPort }}
+      targetPort: {{ .Values.web.http.public.port }}
+      protocol: TCP
+      name: public
+    - port: {{ .Values.service.controlPort }}
+      targetPort: {{ .Values.web.http.control.port }}
+      protocol: TCP
+      name: control
   selector:
     {{- include "edc-ionos-s3.selectorLabels" . | nindent 4 }}
