@@ -1,201 +1,290 @@
 #!/bin/bash
 
-# load config
+# Get config from environment variables
 source .G02-config
 
-# healthcheck
-curl -s http://$PROVIDER_IP:8181/api/check/health|jq '.'
-curl -s http://$CONSUMER_IP:8181/api/check/health|jq '.'
+set -e
 
-# create the asset
-ASSET_ID=$(pwgen -N1 12)
-# ASSET_ID=assetId
+request_timeout=10
 
-echo "Creating asset ID='$ASSET_ID' ..."
-curl -vv --header 'X-API-Key: password' \
--d '{
-  "@context": {
-    "edc": "https://w3id.org/edc/v0.0.1/ns/",
-    "odrl": "http://www.w3.org/ns/odrl/2/",
-    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
-  },
-  "edc:asset": {
-    "@id": "'$ASSET_ID'",
-    "properties": {
-      "edc:name": "product name",
-      "edc:contenttype": "application/json",
-      "edc:description": "product description",
-      "edc:version": "v1.2.3"
-    }
-  },
-  "edc:dataAddress": {
-    "edc:bucketName": "'$PROVIDER_BUCKET'",
-    "edc:container": "'$PROVIDER_BUCKET'",
-    "edc:blobName": "'$FILENAME'",
-    "edc:storage": "s3-eu-central-1.ionoscloud.com",
-    "edc:name": "'$FILENAME'",
-    "edc:type": "IonosS3",
-    "edc:keyName": "'$FILENAME'"
-  }
-}' -H 'content-type: application/json' http://$PROVIDER_IP:8182/management/v2/assets -s | jq
+# Make health check requests to both connectors
 
-# create the policy
-POLICY_ID=$(pwgen -N1 12)
-POLICY_UUID=$(/usr/bin/uuidgen)
-echo 'Creating policy ID="'$POLICY_ID'" ...'
-curl -d '{
+PROVIDER_HEALTH_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://$PROVIDER_IP:8181/api/check/health -m $request_timeout)
+CONSUMER_HEALTH_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://$CONSUMER_IP:8181/api/check/health -m $request_timeout)
+
+if [ $PROVIDER_HEALTH_RESPONSE -ne 200 ]; then
+  echo "Provider health check failed."
+  echo $PROVIDER_HEALTH_RESPONSE
+  exit 1
+fi
+
+if [ $CONSUMER_HEALTH_RESPONSE -ne 200 ]; then
+  echo "Consumer health check failed." 
+  echo $CONSUMER_HEALTH_RESPONSE
+  exit 1
+fi
+
+# Create the asset
+
+asset_id=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1)
+echo "Creating asset ID=\"$asset_id\" ..."
+
+create_asset_response=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://$PROVIDER_IP:8182/management/v2/assets \
+  -H 'Content-Type: application/json' \
+  -H "X-API-Key: password" \
+  -d '{
     "@context": {
         "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
         "edc": "https://w3id.org/edc/v0.0.1/ns/",
         "odrl": "http://www.w3.org/ns/odrl/2/"
     },
-    "@id": "'$POLICY_ID'",
+    "edc:asset": {
+        "@id": "'"$asset_id"'",
+        "@type": "edc:Asset",
+        "edc:properties": {
+            "edc:name": "Name",
+            "edc:description": "Description",
+            "edc:contenttype": "application/json",
+            "edc:version": "v1.2.3"
+        }
+    },
+    "edc:dataAddress": {
+        "@type": "edc:DataAddress",
+        "edc:bucketName": "'"$PROVIDER_BUCKET"'",
+        "edc:container": "'"$PROVIDER_BUCKET"'",
+        "edc:blobName": "'"$FILENAME"'",
+        "edc:keyName": "'"$FILENAME"'",
+        "edc:storage": "s3-eu-central-1.ionoscloud.com",
+        "edc:name": "'"$FILENAME"'",
+        "edc:type": "IonosS3"
+    }
+}' \
+  -m $request_timeout)
+
+if [ "$create_asset_response" != "200" ]; then
+  echo "Asset creation failed with response code: $create_asset_response."
+  echo $create_asset_response
+  exit 1
+fi
+
+# Create the policy 
+
+policy_id=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1)
+echo "Creating policy ID=\"$policy_id\" ..."
+
+create_policy_response=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://$PROVIDER_IP:8182/management/v2/policydefinitions \
+  -H 'Content-Type: application/json' \
+  -H "X-API-Key: password" \
+  -d '{
+    "@context": {
+        "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+        "odrl": "http://www.w3.org/ns/odrl/2/"
+    },
+    "@id": "'"$policy_id"'",
     "edc:policy": {
         "@context": "http://www.w3.org/ns/odrl.jsonld",
         "@type": "odrl:Set",
         "odrl:permission": [
             {
+                "odrl:target": "'"$asset_id"'",
                 "odrl:action": {
                     "odrl:type": "USE"
                 },
-                "odrl:edctype": "dataspaceconnector:permission",
-                "odrl:target": "'$ASSET_ID'"
+                "odrl:edctype": "dataspaceconnector:permission"
             }
         ]
     }
-}' -H 'X-API-Key: password' \
-  -H 'content-type: application/json' http://$PROVIDER_IP:8182/management/v2/policydefinitions
+}' \
+  -m $request_timeout)
 
-# create the contractoffer
-echo ""
-echo "Creating contractoffer ..."
-CONTRACTOFFER_ID=$(pwgen -N1 12)
-curl -d '{
+if [ "$create_policy_response" != "200" ]; then
+  echo "Policy creation failed with response code: $create_policy_response."
+  echo $create_policy_response
+  exit 1
+fi
+
+# Create the contractoffer
+
+contractoffer_id=1
+
+create_contractoffer_response=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://$PROVIDER_IP:8182/management/v2/contractdefinitions \
+  -H 'Content-Type: application/json' \
+  -H "X-API-Key: password" \
+  -d '{
     "@context": {
         "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
         "edc": "https://w3id.org/edc/v0.0.1/ns/",
         "odrl": "http://www.w3.org/ns/odrl/2/"
     },
-    "@id": "'$CONTRACTOFFER_ID'",
+    "@id": "'"$contractoffer_id"'",
     "@type": "edc:ContractDefinition",
-    "edc:accessPolicyId": "'$POLICY_ID'",
-    "edc:assetsSelector": [],
-    "edc:contractPolicyId": "'$POLICY_ID'"
-}' -H 'X-API-Key: password' \
- -H 'content-type: application/json' http://$PROVIDER_IP:8182/management/v2/contractdefinitions
+    "edc:accessPolicyId": "'"$policy_id"'",
+    "edc:contractPolicyId": "'"$policy_id"'",
+    "edc:assetsSelector": []
+}' \
+  -m $request_timeout)
 
-# fetch the catalog
-echo ""
+if [ "$create_contractoffer_response" != "200" ] && [ "$create_contractoffer_response" != "409" ]; then
+  echo "Contract offer creation failed with response code: $create_contractoffer_response."
+  
+  echo $create_contractoffer_response
+  exit 1
+fi
+
+# Fetch the catalog
+
 echo "Fetching the catalog ..."
-curl -X POST "http://$CONSUMER_IP:8182/management/v2/catalog/request" \
---header 'X-API-Key: password' \
---header 'Content-Type: application/json' \
--d '{
-  "@context": {
-    "edc": "https://w3id.org/edc/v0.0.1/ns/"
-  },
-  "providerUrl": "http://'$PROVIDER_IP':8281/protocol",
-  "protocol": "dataspace-protocol-http"
-}' -s | jq '. | select(.key == "@id")'
-#| jq '. | select(.key == ["@id"]'
-exit 0
-# OFFER=$(curl -X POST "http://$CONSUMER_IP:8182/management/v2/catalog/request" \
-# --header 'X-API-Key: password' \
-# --header 'Content-Type: application/json' \
-# -d '{
-#   "@context": {
-#     "edc": "https://w3id.org/edc/v0.0.1/ns/"
-#   },
-#   "providerUrl": "http://'$PROVIDER_IP':8281/protocol",
-#   "protocol": "dataspace-protocol-http"
-# }' -s |jq '."dcat:dataset" |.[] | .[] | select(.["@id"] == "1dd1a65f-3689-456c-b948-29b9647ff919")')
 
-# OFFER=$(echo "$OFFER" | sed 's/^=//')
-echo "OFFER=$OFFER"
-exit 0
+fetch_catalog_response=$(curl -s -X POST http://$CONSUMER_IP:8182/management/v2/catalog/request \
+  -H 'Content-Type: application/json' \
+  -H "X-API-Key: password" \
+  -d '{
+    "@context": {
+        "edc": "https://w3id.org/edc/v0.0.1/ns/"
+    },
+    "providerUrl": "http://'"$PROVIDER_IP"':8281/protocol",
+    "protocol": "dataspace-protocol-http"
+}' \
+  -m $request_timeout)
 
-OFFER_HASPOLICY=$(echo "$OFFER" | jq '."odrl:hasPolicy"')
-OFFER_HASPOLICY_ID=$(echo "$OFFER" |jq '."odrl:hasPolicy" |."@id"')
-OFFER_EDC_ID=$(echo "$OFFER" |jq '."edc:id"')
-# echo "OFFER_HASPOLICY=$OFFER_HASPOLICY"
-# echo "OFFER_HASPOLICY_ID=$OFFER_HASPOLICY_ID"
-# echo "OFFER_EDC_ID=$OFFER_EDC_ID"
-# exit 0
+catalog_contractOffer=$(echo "$fetch_catalog_response" | jq '.["dcat:dataset"][0]')
 
-# contract negotiation
-OFFER_ID="$CONTRACTOFFER_ID:$(/usr/bin/uuidgen)"
-echo ""
-echo "Negotiating the contract with OFFER_ID=$OFFER_HASPOLICY_ID ..."
-JSON_PAYLOAD=$(cat <<-EOF
-{
+if [ -z "$catalog_contractOffer" ]; then
+  echo "New asset fetch failed."
+  exit 1
+fi
+
+# Contract negotiation
+
+offer_id=$(echo $catalog_contractOffer | jq -r '.["odrl:hasPolicy"] | .["@id"]')
+echo "Negotiating the contract with OFFER_ID=\"$offer_id\" ..."
+
+contract_negotiations_response=$(curl -X POST http://$CONSUMER_IP:8182/management/v2/contractnegotiations \
+  -H 'Content-Type: application/json' \
+  -H "X-API-Key: password" \
+  -d '{
     "@context": {
         "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
         "edc": "https://w3id.org/edc/v0.0.1/ns/",
         "odrl": "http://www.w3.org/ns/odrl/2/"
     },
     "@type": "edc:NegotiationInitiateRequestDto",
-    "edc:connectorAddress": "http://$PROVIDER_IP:8281/protocol",
     "edc:connectorId": "provider",
+    "edc:connectorAddress": "http://'"$PROVIDER_IP"':8281/protocol",
     "edc:consumerId": "consumer",
+    "edc:protocol": "dataspace-protocol-http",
+    "edc:providerId": "provider",
     "edc:offer": {
         "@type": "edc:ContractOfferDescription",
-        "edc:assetId": "$ASSET_ID",
-        "edc:offerId": $OFFER_HASPOLICY_ID,
-        "edc:policy": $OFFER_HASPOLICY},
-    "edc:protocol": "dataspace-protocol-http",
-    "edc:providerId": "provider"
-}
-EOF
-)
-echo "Generated contract offer: $JSON_PAYLOAD"
-echo "Creating contract offer..."
-# curl --header 'X-API-Key: password' -X POST -H 'content-type: application/json' -d "$JSON_PAYLOAD" "http://$CONSUMER_IP:8182/management/v2/contractnegotiations"
-# exit 0
+        "edc:offerId": "'$offer_id'",
+        "edc:assetId": "'$(echo $catalog_contractOffer | jq -r '.["edc:id"]')'",
+        "edc:policy":'"$(echo $catalog_contractOffer | jq '.["odrl:hasPolicy"]')"'
+    }
+}' \
+  -m $request_timeout)
 
-ID=$(curl -s --header 'X-API-Key: password' -X POST -H 'content-type: application/json' -d "$JSON_PAYLOAD" "http://$CONSUMER_IP:8182/management/v2/contractnegotiations" | jq -r '.["@id"]')
-echo "Contract negitiation ID=$ID. JSON_PAYLOAD=$JSON_PAYLOAD"
+if [ $? -ne 0 ]; then
+  echo "Contract negotiation failed."
+  exit 1
+fi
 
-# get contract agreement ID
-sleep 5
-curl -X GET "http://$CONSUMER_IP:8182/management/v2/contractnegotiations/$ID" \
-	--header 'X-API-Key: password' \
-    --header 'Content-Type: application/json'
-exit 0
+contract_negotiations_id=$(echo $contract_negotiations_response | jq -r '.["@id"]')
 
-CONTRACT_AGREEMENT_ID=$(curl -X GET "http://$CONSUMER_IP:8182/management/v2/contractnegotiations/$OFFER_HASPOLICY_ID" \
-	--header 'X-API-Key: password' \
-    --header 'Content-Type: application/json' \
-    -s | jq -r '.["@id"]')
-echo ""
-echo "Contract agreement ID: $CONTRACT_AGREEMENT_ID"
+# Get contract agreement ID
 
-# file transfer
-curl -i -X POST "http://$CONSUMER_IP:8182/management/v2/transferprocesses" \
-  --header "Content-Type: application/json" \
-  --header 'X-API-Key: password' \
-  -d @- <<-EOF
-  {
+MAX_RETRIES=10
+WAIT_SECONDS=5
+
+for ((i=0; i<$MAX_RETRIES; i++)); do
+  echo "Requesting status of negotiation"
+  sleep $WAIT_SECONDS
+  
+  get_contract_agreement_response=$(curl http://$CONSUMER_IP:8182/management/v2/contractnegotiations/$contract_negotiations_id \
+    -H 'Content-Type: application/json' \
+    -H "X-API-Key: password" \
+    -m $request_timeout)
+
+  if [ $? -ne 0 ]; then
+    echo "Contract agreement failed."
+    exit 1
+  fi
+
+  echo $get_contract_agreement_response
+
+  STATE=$(echo $get_contract_agreement_response | jq -r '.["edc:state"]')
+
+  if [ "$STATE" == "FINALIZED" ]; then
+    contract_agreement_id=$(echo $get_contract_agreement_response | jq -r '.["edc:contractAgreementId"]')
+    echo "Contract agreement ID: $contract_agreement_id is FINALIZED."
+    break
+  elif [[ "$STATE" == "TERMINATING" || "$STATE" == "TERMINATED" ]]; then
+    echo "Contract agreement failed."
+    exit 1
+  elif [ $i -eq $((MAX_RETRIES-1)) ]; then
+    echo "Contract agreement failed." 
+    exit 1
+  fi
+done
+
+# File transfer
+
+file_transfer_response=$(curl -X POST http://$CONSUMER_IP:8182/management/v2/transferprocesses \
+  -H 'Content-Type: application/json' \
+  -H "X-API-Key: password" \
+  -d '{
     "@context": {
         "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
         "edc": "https://w3id.org/edc/v0.0.1/ns/",
         "odrl": "http://www.w3.org/ns/odrl/2/"
     },
     "@type": "edc:TransferRequestDto",
-    "edc:assetId": "$ASSET_ID",
-    "edc:connectorAddress": "http://$PROVIDER_IP:8281/protocol",
     "edc:connectorId": "provider",
-    "edc:contractId": "$CONTRACT_AGREEMENT_ID",
+    "edc:connectorAddress": "http://'"$PROVIDER_IP"':8281/protocol",
+    "edc:contractId": "'"$contract_agreement_id"'",
+    "edc:protocol": "dataspace-protocol-http",
+    "edc:assetId": "'"$asset_id"'",
+    "edc:managedResources": false,
     "edc:dataDestination": {
         "@type": "edc:DataAddress",
-        "edc:blobName": "$FILENAME",
-        "edc:bucketName": "$CONSUMER_BUCKET",
-        "edc:container": "$CONSUMER_BUCKET",
-        "edc:keyName": "$FILENAME",
-        "edc:name": "$FILENAME",
+        "edc:blobName": "'"$FILENAME"'",
+        "edc:bucketName": "'"$CONSUMER_BUCKET"'",
+        "edc:container": "'"$CONSUMER_BUCKET"'",
+        "edc:keyName": "'"$FILENAME"'",
+        "edc:name": "'"$FILENAME"'",
         "edc:storage": "s3-eu-central-1.ionoscloud.com",
         "edc:type": "IonosS3"
-    },
-    "edc:managedResources": false,
-    "edc:protocol": "dataspace-protocol-http"
-}
-EOF
+    }
+}' \
+  -m $request_timeout)
+
+TRANSFER_PROCESS_ID=$(echo $file_transfer_response | jq -r '.["@id"]')
+
+# Get transfer process status
+
+MAX_RETRIES=30
+WAIT_SECONDS=5
+
+for ((i=0; i<$MAX_RETRIES; i++)); do
+  echo "Requesting status of transfer ..."
+  sleep $WAIT_SECONDS
+
+  get_transfer_process_response=$(curl http://$CONSUMER_IP:8182/management/v2/transferprocesses/$TRANSFER_PROCESS_ID \
+    -H 'Content-Type: application/json' \
+    -H "X-API-Key: password" \
+    -m $request_timeout)
+
+  STATE=$(echo $get_transfer_process_response | jq -r '.["edc:state"]')
+
+  echo $get_transfer_process_response
+
+  if [ "$STATE" == "COMPLETED" ]; then
+    break
+  elif [ "$STATE" == "TERMINATING" ]; then
+    echo "Transfer failed."
+    exit 1
+  elif [ $i -eq $((MAX_RETRIES-1)) ]; then
+    echo "Transfer failed."
+    exit 1 
+  fi
+done
