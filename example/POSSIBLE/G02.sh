@@ -156,7 +156,7 @@ fi
 OFFER_ID=$(echo $CATALOG_CONTRACTOFFER | jq -r '.["odrl:hasPolicy"] | .["@id"]')
 echo "Negotiating the contract with OFFER_ID=\"$OFFER_ID\" ..."
 
-contract_negotiations_response=$(curl -X POST http://$CONSUMER_IP:8182/management/v2/contractnegotiations \
+contract_negotiations_response=$(curl -s -X POST http://$CONSUMER_IP:8182/management/v2/contractnegotiations \
   -H 'Content-Type: application/json' \
   -H "X-API-Key: password" \
   -d '{
@@ -196,7 +196,7 @@ for ((i=0; i<$MAX_RETRIES; i++)); do
   echo "Requesting status of negotiation"
   sleep $WAIT_SECONDS
   
-  GET_CONTRACT_AGREEMENT_RESPONSE=$(curl http://$CONSUMER_IP:8182/management/v2/contractnegotiations/$contract_negotiations_id \
+  GET_CONTRACT_AGREEMENT_RESPONSE=$(curl -s http://$CONSUMER_IP:8182/management/v2/contractnegotiations/$contract_negotiations_id \
     -H 'Content-Type: application/json' \
     -H "X-API-Key: password" \
     -m $REQUEST_TIMEOUT)
@@ -225,7 +225,7 @@ done
 
 # File transfer
 
-file_transfer_response=$(curl -X POST http://$CONSUMER_IP:8182/management/v2/transferprocesses \
+file_transfer_response=$(curl -s -X POST http://$CONSUMER_IP:8182/management/v2/transferprocesses \
   -H 'Content-Type: application/json' \
   -H "X-API-Key: password" \
   -d '{
@@ -265,7 +265,7 @@ for ((i=0; i<$MAX_RETRIES; i++)); do
   echo "Requesting status of transfer ..."
   sleep $WAIT_SECONDS
 
-  GET_TRANSFER_PROCESS_RESPONSE=$(curl http://$CONSUMER_IP:8182/management/v2/transferprocesses/$TRANSFER_PROCESS_ID \
+  GET_TRANSFER_PROCESS_RESPONSE=$(curl -s http://$CONSUMER_IP:8182/management/v2/transferprocesses/$TRANSFER_PROCESS_ID \
     -H 'Content-Type: application/json' \
     -H "X-API-Key: password" \
     -m $REQUEST_TIMEOUT)
