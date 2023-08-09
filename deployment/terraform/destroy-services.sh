@@ -24,10 +24,10 @@ terraform destroy -auto-approve
 cd ../
 
 # remove terraform state
-rm -rf ./configure-ionos-s3-webhook-address/.terraform
-rm -f ./configure-ionos-s3-webhook-address/terraform.tfstate
-rm -f ./configure-ionos-s3-webhook-address/.terraform.lock.hcl
-rm -f ./configure-ionos-s3-webhook-address/terraform.tfstate.backup
+rm -rf ./configure-public-address/.terraform
+rm -f ./configure-public-address/terraform.tfstate
+rm -f ./configure-public-address/.terraform.lock.hcl
+rm -f ./configure-public-address/terraform.tfstate.backup
 
 rm -rf ./ionos-s3-deploy/.terraform
 rm -f ./ionos-s3-deploy/terraform.tfstate

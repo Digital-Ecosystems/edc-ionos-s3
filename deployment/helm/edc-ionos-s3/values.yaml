@@ -40,7 +40,9 @@ service:
   type: LoadBalancer
   apiPort: 8181
   managementPort: 8182
-  idsPort: 8282
+  protocolPort: 8281
+  publicPort: 8282
+  controlPort: 8283
 
 ingress:
   enabled: false
@@ -88,20 +90,25 @@ tolerations: []
 
 affinity: {}
 
-ids:
-  webhook:
-    address: http://localhost:8282
 web:
   http:
     port: 8181
     path: /api
     management:
       port: 8182
-      path: /api/v1/data
-    ids:
+      path: /management
+    protocol:
+      port: 8281
+      path: /protocol
+    public:
       port: 8282
-      path: /api/v1/ids
+      path: /public
+    control:
+      port: 8283
+      path: /control
 edc:
+  participant:
+    id: provider
   api:
     auth:
       key: password
@@ -109,15 +116,28 @@ edc:
     clientid: company1
     tenantid: 1
     certificate: /resources/
-    name: ionos
     hashicorp:
       url: http://vault:8200
       token:
       timeout:
         seconds: 30
+  ids:
+    id: urn:connector:provider
   ionos:
     endpoint: s3-eu-central-1.ionoscloud.com
     accessKey: notnull
     secretKey: notnull
     token: notnull
-
+  dsp:
+    callback:
+      address: http://localhost
+  receiver:
+    http:
+      endpoint: http://localhost:4000
+  public:
+    key:
+      alias: alias
+  dataplane:
+    token:
+      validation:
+        endpoint: http://localhost

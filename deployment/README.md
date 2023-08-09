@@ -71,7 +71,7 @@ If you don't want the Connector to be externally accessible, you need to set the
     type: ClusterIP
 ```
 
-This will allocate a public IP address to the Connector. You can then access it on the ports 8181, 8182, and 8282.
+This will allocate a public IP address to the Connector. You can then access it on the ports 8181, 8182, 8281, 8282 and 8283.
 
 ***
 
