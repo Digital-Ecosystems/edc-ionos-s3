@@ -73,6 +73,7 @@ It is required to configure those parameters:
 | `edc.ionos.access.key`                    | IONOS Access Key Id to access S3     | Yes if the context is accessing file |
 | `edc.ionos.secret.access.key`             | IONOS Secret Access Key to access S3 | Yes if the context is accessing file |
 | `edc.ionos.token`                         | IONOS token to allow S3 provisioning | Yes if the context is provisioning access for others |
+| `edc.ionos.endpoint`    | IONOS S3 endpoint address. Refer to [docs](https://docs.ionos.com/cloud/managed-services/s3-object-storage/endpoints) for further information. | Yes, if the context is accessing file |
 
 To create the token please take a look at the following [documentation](./ionos_token.md).
 
