@@ -32,11 +32,11 @@ Note: by design, S3 technology allows only unique names for the buckets. You may
 
 Local execution:
 ```bash
-java -Dedc.keystore=example/file-transfer-pull/certs/cert.pfx -Dedc.keystore.password=123456 -Dedc.vault=example/file-transfer-pull/consumer/resources/consumer-vault.properties -Dedc.fs.config=example/file-transfer-pull/consumer/resources/consumer-config.properties -jar example/file-transfer-pull/consumer/build/libs/dataspace-connector.jar
+java -Dedc.keystore=example/file-transfer-pull/certs/cert.pfx -Dedc.keystore.password=123456 -Dedc.vault=example/file-transfer-pull/consumer/resources/consumer-vault.properties -Dedc.fs.config=example/file-transfer-pull/consumer/resources/consumer-configuration.properties -jar example/file-transfer-pull/consumer/build/libs/dataspace-connector.jar
 
-java -Dedc.keystore=example/file-transfer-pull/certs/cert.pfx -Dedc.keystore.password=123456 -Dedc.vault=example/file-transfer-pull/provider/resources/provider-vault.properties -Dedc.fs.config=example/file-transfer-pull/provider/resources/provider-config.properties -jar example/file-transfer-pull/provider/build/libs/dataspace-connector.jar
+java -Dedc.keystore=example/file-transfer-pull/certs/cert.pfx -Dedc.keystore.password=123456 -Dedc.vault=example/file-transfer-pull/provider/resources/provider-vault.properties -Dedc.fs.config=example/file-transfer-pull/provider/resources/provider-configuration.properties -jar example/file-transfer-pull/provider/build/libs/dataspace-connector.jar
 
-java -jar ./example/file-transfer-pull/backend-service/build/libs/http-pull-connector.jar
+java -jar ./example/file-transfer-pull/backend-service/build/libs/backend-service.jar
 ```
 
 or
@@ -198,7 +198,7 @@ You will have an output like the following:
 
 7) Contract negotiation
 
-Copy the `policy{ @id` from the response of the first curl into this curl and execute it.
+Copy the `policy{ @id` from the response of the policy creation request (4.) into this curl and execute it.
 
 ```console
 curl -d '{
@@ -216,7 +216,7 @@ curl -d '{
    "offerId": "1:assetId:0ed3140c-0927-4ffd-a225-ba92d894eafe",
    "assetId": "assetId",
    "policy": {
-     "@id": "@id":"<"REPLACE HERE">",
+     "@id": "<REPLACE HERE>",
      "@type": "Set",
      "odrl:permission": [],
      "odrl:prohibition": [],
@@ -232,7 +232,7 @@ curl -d '{
 
 Copy the value of the `id` from the response of the previous curl into this curl and execute it.
 ```console
-curl -X GET "http://localhost:29193/api/v1/data/contractnegotiations/{<ID>}" \
+curl -X GET "http://localhost:29193/management/v2/contractnegotiations/{<ID>}" \
     --header 'Content-Type: application/json' \
     -s | jq	
 ```
