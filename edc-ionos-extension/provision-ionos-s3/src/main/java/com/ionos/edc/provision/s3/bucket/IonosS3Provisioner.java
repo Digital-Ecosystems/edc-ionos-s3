@@ -72,8 +72,6 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
                     if (!s3Api.bucketExists(bucketName)) {
                         
                         createBucket(bucketName);
-                    }else{
-                        return completedFuture(StatusResult.failure(ResponseStatus.FATAL_ERROR, "Bucket:"+ bucketName+" exists"));
                     }
 
                     
@@ -84,9 +82,11 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
 
                 	 var resource = IonosS3ProvisionedResource.Builder.newInstance().id( resourceDefinition.getbucketName())  
                 			 .storage(resourceDefinition.getStorage())
-                             .bucketName(resourceDefinition.getbucketName()).resourceDefinitionId(resourceDefinition.getId())
+                             .bucketName(resourceDefinition.getbucketName())
+                             .resourceDefinitionId(resourceDefinition.getId())
                              .keyId(serviceAccount.getAccessKey())
-                             .transferProcessId(resourceDefinition.getTransferProcessId()).resourceName(resourceName).hasToken(true)
+                             .transferProcessId(resourceDefinition.getTransferProcessId())
+                             .resourceName(resourceName).hasToken(true)
                              .build();
                 	var secretToken = new IonosToken(serviceAccount.getAccessKey(), serviceAccount.getSecretKey(), expiryTime.toInstant().toEpochMilli() );
                     var response = ProvisionResponse.Builder.newInstance().resource(resource).secretToken(secretToken).build();

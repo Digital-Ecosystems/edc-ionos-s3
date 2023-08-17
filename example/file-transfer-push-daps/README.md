@@ -268,7 +268,7 @@ export CONSUMER_ADDRESS=$(kubectl get svc -n edc-ionos-s3-consumer edc-ionos-s3-
     Due to the nature of the transfer, it will be very fast and most likely already done by the time you read the UUID.
 
     ```bash
-    curl -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/api/v1/management/transferprocess/$TRANSFER_PROCESSS_ID"
+    curl -X GET -H 'X-Api-Key: password' "http://$CONSUMER_ADDRESS:8182/api/v2/management/transferprocess/$TRANSFER_PROCESSS_ID"
     ```
 
 

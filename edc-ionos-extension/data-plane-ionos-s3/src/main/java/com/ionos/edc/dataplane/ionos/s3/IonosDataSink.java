@@ -37,7 +37,8 @@ public class IonosDataSink extends ParallelSink {
 
     @Override
     protected StreamResult<Void> transferParts(List<DataSource.Part> parts) {
-        for (DataSource.Part part : parts) {
+
+        for (var part : parts) {
             try (var input = part.openStream()) {
                 s3Api.uploadParts(bucketName, blobName, new ByteArrayInputStream(input.readAllBytes()));
             } catch (Exception e) {

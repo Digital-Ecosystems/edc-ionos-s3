@@ -67,7 +67,7 @@ public class S3CoreExtension implements ServiceExtension {
               endPoint = context.getSetting(IONOS_ENDPOINT, IONOS_ENDPOINT);
               token = context.getSetting(IONOS_TOKEN, IONOS_TOKEN);
         }
-		
+        
         var s3Api = new S3ConnectorApiImpl(endPoint, accessKey, secretKey, token);
         context.registerService(S3ConnectorApi.class, s3Api);
 

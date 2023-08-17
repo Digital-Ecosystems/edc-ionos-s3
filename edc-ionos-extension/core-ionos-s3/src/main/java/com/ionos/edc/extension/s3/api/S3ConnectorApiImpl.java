@@ -67,7 +67,6 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
 
     @Override
     public void createBucket(String bucketName) {
-
         if (!bucketExists(bucketName.toLowerCase())) {
             // Make a new bucket'.
             try {
@@ -100,9 +99,13 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
     @Override
     public void uploadFile(String bucketName, String fileName, String path) {
 
-        if (bucketExists(bucketName.toLowerCase())) {
-
-            try {
+        if (!bucketExists(bucketName.toLowerCase())){
+              
+            createBucket(bucketName.toLowerCase());
+        }
+       
+        try {
+             
                 minioClient.uploadObject(UploadObjectArgs.builder().bucket(bucketName.toLowerCase()).object(fileName)
                         .filename(path).build());
             } catch (InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException |
@@ -110,15 +113,21 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
                     IllegalArgumentException | IOException e) {
 
                 e.printStackTrace();
+            
             }
         }
-    }
+    
     
     @Override
     public void uploadParts(String bucketName, String fileName, ByteArrayInputStream  part) {
-        if (bucketExists(bucketName.toLowerCase())) {
-
-            try {
+       
+        if (!bucketExists(bucketName.toLowerCase())){
+             
+            createBucket(bucketName.toLowerCase());
+        }
+       
+        try {
+             
                 minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(fileName).stream(part, part.available(), -1).build());
             } catch (InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException |
                     InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException |
@@ -126,7 +135,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
 
                 e.printStackTrace();
             }
-        }
+        
     }
 
     @Override
@@ -173,7 +182,6 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
 
     @Override
     public boolean bucketExists(String bucketName) {
-
         boolean found = false;
         try {
         	
@@ -189,7 +197,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
     
     @Override
     public  TemporaryKey createTemporaryKey() {
-    	
+ 
 		return ionosApi.createTemporaryKey(token);
     	
     }
