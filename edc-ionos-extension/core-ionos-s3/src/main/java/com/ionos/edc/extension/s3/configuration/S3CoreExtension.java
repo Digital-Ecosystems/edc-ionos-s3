@@ -61,13 +61,14 @@ public class S3CoreExtension implements ServiceExtension {
         var secretKey = vault.resolveSecret(IONOS_SECRET_KEY);
         var endPoint = vault.resolveSecret(IONOS_ENDPOINT);
         var token =  vault.resolveSecret(IONOS_TOKEN);
-        if(accessKey == null || secretKey  == null || endPoint ==null) {    	
+        if(accessKey == null || secretKey  == null || endPoint ==null) {
+              monitor.warning("Couldn't connect or the vault didn't return values, falling back to ConfigMap Configuration");
         	  accessKey = context.getSetting(IONOS_ACCESS_KEY, IONOS_ACCESS_KEY);
               secretKey = context.getSetting(IONOS_SECRET_KEY, IONOS_SECRET_KEY);
               endPoint = context.getSetting(IONOS_ENDPOINT, IONOS_ENDPOINT);
               token = context.getSetting(IONOS_TOKEN, IONOS_TOKEN);
         }
-		
+        
         var s3Api = new S3ConnectorApiImpl(endPoint, accessKey, secretKey, token);
         context.registerService(S3ConnectorApi.class, s3Api);
 

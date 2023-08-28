@@ -37,7 +37,7 @@ class IonosDataSource implements DataSource {
 
     @Override
     public StreamResult<Stream<Part>> openPartStream() {
-        return success(Stream.of(new S3Part(s3Api, keyName, bucketName, blobName)));
+        return success(Stream.of(new S3Part(s3Api, keyName, bucketName, keyName)));
     }
 
     private static class S3Part implements Part {
@@ -100,7 +100,6 @@ class IonosDataSource implements DataSource {
         }
 
         public Builder blobName(String blobName) {
-            // TODO Auto-generated method stub
             source.blobName = blobName;
             return this;
         }

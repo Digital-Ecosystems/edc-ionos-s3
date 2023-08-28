@@ -280,7 +280,7 @@ Accessing the bucket on the IONOS S3, you will see the `device1-data.csv` file.
 8) Deprovisioning 
 
 ```
-curl -X POST -H 'X-Api-Key: password' "http://localhost:9192/management/v2/transferprocess/{<ID>}/deprovision"
+curl -X POST -H 'X-Api-Key: password' "http://localhost:9192/management/v2/transferprocesses/{<ID>}/deprovision"
 ```
 
 Note: this will delete the IONOS S3 token from IONOS Cloud.

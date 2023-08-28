@@ -33,9 +33,6 @@ import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ExecutorService;
-
-import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.ACCESS_KEY_ID;
-import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.SECRET_ACCESS_KEY;
 public class IonosDataSinkFactory implements DataSinkFactory {
 
     private static final int CHUNK_SIZE_IN_BYTES = 1024 * 1024 * 500; // 500MB chunk size
@@ -61,25 +58,32 @@ public class IonosDataSinkFactory implements DataSinkFactory {
 
     @Override
     public boolean canHandle(DataFlowRequest request) {
-        return true;
+        return IonosBucketSchema.TYPE.equals(request.getDestinationDataAddress().getType());
     }
 
     @Override
-    public @NotNull Result<Boolean> validate(DataFlowRequest request) {
+    public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
+    var destination = request.getDestinationDataAddress();
+
+
+        return validation.apply(destination).map(it -> null);
+    }
+    @Override
+    public  @NotNull Result<Boolean> validate(DataFlowRequest request) {
+
         var destination = request.getDestinationDataAddress();
-        return validation.apply(destination).map(it -> true);
+
+        return  validation.apply(destination).map(it -> true);
     }
 
     @Override
     public DataSink createSink(DataFlowRequest request) {
-        var validationResult = validate(request);
+        var validationResult = validateRequest(request);
         if (validationResult.failed()) {
-            throw new EdcException(String.join(", ", validationResult.getFailureMessages()));
-        }
-        var destination = request.getDestinationDataAddress();
-       
-        var secret = vault.resolveSecret(destination.getKeyName());
-        
+         throw new EdcException(String.join(", ", validationResult.getFailureMessages()));
+         }
+        var destination = request.getDestinationDataAddress();;
+        var secret = vault.resolveSecret(destination.getProperty(IonosBucketSchema.BUCKET_NAME));
         S3ConnectorApi s3ApiTemp;
         if (secret != null) {
             var Token = typeManager.readValue(secret, IonosToken.class);
