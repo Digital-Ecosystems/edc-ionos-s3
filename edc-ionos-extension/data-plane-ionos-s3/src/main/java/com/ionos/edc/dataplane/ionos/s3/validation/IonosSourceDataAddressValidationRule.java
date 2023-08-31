@@ -21,14 +21,13 @@ import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 
 import java.util.List;
-import java.util.Map;
 
 import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.BLOB_NAME;
 import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.BUCKET_NAME;
 
 public class IonosSourceDataAddressValidationRule implements ValidationRule<DataAddress> {
 
-    private final CompositeValidationRule<Map<String, String>> mandatoryPropertyValidationRule  = new CompositeValidationRule<>(
+    private final CompositeValidationRule<DataAddress> mandatoryPropertyValidationRule  = new CompositeValidationRule<>(
             List.of(
                     new EmptyValueValidationRule(BLOB_NAME),
                     new EmptyValueValidationRule(BUCKET_NAME)
@@ -37,6 +36,6 @@ public class IonosSourceDataAddressValidationRule implements ValidationRule<Data
 
     @Override
     public Result<Void> apply(DataAddress dataAddress) {
-        return mandatoryPropertyValidationRule.apply(dataAddress.getProperties());
+        return mandatoryPropertyValidationRule.apply(dataAddress);
     }
 }

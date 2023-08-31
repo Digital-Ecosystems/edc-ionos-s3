@@ -40,7 +40,7 @@ public class IonosS3StatusChecker implements StatusChecker {
         
         if (resources.isEmpty()) {
             var destination = transferProcess.getDataRequest().getDataDestination();
-            var bucketName = destination.getProperty(IonosBucketSchema.BUCKET_NAME);
+            var bucketName = destination.getStringProperty(IonosBucketSchema.BUCKET_NAME);
             return checkBucket(bucketName);
         } else {
 
@@ -56,13 +56,8 @@ public class IonosS3StatusChecker implements StatusChecker {
                         transferProcess.getId()));
 
     }
-
     private boolean checkBucket(String bucketName) {
-        if (!s3Api.bucketExists(bucketName)) {
-            return false;
-        }
-        return true;
-
+        return s3Api.bucketExists(bucketName);
     }
 
 }

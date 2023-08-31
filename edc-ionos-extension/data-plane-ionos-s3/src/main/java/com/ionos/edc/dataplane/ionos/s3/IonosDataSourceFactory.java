@@ -21,7 +21,6 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSourceFactory;
 import org.eclipse.edc.connector.dataplane.util.validation.ValidationRule;
 import org.eclipse.edc.spi.EdcException;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -29,7 +28,7 @@ import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.jetbrains.annotations.NotNull;
 
 public class IonosDataSourceFactory implements DataSourceFactory {
-    private S3ConnectorApi s3Api;
+    private final S3ConnectorApi s3Api;
    
     private final TypeManager typeManager;
     
@@ -46,21 +45,21 @@ public class IonosDataSourceFactory implements DataSourceFactory {
     }
 
     @Override
-    public @NotNull Result<Boolean> validate(DataFlowRequest request) {
+    public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
         var source = request.getSourceDataAddress();
-        return validation.apply(source).map(it -> true);
+        return validation.apply(source);
     }
 
     @Override
     public DataSource createSource(DataFlowRequest request) {
-        var validationResult = validate(request);
+        var validationResult = validateRequest(request);
         if (validationResult.failed()) {
             throw new EdcException(String.join(", ", validationResult.getFailureMessages()));
         }
         
         var source = request.getSourceDataAddress();
        
-        return IonosDataSource.Builder.newInstance().client(s3Api).bucketName(source.getProperty(IonosBucketSchema.BUCKET_NAME)).blobName(source.getProperty(IonosBucketSchema.BLOB_NAME))
+        return IonosDataSource.Builder.newInstance().client(s3Api).bucketName(source.getStringProperty(IonosBucketSchema.BUCKET_NAME)).blobName(source.getStringProperty(IonosBucketSchema.BLOB_NAME))
                 .keyName(source.getKeyName()).build();
     }
 

@@ -30,10 +30,10 @@ public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResour
     private String keyId;
     
     public String getStorage() {
-        return getDataAddress().getProperty(STORAGE_NAME);
+        return getDataAddress().getStringProperty(STORAGE_NAME);
     }
     public String getBucketName() {
-        return getDataAddress().getProperty(BUCKET_NAME);
+        return getDataAddress().getStringProperty(BUCKET_NAME);
     }
     
     
@@ -46,7 +46,7 @@ public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResour
 	}
 	@Override
     public String getResourceName() {
-        return dataAddress.getProperty(BUCKET_NAME);
+        return dataAddress.getStringProperty(BUCKET_NAME);
     }
 
  
