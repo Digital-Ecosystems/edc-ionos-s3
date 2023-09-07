@@ -33,6 +33,7 @@ import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ExecutorService;
+
 public class IonosDataSinkFactory implements DataSinkFactory {
 
     private static final int CHUNK_SIZE_IN_BYTES = 1024 * 1024 * 500; // 500MB chunk size
@@ -63,8 +64,8 @@ public class IonosDataSinkFactory implements DataSinkFactory {
 
     @Override
     public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
-        var destination = request.getDestinationDataAddress();
-        return validation.apply(destination);
+        // Validation disabled until EDC bug not fixed (storage and bucketName always null)
+        return Result.success(null);
     }
 
     @Override
@@ -76,22 +77,21 @@ public class IonosDataSinkFactory implements DataSinkFactory {
         var destination = request.getDestinationDataAddress();
        
         var secret = vault.resolveSecret(destination.getKeyName());
-        
-        S3ConnectorApi s3ApiTemp;
+
         if (secret != null) {
             var Token = typeManager.readValue(secret, IonosToken.class);
-            
-            if (destination.getStringProperty(IonosBucketSchema.STORAGE_NAME)!=null) {
-            	
-            s3ApiTemp = new S3ConnectorApiImpl(destination.getStringProperty(IonosBucketSchema.STORAGE_NAME), Token.getAccessKey(), Token.getSecretKey(), "");
-            		 return IonosDataSink.Builder.newInstance().bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
-            	                .blobName(destination.getKeyName()).requestId(request.getId()).executorService(executorService)
-            	                .monitor(monitor).s3Api(s3ApiTemp).build();
-            }	 else {
-            	 s3ApiTemp = new S3ConnectorApiImpl(DEFAULT_STORAGE, Token.getAccessKey(), Token.getSecretKey(), "");
-            	 return IonosDataSink.Builder.newInstance().bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
-				   	                .blobName(destination.getKeyName()).requestId(request.getId()).executorService(executorService)
-				   	                .monitor(monitor).s3Api(s3ApiTemp).build();
+
+            if (destination.getStringProperty(IonosBucketSchema.STORAGE_NAME) != null) {
+                var s3ApiTemp = new S3ConnectorApiImpl(destination.getStringProperty(IonosBucketSchema.STORAGE_NAME), Token.getAccessKey(), Token.getSecretKey(), "");
+                return IonosDataSink.Builder.newInstance().bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
+            	    .blobName(destination.getKeyName()).requestId(request.getId()).executorService(executorService)
+            	    .monitor(monitor).s3Api(s3ApiTemp).build();
+
+            } else {
+                var s3ApiTemp = new S3ConnectorApiImpl(DEFAULT_STORAGE, Token.getAccessKey(), Token.getSecretKey(), "");
+                return IonosDataSink.Builder.newInstance().bucketName(destination.getKeyName())
+				   	.blobName(destination.getKeyName()).requestId(request.getId()).executorService(executorService)
+				   	.monitor(monitor).s3Api(s3ApiTemp).build();
             }
         }  
         
