@@ -44,7 +44,8 @@ val fraunhoferVersion: String by project
 dependencies {
 
 	implementation("${edcGroup}:control-plane-core:${edcVersion}")
-	
+	implementation("${edcGroup}:control-plane-api-client:${edcVersion}")
+
 	implementation("${edcGroup}:api-observability:${edcVersion}")
 	
 	implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
@@ -73,7 +74,6 @@ dependencies {
 	
 	implementation("${edcGroup}:dsp:${edcVersion}")
 	//file-transfer
-	implementation("${edcGroup}:control-plane-core:${edcVersion}")
 	implementation("${edcGroup}:data-plane-core:${edcVersion}")
 	implementation(project(":edc-ionos-extension:data-plane-ionos-s3"))
 	implementation("${edcGroup}:data-plane-azure-storage:${edcVersion}")
