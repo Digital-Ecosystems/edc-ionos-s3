@@ -36,8 +36,6 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
     private final Monitor monitor;
     private final S3ConnectorApi s3Api;
 
-    private static final String DEFAULT_STORAGE = "s3-eu-central-1.ionoscloud.com";
-
     public IonosS3Provisioner(RetryPolicy<Object> retryPolicy, Monitor monitor, S3ConnectorApi s3Api) {
         this.retryPolicy = retryPolicy;
         this.monitor = monitor;
@@ -59,11 +57,7 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
             org.eclipse.edc.policy.model.Policy policy) {
     	
         String storage = resourceDefinition.getStorage();
-        if (storage == null) {
-            storage = DEFAULT_STORAGE;
-        }
-
-        String bucketName = resourceDefinition.getbucketName();
+        String bucketName = resourceDefinition.getBucketName();
 
         OffsetDateTime expiryTime = OffsetDateTime.now().plusHours(1);
 
@@ -76,9 +70,10 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
         var serviceAccount =s3Api.createTemporaryKey();
 
 
-         var resource = IonosS3ProvisionedResource.Builder.newInstance().id( resourceDefinition.getbucketName())
+         var resource = IonosS3ProvisionedResource.Builder.newInstance().id(resourceDefinition.getBucketName())
                  .storage(storage)
-                 .bucketName(resourceDefinition.getbucketName()).resourceDefinitionId(resourceDefinition.getId())
+                 .bucketName(resourceDefinition.getBucketName())
+                 .resourceDefinitionId(resourceDefinition.getId())
                  .keyId(serviceAccount.getAccessKey())
                  .transferProcessId(resourceDefinition.getTransferProcessId()).resourceName(resourceName).hasToken(true)
                  .build();

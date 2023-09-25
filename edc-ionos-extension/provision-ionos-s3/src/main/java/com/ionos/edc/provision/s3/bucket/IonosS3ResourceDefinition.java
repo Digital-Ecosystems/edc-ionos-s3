@@ -16,7 +16,6 @@ package com.ionos.edc.provision.s3.bucket;
 
 import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
 
-
 public class IonosS3ResourceDefinition extends ResourceDefinition {
     private String storage;
     private String accessKey;
@@ -40,30 +39,23 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
 		return accessKey;
 	}
 
-
-
 	public void setAccessKey(String accessKey) {
 		this.accessKey = accessKey;
 	}
-
-
 
 	public String getSecretKey() {
 		return secretKey;
 	}
 
-
-
 	public void setSecretKey(String secretKey) {
 		this.secretKey = secretKey;
 	}
 
-
-	public String getbucketName() {
+	public String getBucketName() {
         return bucketName;
     }
 
-    public void setbucketName(String bucketName) {
+    public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
 
@@ -101,14 +93,10 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
             resourceDefinition.bucketName = bucketName;
             return this;
         }
-        
-        
 
         @Override
         protected void verify() {
             super.verify();
-
         }
     }
-
 }
