@@ -44,6 +44,7 @@ val fraunhoferVersion: String by project
 dependencies {
 
 	implementation("${edcGroup}:control-plane-core:${edcVersion}")
+	implementation("${edcGroup}:control-plane-api:${edcVersion}")
 	implementation("${edcGroup}:control-plane-api-client:${edcVersion}")
 
 	implementation("${edcGroup}:api-observability:${edcVersion}")

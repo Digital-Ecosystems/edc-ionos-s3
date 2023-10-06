@@ -21,7 +21,7 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
     private String accessKey;
     private String secretKey;
     private String bucketName;
-
+    private String blobName;
 
     public IonosS3ResourceDefinition() {
         super();
@@ -59,6 +59,14 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
         this.bucketName = bucketName;
     }
 
+    public String getBlobName() {
+        return blobName;
+    }
+
+    public void setBlobName(String blobName) {
+        this.blobName = blobName;
+    }
+
     @Override
     public Builder toBuilder() {
         return initializeBuilder(new Builder()).storage(storage).accessKey(accessKey).secretKey(secretKey).bucketName(bucketName);
@@ -91,6 +99,11 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
         
         public Builder bucketName(String bucketName) {
             resourceDefinition.bucketName = bucketName;
+            return this;
+        }
+
+        public Builder blobName(String blobName) {
+            resourceDefinition.blobName = blobName;
             return this;
         }
 

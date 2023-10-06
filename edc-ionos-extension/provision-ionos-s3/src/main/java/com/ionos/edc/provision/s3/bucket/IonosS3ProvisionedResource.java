@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
 import org.eclipse.edc.connector.transfer.spi.types.ProvisionedDataDestinationResource;
 
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.BLOB_NAME;
 import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.BUCKET_NAME;
 import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.STORAGE_NAME;
 
@@ -35,20 +36,17 @@ public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResour
     public String getBucketName() {
         return getDataAddress().getStringProperty(BUCKET_NAME);
     }
-    
-    
- 
+    public String getBlobName() {
+        return getDataAddress().getStringProperty(BLOB_NAME);
+    }
+
     public String getKeyId() {
 		return keyId;
-	}
-	public void setKeyId(String keyId) {
-		this.keyId = keyId;
 	}
 	@Override
     public String getResourceName() {
         return dataAddress.getStringProperty(BUCKET_NAME);
     }
-
  
     private IonosS3ProvisionedResource() {
     }
@@ -74,6 +72,11 @@ public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResour
         public Builder bucketName(String bucketName) {
             dataAddressBuilder.property(BUCKET_NAME, bucketName);
             dataAddressBuilder.keyName(bucketName + "-key");
+            return this;
+        }
+
+        public Builder blobName(String blobName) {
+            dataAddressBuilder.property(BLOB_NAME, blobName);
             return this;
         }
 

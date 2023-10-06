@@ -73,6 +73,7 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
          var resource = IonosS3ProvisionedResource.Builder.newInstance().id(resourceDefinition.getBucketName())
                  .storage(storage)
                  .bucketName(resourceDefinition.getBucketName())
+                 .blobName(resourceDefinition.getBlobName())
                  .resourceDefinitionId(resourceDefinition.getId())
                  .keyId(serviceAccount.getAccessKey())
                  .transferProcessId(resourceDefinition.getTransferProcessId()).resourceName(resourceName).hasToken(true)

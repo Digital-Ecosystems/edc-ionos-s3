@@ -64,8 +64,8 @@ public class IonosDataSinkFactory implements DataSinkFactory {
 
     @Override
     public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
-        // Validation disabled until EDC bug not fixed (storage and bucketName always null)
-        return Result.success(null);
+        var destination = request.getDestinationDataAddress();
+        return validation.apply(destination);
     }
 
     @Override
@@ -83,15 +83,23 @@ public class IonosDataSinkFactory implements DataSinkFactory {
 
             if (destination.getStringProperty(IonosBucketSchema.STORAGE_NAME) != null) {
                 var s3ApiTemp = new S3ConnectorApiImpl(destination.getStringProperty(IonosBucketSchema.STORAGE_NAME), Token.getAccessKey(), Token.getSecretKey(), "");
-                return IonosDataSink.Builder.newInstance().bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
-            	    .blobName(destination.getKeyName()).requestId(request.getId()).executorService(executorService)
-            	    .monitor(monitor).s3Api(s3ApiTemp).build();
-
+                return IonosDataSink.Builder.newInstance()
+                            .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
+            	            .blobName(destination.getKeyName())
+                            .requestId(request.getId())
+                            .executorService(executorService)
+            	            .monitor(monitor).s3Api(s3ApiTemp)
+                        .build();
             } else {
                 var s3ApiTemp = new S3ConnectorApiImpl(DEFAULT_STORAGE, Token.getAccessKey(), Token.getSecretKey(), "");
-                return IonosDataSink.Builder.newInstance().bucketName(destination.getKeyName())
-				   	.blobName(destination.getKeyName()).requestId(request.getId()).executorService(executorService)
-				   	.monitor(monitor).s3Api(s3ApiTemp).build();
+                return IonosDataSink.Builder.newInstance()
+                        .bucketName(destination.getKeyName())
+				   	    .blobName(destination.getKeyName())
+                        .requestId(request.getId())
+                        .executorService(executorService)
+				   	    .monitor(monitor)
+                        .s3Api(s3ApiTemp)
+                    .build();
             }
         }  
         
