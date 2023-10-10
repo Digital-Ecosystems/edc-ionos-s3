@@ -45,8 +45,14 @@ spec:
             - name: management
               containerPort: {{ .Values.service.managementPort }}
               protocol: TCP
-            - name: ids
-              containerPort: {{ .Values.service.idsPort }}
+            - name: protocol
+              containerPort: {{ .Values.service.protocolPort }}
+              protocol: TCP
+            - name: public
+              containerPort: {{ .Values.service.publicPort }}
+              protocol: TCP
+            - name: control
+              containerPort: {{ .Values.service.controlPort }}
               protocol: TCP
           livenessProbe:
             httpGet:

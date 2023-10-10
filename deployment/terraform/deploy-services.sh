@@ -40,7 +40,7 @@ cd ../ionos-s3-deploy
 terraform init
 terraform apply -auto-approve
 
-# Configure webhook address
-cd ../configure-ionos-s3-webhook-address
+# Configure public address
+cd ../configure-public-address
 terraform init
 terraform apply -auto-approve

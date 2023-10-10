@@ -228,4 +228,12 @@ You will have an answer like the following:
 	}
 }
 ```
+
 After executing all the steps, we can now check the `company2` bucket of our IONOS S3 to see if the file has been correctly transfered.
+
+
+Deprovisioning 
+
+```
+curl -X POST -H 'X-Api-Key: password' "http://localhost:9192/management/v2/transferprocesses/{<ID>}/deprovision"
+```

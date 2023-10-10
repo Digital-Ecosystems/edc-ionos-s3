@@ -39,14 +39,13 @@ public class IonosDataSink extends ParallelSink {
     @Override
     protected StreamResult<Void> transferParts(List<DataSource.Part> parts) {
         for (DataSource.Part part : parts) {
-
             String blobName;
             if (part.name() != null) {
                 blobName = part.name();
             } else {
                 blobName = this.blobName;
             }
-        
+
             try (var input = part.openStream()) {
                 s3Api.uploadParts(bucketName, blobName, new ByteArrayInputStream(input.readAllBytes()));
             } catch (Exception e) {
@@ -99,7 +98,6 @@ public class IonosDataSink extends ParallelSink {
         }
 
         @Override
-        protected void validate() {
-        }
+        protected void validate() {}
     }
 }

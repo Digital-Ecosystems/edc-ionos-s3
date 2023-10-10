@@ -59,7 +59,7 @@ public class IonosDataSinkFactory implements DataSinkFactory {
 
     @Override
     public boolean canHandle(DataFlowRequest request) {
-        return true;
+        return IonosBucketSchema.TYPE.equals(request.getDestinationDataAddress().getType());
     }
 
     @Override

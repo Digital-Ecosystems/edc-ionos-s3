@@ -57,7 +57,7 @@ dependencies {
 
     implementation("${edcGroup}:management-api:${edcVersion}")
 		
-	implementation("$edcGroup:vault-azure:$edcVersion")
+	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
 
 	implementation("de.fraunhofer.iais.eis.ids.infomodel:java:${fraunhoferVersion}")
 	
@@ -77,7 +77,6 @@ dependencies {
 	//file-transfer
 	implementation("${edcGroup}:data-plane-core:${edcVersion}")
 	implementation(project(":edc-ionos-extension:data-plane-ionos-s3"))
-	implementation("${edcGroup}:data-plane-azure-storage:${edcVersion}")
     implementation("${edcGroup}:data-plane-client:${edcVersion}")
     implementation("${edcGroup}:data-plane-selector-client:${edcVersion}")
     implementation("${edcGroup}:data-plane-selector-core:${edcVersion}")

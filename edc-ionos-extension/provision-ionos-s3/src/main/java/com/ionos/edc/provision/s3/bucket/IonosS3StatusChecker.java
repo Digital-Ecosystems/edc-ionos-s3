@@ -39,6 +39,7 @@ public class IonosS3StatusChecker implements StatusChecker {
     public boolean isComplete(TransferProcess transferProcess, List<ProvisionedResource> resources) {
         
         if (resources.isEmpty()) {
+           
             var destination = transferProcess.getDataRequest().getDataDestination();
             var bucketName = destination.getStringProperty(IonosBucketSchema.BUCKET_NAME);
             return checkBucket(bucketName);
@@ -47,6 +48,7 @@ public class IonosS3StatusChecker implements StatusChecker {
             for (var resource : resources) {
                 var provisionedResource = (IonosS3ProvisionedResource) resource;
                 var bucketName = provisionedResource.getBucketName();
+
                 return checkBucket(bucketName);
             }
 

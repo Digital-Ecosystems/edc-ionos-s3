@@ -23,11 +23,13 @@ import org.eclipse.edc.spi.types.domain.DataAddress;
 import java.util.List;
 
 import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.BUCKET_NAME;
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.STORAGE_NAME;
 
 public class IonosSinkDataAddressValidationRule implements ValidationRule<DataAddress> {
     private final CompositeValidationRule<DataAddress> mandatoryPropertyValidationRule = new CompositeValidationRule<>(
             List.of(
-                    new EmptyValueValidationRule(BUCKET_NAME)
+                    new EmptyValueValidationRule(BUCKET_NAME),
+                    new EmptyValueValidationRule(STORAGE_NAME)
             )
     );
 

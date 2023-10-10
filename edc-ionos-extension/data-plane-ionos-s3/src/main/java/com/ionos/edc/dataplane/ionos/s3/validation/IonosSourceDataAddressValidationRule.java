@@ -29,7 +29,7 @@ public class IonosSourceDataAddressValidationRule implements ValidationRule<Data
 
     private final CompositeValidationRule<DataAddress> mandatoryPropertyValidationRule  = new CompositeValidationRule<>(
             List.of(
-                    new EmptyValueValidationRule(BLOB_NAME),
+
                     new EmptyValueValidationRule(BUCKET_NAME)
             )
     );
