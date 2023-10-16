@@ -56,7 +56,7 @@
          try {
              var dataAddress = DataAddress.Builder.newInstance().type("IonosS3")
                      .property(IonosBucketSchema.STORAGE_NAME, "s3-eu-central-1.ionoscloud.com")
-                     .property(IonosBucketSchema.BUCKET_NAME, "glaucio.jannotti.s3.provider")
+                     .property(IonosBucketSchema.BUCKET_NAME, "company1")
                      .property(IonosBucketSchema.BLOB_NAME, "device1-data.csv")
                      .keyName("device1-data.csv").build();
              var asset = Asset.Builder.newInstance().id("1").dataAddress(dataAddress).build();
