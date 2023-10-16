@@ -38,14 +38,13 @@ val rsApi: String by project
 val metaModelVersion: String by project
 val fraunhoferVersion: String by project
 
-
-
-
 dependencies {
 	implementation("${edcGroup}:boot:${edcVersion}")
-	
+
     implementation("${edcGroup}:control-plane-core:${edcVersion}")
-	
+	implementation("${edcGroup}:control-plane-api:${edcVersion}")
+	implementation("${edcGroup}:control-plane-api-client:${edcVersion}")
+
 	implementation("${edcGroup}:api-observability:${edcVersion}")
 	
 	implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
@@ -80,11 +79,8 @@ dependencies {
 	implementation(project(":edc-ionos-extension:data-plane-ionos-s3"))
  
 	testImplementation ("${edcGroup}:junit:${edcVersion}")	
-	
-	
-	
-	implementation("de.fraunhofer.iais.eis.ids.infomodel:java:${fraunhoferVersion}")
 
+	implementation("de.fraunhofer.iais.eis.ids.infomodel:java:${fraunhoferVersion}")
 }
 
 repositories {
