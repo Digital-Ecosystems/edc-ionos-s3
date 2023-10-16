@@ -14,6 +14,7 @@
 
  package org.eclipse.edc.sample.extension.transfer;
 
+ import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
  import org.eclipse.edc.connector.contract.spi.offer.store.ContractDefinitionStore;
  import org.eclipse.edc.connector.contract.spi.types.offer.ContractDefinition;
  import org.eclipse.edc.connector.policy.spi.PolicyDefinition;
@@ -53,16 +54,14 @@
  
      public void registerDataEntries() {
          try {
-             var asset = Asset.Builder.newInstance().id("1").build();
              var dataAddress = DataAddress.Builder.newInstance().type("IonosS3")
-                     .property("storage", "s3-eu-central-1.ionoscloud.com")
-                     .property("bucketName", "company1")
-                     .property("container", "company1")
-                     .property("blobName", "device1-data.csv")
+                     .property(IonosBucketSchema.STORAGE_NAME, "s3-eu-central-1.ionoscloud.com")
+                     .property(IonosBucketSchema.BUCKET_NAME, "glaucio.jannotti.s3.provider")
+                     .property(IonosBucketSchema.BLOB_NAME, "device1-data.csv")
                      .keyName("device1-data.csv").build();
- 
-             
-             assetIndex.create(asset, dataAddress);
+             var asset = Asset.Builder.newInstance().id("1").dataAddress(dataAddress).build();
+
+             assetIndex.create(asset);
          } catch (Exception e) {
              // TODO: handle exception
              System.out.println(e);

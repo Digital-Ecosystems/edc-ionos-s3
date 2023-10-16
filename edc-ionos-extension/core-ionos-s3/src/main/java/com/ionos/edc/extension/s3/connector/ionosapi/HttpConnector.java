@@ -4,11 +4,11 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.eclipse.edc.spi.EdcException;
 
 
 public class HttpConnector {
@@ -26,28 +26,27 @@ public class HttpConnector {
 		
 	public TemporaryKey createTemporaryKey(String token) {
 		 String url = basicUrl + retrieveUserID(token) + "/s3keys";
-		
-		
+
 		Request request = new Request.Builder()
-				   .url(url)
-				   //This adds the token to the header.
-				   .addHeader("Authorization", "Bearer " + token)
-				   .post(RequestBody.create(null, new byte[0]))
-				   .build();
-				    try (Response response = client.newCall(request).execute()) {
-				         if (!response.isSuccessful()){
-				            throw new IOException("Unexpected code " + response);
-				         }
+			   .url(url)
+			   //This adds the token to the header.
+			   .addHeader("Authorization", "Bearer " + token)
+			   .post(RequestBody.create(null, new byte[0]))
+			   .build();
 
+		try (Response response = client.newCall(request).execute()) {
+			 if (!response.isSuccessful()){
+				throw new IOException("Unexpected code " + response);
+			 }
 
-					        ObjectMapper objectMapper = new ObjectMapper();
-					        S3Key resp = objectMapper.readValue(response.body().string(), S3Key.class);					        
-					        TemporaryKey temp = new TemporaryKey(resp.getId().toString(),resp.getProperties().get("secretKey").toString());
-					        return temp;
-				    } catch (IOException e) {
-						e.printStackTrace();
-						return new TemporaryKey("", "");
-					}				    
+			ObjectMapper objectMapper = new ObjectMapper();
+			S3Key resp = objectMapper.readValue(response.body().string(), S3Key.class);
+			TemporaryKey temp = new TemporaryKey(resp.getId().toString(),resp.getProperties().get("secretKey").toString());
+			return temp;
+
+		} catch (IOException e) {
+			throw new EdcException("Error getting S3 temporary key", e);
+		}
 	}
 	
 	public void deleteTemporaryAccount(String token, String keyID)  {
