@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  provider:
+      image: edc-ionos-provider:latest
+      build:
+        context: ./
+      ports:
+        - "19191:19191"
+        - "19192:19192"            
+        - "19193:19193"        
+        - "19194:19194"
+        - "19195:19195"     
+        - "19291:19291"    
+      environment:
+        EDC_FS_CONFIG: ./provider-configuration.properties

@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  edc-backend:
+      image: edc-ionos-backend:latest
+      build:
+        context: ./
+      ports:
+        - "4000:4000"
+ 
