@@ -24,14 +24,10 @@ repositories {
     maven {// while runtime-metamodel dependency is still a snapshot
 		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
     }
-	  maven {
-        url = uri("https://maven.iais.fraunhofer.de/artifactory/eis-ids-public/")
-    }
 }
 
 val edcGroup: String by project
 val edcVersion: String by project
-val fraunhoferVersion: String by project
 
 dependencies {
     implementation("${edcGroup}:control-plane-core:${edcVersion}")
@@ -53,8 +49,6 @@ dependencies {
     implementation("${edcGroup}:data-plane-api:${edcVersion}")
     implementation("${edcGroup}:data-plane-core:${edcVersion}")
     implementation("${edcGroup}:data-plane-http:${edcVersion}")
-
-
 }
 
 application {

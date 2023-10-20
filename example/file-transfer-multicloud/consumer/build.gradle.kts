@@ -25,10 +25,8 @@ repositories {
     maven {// while runtime-metamodel dependency is still a snapshot
 		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
     }
-	  maven {
-        url = uri("https://maven.iais.fraunhofer.de/artifactory/eis-ids-public/")
-    }
 }
+
 val javaVersion: String by project
 val edcGroup: String by project
 val edcVersion: String by project
@@ -36,35 +34,29 @@ val okHttpVersion: String by project
 val rsApi: String by project
 val metaModelVersion: String by project
 
-
 dependencies {
-
 	implementation("${edcGroup}:control-plane-core:${edcVersion}")
 
 	implementation("${edcGroup}:api-observability:${edcVersion}")
-	  implementation("${edcGroup}:data-plane-client:${edcVersion}")
+	implementation("${edcGroup}:data-plane-client:${edcVersion}")
     implementation("${edcGroup}:data-plane-selector-client:${edcVersion}")
     implementation("${edcGroup}:data-plane-selector-core:${edcVersion}")
-	 implementation("${edcGroup}:data-plane-selector-api:${edcVersion}")
+	implementation("${edcGroup}:data-plane-selector-api:${edcVersion}")
 	implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
 
 	implementation("${edcGroup}:http:${edcVersion}")
-	
-	implementation("${edcGroup}:dsp:${edcVersion}")
-	
-	implementation("${edcGroup}:auth-tokenbased:${edcVersion}")	
-	
-	
-	implementation("${edcGroup}:management-api:${edcVersion}")
-	
-	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
-	
-	implementation(project(":edc-ionos-extension:provision-ionos-s3"))
-			
-	implementation("${edcGroup}:iam-mock:${edcVersion}")
-	
-	
 
+	implementation("${edcGroup}:dsp:${edcVersion}")
+
+	implementation("${edcGroup}:auth-tokenbased:${edcVersion}")	
+
+	implementation("${edcGroup}:management-api:${edcVersion}")
+
+	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
+
+	implementation(project(":edc-ionos-extension:provision-ionos-s3"))
+
+	implementation("${edcGroup}:iam-mock:${edcVersion}")
 }
 
 application {

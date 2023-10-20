@@ -25,12 +25,7 @@ repositories {
     maven {// while runtime-metamodel dependency is still a snapshot
 		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
     }
-
-	  maven {
-        url = uri("https://maven.iais.fraunhofer.de/artifactory/eis-ids-public/")
-    }
-	
-	  gradlePluginPortal()
+    gradlePluginPortal()
 }
 val javaVersion: String by project
 val faaastVersion: String by project
@@ -39,10 +34,8 @@ val edcVersion: String by project
 val okHttpVersion: String by project
 val rsApi: String by project
 val metaModelVersion: String by project
-val fraunhoferVersion: String by project
 
 dependencies {
-
 	implementation("${edcGroup}:control-plane-core:${edcVersion}")
 	implementation("${edcGroup}:control-plane-api:${edcVersion}")
 	implementation("${edcGroup}:control-plane-api-client:${edcVersion}")
@@ -59,20 +52,18 @@ dependencies {
 		
 	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
 
-	implementation("de.fraunhofer.iais.eis.ids.infomodel:java:${fraunhoferVersion}")
-	
 	//implementation("$edcGroup:ids:+")
-		
+
 	implementation("${edcGroup}:iam-mock:${edcVersion}")
-	
+
     //implementation(project(":example:file-transfer-multicloud:transfer-file"))
-	
+
 	//adjust
    // implementation("${edcGroup}:data-plane-selector-api:${edcVersion}")
 
     //implementation("${edcGroup}:data-plane-api:${edcVersion}")
     //implementation("${edcGroup}:data-plane-http:${edcVersion}")
-	
+
 	implementation("${edcGroup}:dsp:${edcVersion}")
 	//file-transfer
 	implementation("${edcGroup}:data-plane-core:${edcVersion}")
@@ -81,7 +72,7 @@ dependencies {
     implementation("${edcGroup}:data-plane-selector-client:${edcVersion}")
     implementation("${edcGroup}:data-plane-selector-core:${edcVersion}")
     implementation("${edcGroup}:transfer-data-plane:${edcVersion}")
-	
+
 	//implementation("${edcGroup}:contract-spi:${edcVersion}")	
 	//implementation("${edcGroup}:policy-model:${edcVersion}")		
 	//implementation("${edcGroup}:policy-spi:${edcVersion}")	
