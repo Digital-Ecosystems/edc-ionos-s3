@@ -53,25 +53,20 @@
      }
  
      public void registerDataEntries() {
-         try {
-             var dataAddress = DataAddress.Builder.newInstance().type("IonosS3")
-                     .property(IonosBucketSchema.STORAGE_NAME, "s3-eu-central-1.ionoscloud.com")
-                     .property(IonosBucketSchema.BUCKET_NAME, "company1")
-                     .property(IonosBucketSchema.BLOB_NAME, "device1-data.csv")
-                     .keyName("device1-data.csv").build();
-             var asset = Asset.Builder.newInstance().id("1").dataAddress(dataAddress).build();
+         var dataAddress = DataAddress.Builder.newInstance().type(IonosBucketSchema.TYPE)
+                 .property(IonosBucketSchema.STORAGE_NAME, "s3-eu-central-1.ionoscloud.com")
+                 .property(IonosBucketSchema.BUCKET_NAME, "company1")
+                 .property(IonosBucketSchema.BLOB_NAME, "device1-data.csv")
+                 .keyName("device1-data.csv").build();
+         var asset = Asset.Builder.newInstance().id("1").dataAddress(dataAddress).build();
 
-             assetIndex.create(asset);
-         } catch (Exception e) {
-             // TODO: handle exception
-             System.out.println(e);
-         }
+         assetIndex.create(asset);
      }
  
      public void registerContractDefinition(String policyId) {
-         var contractDefinition1 = ContractDefinition.Builder.newInstance().id("1").accessPolicyId(policyId)
+         var contractDefinition1 = ContractDefinition.Builder.newInstance().id("contract-1").accessPolicyId(policyId)
                  .contractPolicyId(policyId)
-                 .assetsSelectorCriterion(criterion(Asset.PROPERTY_ID, "=", "1"))
+                 .assetsSelectorCriterion(criterion(Asset.PROPERTY_ID, "=", "asset-1"))
                  .build();
  
          contractDefinitionStore.save(contractDefinition1);
@@ -82,6 +77,7 @@
                  .build();
  
          return PolicyDefinition.Builder.newInstance()
+                 .id("policy-1")
                  .policy(Policy.Builder.newInstance().permission(usePermission).build()).build();
      }
  }

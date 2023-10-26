@@ -17,6 +17,7 @@ You will need the following:
 - Docker;
 - GIT;
 - Linux shell or PowerShell;
+- [JQ Tool](https://jqlang.github.io/jq/);
 
 ## Deployment
 
@@ -85,202 +86,250 @@ We will have to call some URL's in order to transfer the file:
 
 1) Asset creation for the consumer
 ```console
-curl -d '{
-			"@context": {
-             "edc": "https://w3id.org/edc/v0.0.1/ns/"
-           },
-           "asset": {
-             "@id": "assetId",
-			 "properties": {
-              
-               "name": "product description",
-               "contenttype": "application/json"
-             }
-           },
-           "dataAddress": {
-             "properties": {
-			 "type": "AzureStorage",
-				"account": "edcionosstorage",
-				"container": "src-container",
-				"blobname": "device1-data.csv",
-				"keyName" : "<storage-account-name>-key1"
-            }
-           }
-         }'  -H 'X-API-Key: password' \
-		 -H 'content-type: application/json' http://localhost:8182/management/v2/assets
+curl --request POST --location 'http://localhost:8182/management/v2/assets' \
+--header 'X-API-Key: password' --header 'Content-Type: application/json' \
+--data-raw '{
+   "@context":{
+      "edc":"https://w3id.org/edc/v0.0.1/ns/"
+   },
+   "asset":{
+      "@id":"asset-1",
+      "properties":{
+         "name":"product 1",
+         "contenttype":"application/json"
+      }
+   },
+   "dataAddress":{
+      "type": "AzureStorage",
+      "account": "<storage-account-name>",
+      "container": "src-container",
+      "blobname": "device1-data.csv",
+      "keyName" : "<storage-account-name>-key1"
+   }
+}' | jq
 ```
 Note: for the `account` and `keyName` fields use the output generated from the Terraform script;
 
 2) Policy creation
 ```console
-curl -d '{
-			"@context": {
-				"edc": "https://w3id.org/edc/v0.0.1/ns/",
-				"odrl": "http://www.w3.org/ns/odrl/2/"
-			},
-           "@id": "aPolicy",
-           "policy": {
-             "@type": "set",
-             "odrl:permission": [],
-             "odrl:prohibition": [],
-             "odrl:obligation": []
-           }
-         }' -H 'X-API-Key: password' \
-		 -H 'content-type: application/json' http://localhost:8182/management/v2/policydefinitions
+curl --request POST --location 'http://localhost:8182/management/v2/policydefinitions' \
+--header 'X-API-Key: password' --header 'Content-Type: application/json' \
+--data-raw '{
+   "@context":{
+      "edc":"https://w3id.org/edc/v0.0.1/ns/",
+      "odrl":"http://www.w3.org/ns/odrl/2/"
+   },
+   "@id":"policy-1",
+   "policy":{
+      "@type":"set",
+      "odrl:permission":[],
+      "odrl:prohibition":[],
+      "odrl:obligation":[]
+   }
+}' | jq
 ```
 
 3) Contract creation
 ```console
-curl -d '{
-           "@context": {
-             "edc": "https://w3id.org/edc/v0.0.1/ns/"
-           },
-           "@id": "1",
-           "accessPolicyId": "aPolicy",
-           "contractPolicyId": "aPolicy",
-           "assetsSelector": []
-         }' -H 'X-API-Key: password' \
- -H 'content-type: application/json' http://localhost:8182/management/v2/contractdefinitions
+curl --request POST --location 'http://localhost:8182/management/v2/contractdefinitions' \
+--header 'X-API-Key: password' --header 'Content-Type: application/json' \
+--data-raw '{
+   "@context":{
+      "edc":"https://w3id.org/edc/v0.0.1/ns/"
+   },
+   "@id":"contract-1",
+   "accessPolicyId":"policy-1",
+   "contractPolicyId":"policy-1",
+   "assetsSelector":[]
+}' | jq
 ```
 
 4) Fetching the catalog
 ```console
-curl -X POST "http://localhost:9192/management/v2/catalog/request" \
---header 'X-API-Key: password' \
---header 'Content-Type: application/json' \
--d '{
-      "@context": {
-        "edc": "https://w3id.org/edc/v0.0.1/ns/"
-      },
-      "providerUrl": "http://localhost:8282/protocol",
-      "protocol": "dataspace-protocol-http"
-    }'
+curl --request POST --location 'http://localhost:9192/management/v2/catalog/request' \
+--header 'X-API-Key: password' --header 'Content-Type: application/json' \
+--data-raw '{
+   "@context":{
+      "edc":"https://w3id.org/edc/v0.0.1/ns/"
+   },
+   "counterPartyAddress":"http://localhost:8282/protocol",
+   "protocol":"dataspace-protocol-http"
+}' | jq
 ```
+
 You will have an answer like the following:
-```
+```json
 {
-	"@type": "edc:ContractNegotiationDto",
-	"@id": "a88180b3-0d66-41b5-8376-c91d8253afcf",
-	"edc:type": "CONSUMER",
-	"edc:protocol": "dataspace-protocol-http",
-	"edc:state": "FINALIZED",
-	"edc:counterPartyAddress": "http://localhost:8282/protocol",
-	"edc:callbackAddresses": [],
-	"edc:contractAgreementId": "1:1:5c0a5d3c-69ea-4fb5-9d3d-e33ec280cde9",
-	"@context": {
-		"dct": "https://purl.org/dc/terms/",
-		"edc": "https://w3id.org/edc/v0.0.1/ns/",
-		"dcat": "https://www.w3.org/ns/dcat/",
-		"odrl": "http://www.w3.org/ns/odrl/2/",
-		"dspace": "https://w3id.org/dspace/v0.8/"
-	}
+    "@id": "f1e02a5c-f545-4a34-bb94-8dec852867f6",
+    "@type": "dcat:Catalog",
+    "dcat:dataset": {
+        "@id": "asset-1",
+        "@type": "dcat:Dataset",
+        "odrl:hasPolicy": {
+            "@id": "MQ==:MQ==:ODQ2ZjY0ZDQtYWJjYS00MzM5LWFiMTMtNjM4MzM3MTBmZjg0",
+            "@type": "odrl:Set",
+            "odrl:permission": {
+                "odrl:target": "asset-1",
+                "odrl:action": {
+                    "odrl:type": "USE"
+                }
+            },
+            "odrl:prohibition": [],
+            "odrl:obligation": [],
+            "odrl:target": "asset-1"
+        },
+        "dcat:distribution": [],
+        "edc:id": "asset-1"
+    },
+    "dcat:service": {
+        "@id": "868b5f3b-b7b5-482f-b969-c4b76235ab59",
+        "@type": "dcat:DataService",
+        "dct:terms": "connector",
+        "dct:endpointUrl": "http://localhost:8282/protocol"
+    },
+    "edc:participantId": "provider",
+    "@context": {
+        "dct": "https://purl.org/dc/terms/",
+        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+        "dcat": "https://www.w3.org/ns/dcat/",
+        "odrl": "http://www.w3.org/ns/odrl/2/",
+        "dspace": "https://w3id.org/dspace/v0.8/"
+    }
 }
 ```
 
 5) Contract negotiation
-Copy the `policy{ @id` from the response of the first curl into this curl and execute it.
 
-```
-curl --location --request POST 'http://localhost:9192/management/v2/contractnegotiations' \
---header 'X-API-Key: password' \
---header 'Content-Type: application/json' \
---data-raw '{
-	"@context": {
-    "edc": "https://w3id.org/edc/v0.0.1/ns/",
-    "odrl": "http://www.w3.org/ns/odrl/2/"
-  },
-  "@type": "NegotiationInitiateRequestDto",
-  "connectorId": "provider",
-  "connectorAddress": "http://localhost:8282/protocol",
-  "protocol": "dataspace-protocol-http",
-  "offer": {
-    "offerId": "1:1:a345ad85-c240-4195-b954-13841a6331a1",
-    "assetId": "1",
-    "policy": {"@id":<"REPLACE WHERE">,
-			"@type": "odrl:Set",
-			"odrl:permission": {
-				"odrl:target": "1",
-				"odrl:action": {
-					"odrl:type": "USE"
-				}
-			},
-			"odrl:prohibition": [],
-			"odrl:obligation": [],
-			"odrl:target": "1"}
-  }
-}'
-```
-
-Note: copy the `id` field;
-
-6) Contract agreement
-
-Copy the value of the `id` from the response of the previous curl into this curl and execute it.
+Copy the `odrl:hasPolicy{ @id` from the response of the first curl into this curl and execute it.
 ```console
-curl -X GET "http://localhost:9192/management/v2/contractnegotiations/{<ID>}" \
-	--header 'X-API-Key: password' \
-    --header 'Content-Type: application/json' \
-    -s | jq
+curl --request POST --location 'http://localhost:9192/management/v2/contractnegotiations' \
+--header 'X-API-Key: password' --header 'Content-Type: application/json' \
+--data-raw '{
+   "@context":{
+      "edc":"https://w3id.org/edc/v0.0.1/ns/",
+      "odrl":"http://www.w3.org/ns/odrl/2/"
+   },
+   "@type":"NegotiationInitiateRequestDto",
+   "connectorId":"provider",
+   "connectorAddress":"http://localhost:8282/protocol",
+   "consumerId":"consumer",
+   "providerId":"provider",   
+   "protocol":"dataspace-protocol-http",
+   "offer":{
+      "offerId":"<REPLACE_WHERE>",
+      "assetId":"asset-1",
+      "policy":{
+         "@id":"<REPLACE_WHERE>",
+         "@type":"odrl:Set",
+         "odrl:permission": {
+            "odrl:target": "asset-1",
+            "odrl:action": {
+               "odrl:type": "USE"
+            }
+         },
+         "odrl:prohibition": [],
+         "odrl:obligation": [],
+         "odrl:target": "asset-1"
+      }
+   }
+}' | jq
 ```
+
 You will have an answer like the following:
-```
+```json
 {
-	"@type": "edc:ContractNegotiationDto",
-	"@id": "a88180b3-0d66-41b5-8376-c91d8253afcf",
-	"edc:type": "CONSUMER",
-	"edc:protocol": "dataspace-protocol-http",
-	"edc:state": "FINALIZED",
-	"edc:counterPartyAddress": "http://localhost:8282/protocol",
-	"edc:callbackAddresses": [],
-	"edc:contractAgreementId": "1:1:5c0a5d3c-69ea-4fb5-9d3d-e33ec280cde9",
-	"@context": {
-		"dct": "https://purl.org/dc/terms/",
-		"edc": "https://w3id.org/edc/v0.0.1/ns/",
-		"dcat": "https://www.w3.org/ns/dcat/",
-		"odrl": "http://www.w3.org/ns/odrl/2/",
-		"dspace": "https://w3id.org/dspace/v0.8/"
-	}
+    "@type": "edc:IdResponse",
+    "@id": "74774ea5-2757-4ea8-94cd-c33132bacd52",
+    "edc:createdAt": 1697548933774,
+    "@context": {
+        "dct": "https://purl.org/dc/terms/",
+        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+        "dcat": "https://www.w3.org/ns/dcat/",
+        "odrl": "http://www.w3.org/ns/odrl/2/",
+        "dspace": "https://w3id.org/dspace/v0.8/"
+    }
 }
 ```
 
-Note: copy the `contractAgreementId` field;
+6) Contract agreement
+
+Copy the value of the `@id` from the response of the previous curl into this curl and execute it.
+```console
+curl --request GET --location 'http://localhost:9192/management/v2/contractnegotiations/<REPLACE_WHERE>' --header 'X-API-Key: password' | jq
+```
+
+You will have an answer like the following:
+```json
+{
+    "@type": "edc:ContractNegotiation",
+    "@id": "74774ea5-2757-4ea8-94cd-c33132bacd52",
+    "edc:type": "CONSUMER",
+    "edc:protocol": "dataspace-protocol-http",
+    "edc:state": "FINALIZED",
+    "edc:counterPartyId": "provider",
+    "edc:counterPartyAddress": "http://localhost:8282/protocol",
+    "edc:callbackAddresses": [],
+    "edc:createdAt": 1697548933774,
+    "edc:contractAgreementId": "8f3ab27f-8279-433e-8218-843241302b59",
+    "@context": {
+        "dct": "https://purl.org/dc/terms/",
+        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+        "dcat": "https://www.w3.org/ns/dcat/",
+        "odrl": "http://www.w3.org/ns/odrl/2/",
+        "dspace": "https://w3id.org/dspace/v0.8/"
+    }
+}
+```
 
 7) Transfering the asset
 
-Copy the value of the `contractAgreementId` from the response of the previous curl into this curl and execute it.
+Copy the value of the `edc:contractAgreementId` from the response of the previous curl into this curl and execute it.
 ```console
-curl -X POST "http://localhost:9192/management/v2/transferprocesses" \
-    --header "Content-Type: application/json" \
-	--header 'X-API-Key: password' \
-    --data '{	
-				"@context": {
-					"edc": "https://w3id.org/edc/v0.0.1/ns/"
-					},
-				"@type": "TransferRequestDto",
-                "connectorId": "consumer",
-                "connectorAddress": "http://localhost:8282/protocol",
-				"protocol": "dataspace-protocol-http",
-                "contractId": "<CONTRACT AGREEMENT ID>",
-                "assetId": "1",
-				"dataDestination": { 
-					"type": "IonosS3",
-					"storage":"s3-eu-central-1.ionoscloud.com",
-					"bucketName": "company2",
-					"keyName" : "device1-data.csv"
-				
-				
-				},
-				"managedResources": false
-        }'
-```
-Note: copy the `id` field to do the deprovisioning;
-
-Accessing the bucket on the IONOS S3, you will see the `device1-data.csv` file.
-
-8) Deprovisioning 
-
-```
-curl -X POST -H 'X-Api-Key: password' "http://localhost:9192/management/v2/transferprocesses/{<ID>}/deprovision"
+curl --request POST --location 'http://localhost:9192/management/v2/transferprocesses' \
+--header 'X-API-Key: password' --header 'Content-Type: application/json' \
+--data-raw '{
+   "@context":{
+      "edc":"https://w3id.org/edc/v0.0.1/ns/"
+   },
+   "@type":"TransferRequest",
+   "connectorId":"consumer",
+   "connectorAddress":"http://localhost:8282/protocol",
+   "protocol":"dataspace-protocol-http",
+   "contractId":"<REPLACE_WHERE>",
+   "assetId":"asset-1",
+   "dataDestination":{
+      "type":"IonosS3",
+      "storage":"s3-eu-central-1.ionoscloud.com",
+      "bucketName":"company2",
+      "blobName":"device1-data.csv",
+      "keyName":"device1-data.csv"
+   }
+}' | jq
 ```
 
-Note: this will delete the IONOS S3 token from IONOS Cloud.
+You will have an answer like the following:
+```json
+{
+    "@type": "edc:IdResponse",
+    "@id": "6ac325ba-b869-4306-a3b7-57f1ccd29862",
+    "edc:createdAt": 1697549933752,
+    "@context": {
+        "dct": "https://purl.org/dc/terms/",
+        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+        "dcat": "https://www.w3.org/ns/dcat/",
+        "odrl": "http://www.w3.org/ns/odrl/2/",
+        "dspace": "https://w3id.org/dspace/v0.8/"
+    }
+}
+```
+
+Note: Accessing the bucket on the IONOS S3, you will see the `device1-data.csv` file.
+
+8) Deprovisioning
+ 
+Copy the value of the `@id` from the response of the previous curl into this curl and execute it.
+```console
+curl --request POST --location 'http://localhost:9192/management/v2/transferprocesses/{<REPLACE_WHERE}/deprovision' --header 'X-API-Key: password'
+```
+
+Note: This will delete the IONOS S3 token from IONOS Cloud.
