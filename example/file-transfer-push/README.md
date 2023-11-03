@@ -207,7 +207,7 @@ curl --request POST --location 'http://localhost:9192/management/v2/transferproc
       "storage":"s3-eu-central-1.ionoscloud.com",
       "bucketName":"company2",
       "blobName":"device1-data.csv",
-      "keyName":"device1-data.csv"
+      "keyName":"device1"
    }
 }' | jq
 ```

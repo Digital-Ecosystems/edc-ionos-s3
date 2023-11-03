@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
+import java.util.Objects;
 
 import static java.lang.String.format;
 
@@ -29,8 +30,6 @@ public class IonosDataSink extends ParallelSink {
     private S3ConnectorApi s3Api;
     private String bucketName;
     private String blobName;
-    private String accessKey;
-    private String secretkey;
     
     private IonosDataSink() {
 
@@ -40,10 +39,10 @@ public class IonosDataSink extends ParallelSink {
     protected StreamResult<Void> transferParts(List<DataSource.Part> parts) {
         for (DataSource.Part part : parts) {
             String blobName;
-            if (part.name() != null) {
-                blobName = part.name();
-            } else {
+            if (this.blobName != null) {
                 blobName = this.blobName;
+            } else {
+                blobName = part.name();
             }
 
             try (var input = part.openStream()) {
@@ -87,17 +86,10 @@ public class IonosDataSink extends ParallelSink {
             sink.blobName = blobName;
             return this;
         }
-        
-        public Builder accessKey(String accessKey) {
-            sink.accessKey = accessKey;
-            return this;
-        }
-        public Builder secretkey(String secretkey) {
-            sink.secretkey = secretkey;
-            return this;
-        }
 
         @Override
-        protected void validate() {}
+        protected void validate() {
+            Objects.requireNonNull(sink.bucketName, "Bucket Name is required");
+        }
     }
 }

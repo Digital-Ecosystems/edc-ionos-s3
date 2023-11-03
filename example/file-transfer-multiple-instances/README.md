@@ -64,7 +64,7 @@ curl --header 'X-API-Key: password' \
               "container": "'$PROVIDER_BUCKET'",
               "blobName": "device1-data.csv",
               "storage": "s3-eu-central-1.ionoscloud.com",
-              "keyName": "device1-data.csv",
+              "keyName": "device1-key",
               "type": "IonosS3"
              }
            }
@@ -187,10 +187,9 @@ curl -X POST "http://$CONSUMER_IP:8182/management/v2/transferprocesses" \
 					"type": "IonosS3",
 					"storage":"s3-eu-central-1.ionoscloud.com",
 					"bucketName": "$CONSUMER_BUCKET",
-					"keyName" : "device1-data.csv"
-				
-				},
-				"managedResources": false
+					"blobName": "device1-data.csv",
+					"keyName": "device1"
+				}
     }
 EOF
 ```

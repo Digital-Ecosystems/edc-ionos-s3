@@ -22,15 +22,15 @@ import org.eclipse.edc.spi.types.domain.DataAddress;
 
 import java.util.List;
 
-import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.BLOB_NAME;
-import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.BUCKET_NAME;
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.*;
 
 public class IonosSourceDataAddressValidationRule implements ValidationRule<DataAddress> {
 
     private final CompositeValidationRule<DataAddress> mandatoryPropertyValidationRule  = new CompositeValidationRule<>(
             List.of(
-
-                    new EmptyValueValidationRule(BUCKET_NAME)
+                    new EmptyValueValidationRule(STORAGE_NAME),
+                    new EmptyValueValidationRule(BUCKET_NAME),
+                    new EmptyValueValidationRule(BLOB_NAME)
             )
     );
 

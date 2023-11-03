@@ -41,10 +41,10 @@ public class IonosDataSinkFactory implements DataSinkFactory {
    
     private final ExecutorService executorService;
     private final Monitor monitor;
-    private S3ConnectorApi s3Api;
+    private final S3ConnectorApi s3Api;
    
-    private Vault vault;
-    private TypeManager typeManager;
+    private final Vault vault;
+    private final TypeManager typeManager;
 
     private final ValidationRule<DataAddress> validation = new IonosSinkDataAddressValidationRule();
     
@@ -85,7 +85,7 @@ public class IonosDataSinkFactory implements DataSinkFactory {
                 var s3ApiTemp = new S3ConnectorApiImpl(destination.getStringProperty(IonosBucketSchema.STORAGE_NAME), Token.getAccessKey(), Token.getSecretKey(), "");
                 return IonosDataSink.Builder.newInstance()
                             .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
-            	            .blobName(destination.getKeyName())
+            	            .blobName(destination.getStringProperty(IonosBucketSchema.BLOB_NAME))
                             .requestId(request.getId())
                             .executorService(executorService)
             	            .monitor(monitor).s3Api(s3ApiTemp)
@@ -94,7 +94,7 @@ public class IonosDataSinkFactory implements DataSinkFactory {
                 var s3ApiTemp = new S3ConnectorApiImpl(DEFAULT_STORAGE, Token.getAccessKey(), Token.getSecretKey(), "");
                 return IonosDataSink.Builder.newInstance()
                         .bucketName(destination.getKeyName())
-				   	    .blobName(destination.getKeyName())
+				   	    .blobName(destination.getStringProperty(IonosBucketSchema.BLOB_NAME))
                         .requestId(request.getId())
                         .executorService(executorService)
 				   	    .monitor(monitor)
@@ -103,9 +103,12 @@ public class IonosDataSinkFactory implements DataSinkFactory {
             }
         }  
         
-        return IonosDataSink.Builder.newInstance().bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
-                .blobName(destination.getKeyName()).requestId(request.getId()).executorService(executorService)
-                .monitor(monitor).s3Api(s3Api).build();
+        return IonosDataSink.Builder.newInstance()
+                .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
+                .blobName(destination.getStringProperty(IonosBucketSchema.BLOB_NAME))
+                .requestId(request.getId()).executorService(executorService)
+                .monitor(monitor).s3Api(s3Api)
+                .build();
     }
 
 }

@@ -106,6 +106,7 @@ curl --request POST --location 'http://localhost:19193/management/v2/assets' \
    },
    "dataAddress":{
        "name": "device1-data.csv",
+       "keyName": "device1",
        "bucketName": "company1",
        "blobName": "device1-data.csv",
        "storage": "s3-eu-central-1.ionoscloud.com",

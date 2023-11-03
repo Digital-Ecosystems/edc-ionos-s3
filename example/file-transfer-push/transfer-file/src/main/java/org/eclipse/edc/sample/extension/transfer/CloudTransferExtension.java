@@ -57,8 +57,8 @@
                  .property(IonosBucketSchema.STORAGE_NAME, "s3-eu-central-1.ionoscloud.com")
                  .property(IonosBucketSchema.BUCKET_NAME, "company1")
                  .property(IonosBucketSchema.BLOB_NAME, "device1-data.csv")
-                 .keyName("device1-data.csv").build();
-         var asset = Asset.Builder.newInstance().id("1").dataAddress(dataAddress).build();
+                 .keyName("device1").build();
+         var asset = Asset.Builder.newInstance().id("asset-1").dataAddress(dataAddress).build();
 
          assetIndex.create(asset);
      }

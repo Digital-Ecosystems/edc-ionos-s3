@@ -36,6 +36,7 @@ public class IonosS3ConsumerResourceDefinitionGenerator implements ConsumerResou
      
         var destination = dataRequest.getDataDestination();
         var id = randomUUID().toString();
+        var keyName = destination.getKeyName();
         var accessKey = destination.getStringProperty(IonosBucketSchema.ACCESS_KEY_ID);
         var secretKey = destination.getStringProperty(IonosBucketSchema.SECRET_ACCESS_KEY);
         var storage = destination.getStringProperty(IonosBucketSchema.STORAGE_NAME);
@@ -44,9 +45,10 @@ public class IonosS3ConsumerResourceDefinitionGenerator implements ConsumerResou
 
         return IonosS3ResourceDefinition.Builder.newInstance()
                 .id(id)
+                .keyName(keyName)
+                .storage(storage)
                 .accessKey(accessKey)
                 .secretKey(secretKey)
-                .storage(storage)
                 .bucketName(bucket)
                 .blobName(blobName)
                 .build();

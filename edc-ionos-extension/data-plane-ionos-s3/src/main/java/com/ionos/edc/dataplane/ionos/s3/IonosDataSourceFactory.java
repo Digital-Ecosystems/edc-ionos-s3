@@ -59,8 +59,10 @@ public class IonosDataSourceFactory implements DataSourceFactory {
         
         var source = request.getSourceDataAddress();
        
-        return IonosDataSource.Builder.newInstance().client(s3Api).bucketName(source.getStringProperty(IonosBucketSchema.BUCKET_NAME)).blobName(source.getStringProperty(IonosBucketSchema.BLOB_NAME))
-                .keyName(source.getKeyName()).build();
+        return IonosDataSource.Builder.newInstance().client(s3Api)
+                .bucketName(source.getStringProperty(IonosBucketSchema.BUCKET_NAME))
+                .blobName(source.getStringProperty(IonosBucketSchema.BLOB_NAME))
+                .build();
     }
 
 }
