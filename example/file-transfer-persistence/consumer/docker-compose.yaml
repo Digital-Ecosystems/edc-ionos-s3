@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  consumer:
+      image: edc-ionos-consumer:latest
+      build:
+        context: ./
+      ports:
+        - "29191:29191"
+        - "29192:29192"            
+        - "29193:29193"        
+        - "29194:29194"
+        - "29195:29195"     
+        - "29291:29291"    
+      environment:
+        EDC_FS_CONFIG: ./consumer-configuration.properties
