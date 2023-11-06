@@ -141,3 +141,9 @@ edc:
     token:
       validation:
         endpoint: http://localhost
+  persistenceType: PostgreSQLaaS # 'PostgreSQLaaS', 'PostgreSQL' or 'None'
+  postgresql: # Only used if persistenceType is 'PostgreSQLaaS' or 'PostgreSQL'
+    host: postgresql
+    port: 5432
+    username: postgres
+    password: postgres
