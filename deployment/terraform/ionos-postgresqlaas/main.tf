@@ -44,6 +44,11 @@ variable "pg_version" {
   default = 15
 }
 
+variable "pg_storage_type" {
+  type    = string
+  default = "HDD"
+}
+
 variable "pg_display_name" {
   type    = string
   default = "EDC Ionos Postgres"
@@ -119,7 +124,7 @@ resource "ionoscloud_pg_cluster" "postgresaas" {
   cores            = var.pg_cluster_cores
   ram              = var.pg_cluster_ram
   storage_size     = var.pg_storage_size
-  storage_type     = "HDD"
+  storage_type     = var.pg_storage_type
   connections {
     datacenter_id = data.ionoscloud_datacenter.postgresaas.id
     lan_id        = data.ionoscloud_lan.postgresaas.id

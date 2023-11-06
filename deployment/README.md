@@ -59,6 +59,7 @@ export TF_VAR_pg_instances= 1
 export TF_VAR_pg_cluster_cores= 2
 export TF_VAR_pg_cluster_ram=2048
 export TF_VAR_pg_storage_size=2048
+export TF_VAR_pg_storage_type="HDD"
 export TF_VAR_pg_version= 15
 export TF_VAR_pg_display_name="EDC Ionos Postgres"
 export TF_VAR_pg_username="edc-ionos"
