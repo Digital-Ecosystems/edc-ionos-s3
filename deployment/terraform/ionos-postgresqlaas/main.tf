@@ -1,11 +1,16 @@
 variable "datacenter_name" {
   type    = string
-  default = "darashev-test1"
+  default = "Digital Ecosystems"
 }
 
 variable "datacenter_location" {
   type    = string
   default = "de/txl"
+}
+
+variable "kubernetes_cluster_name" {
+  type    = string
+  default = "federated-catalog"
 }
 
 variable "kubernetes_node_pool_name" {
@@ -17,7 +22,6 @@ variable "private_lan_name" {
   type    = string
   default = "k8s-lan"
 }
-
 
 variable "pg_instances" {
   type    = number
@@ -93,7 +97,7 @@ data "ionoscloud_lan" "postgresaas" {
 }
 
 data "ionoscloud_k8s_cluster" "postgresaas" {
-  name = ""
+  name = var.kubernetes_cluster_name
 }
 
 data "ionoscloud_k8s_node_pool" "postgresaas" {

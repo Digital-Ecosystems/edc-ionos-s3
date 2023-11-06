@@ -51,8 +51,9 @@ export TF_VAR_s3_endpoint='' # s3 endpoint (e.g. s3-eu-central-1.ionoscloud.com)
 export TF_VAR_ionos_token='' # IONOS Cloud token, for further information: https://docs.ionos.com/cloud/managed-services/s3-object-storage/endpoints
 
 # Required only if persistence_type is PostgreSQLaaS
-export TF_VAR_datacenter_name=""
+export TF_VAR_datacenter_name="Digital Ecosystems"
 export TF_VAR_datacenter_location="de/txl"
+export TF_VAR_kubernetes_cluster_name="federated-catalog"
 export TF_VAR_kubernetes_node_pool_name="pool2"
 export TF_VAR_private_lan_name="k8s-lan"
 export TF_VAR_pg_instances= 1
