@@ -146,3 +146,7 @@ resource "ionoscloud_pg_cluster" "postgresaas" {
   }
   synchronization_mode = "ASYNCHRONOUS"
 }
+
+output "postgres_host" {
+  value = ionoscloud_pg_cluster.postgresaas.dns_name
+}
