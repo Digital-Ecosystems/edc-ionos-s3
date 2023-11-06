@@ -16,6 +16,31 @@ variable "ids_webhook_address" {
   default = "http://localhost:8282"
 }
 
+variable "persistence_type" {
+  type = string
+  default = "None"
+}
+
+variable "pg_host" {
+  type = string
+  default = "localhost"
+}
+
+variable "pg_port" {
+  type = number
+  default = 5432
+}
+
+variable "pg_username" {
+  type = string
+  default = "postgres"
+}
+
+variable "pg_password" {
+  type = string
+  default = "postgres"
+}
+
 variable "s3_access_key" {}
 variable "s3_secret_key" {}
 variable "s3_endpoint" {}
@@ -72,4 +97,23 @@ resource "helm_release" "edc-ionos-s3" {
     value = var.ids_webhook_address
   }
 
+  set {
+    name  = "postgresql.host"
+    value = var.pg_host
+  }
+
+  set {
+    name  = "postgresql.port"
+    value = var.pg_port
+  }
+
+  set {
+    name  = "postgresql.username"
+    value = var.pg_username
+  }
+
+  set {
+    name  = "postgresql.password"
+    value = var.pg_password
+  }
 }
