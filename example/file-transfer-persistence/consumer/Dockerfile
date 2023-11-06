@@ -8,8 +8,8 @@ WORKDIR /app
 
 
 # Copy config
-COPY ./resources/ /app
+COPY ./resources /resources
 # Copy jar
 COPY ./build/libs/dataspace-connector.jar /app
 
-ENTRYPOINT java -Dedc.keystore=./cert.pfx -Dedc.keystore.password=123456 -Dedc.vault=./consumer-vault.properties -Dedc.fs.config=./consumer-configuration.properties -jar ./dataspace-connector.jar
+ENTRYPOINT java -jar dataspace-connector.jar

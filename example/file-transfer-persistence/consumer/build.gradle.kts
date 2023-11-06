@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2022 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ *  Copyright (c) 2020, 2021 Microsoft Corporation
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -8,7 +8,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  *
  *  Contributors:
- *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
+ *       Microsoft Corporation - initial API and implementation
+ *       Fraunhofer Institute for Software and Systems Engineering - added dependencies
+ *       ZF Friedrichshafen AG - add dependency
  *
  */
 
@@ -17,7 +19,6 @@ plugins {
     id("application")
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
-
 repositories {
 	mavenLocal()
 	mavenCentral()
@@ -28,31 +29,34 @@ repositories {
         url = uri("https://maven.iais.fraunhofer.de/artifactory/eis-ids-public/")
     }
 }
-
+val javaVersion: String by project
 val edcGroup: String by project
 val postgresqlGroupId: String by project
 val edcVersion: String by project
-val fraunhoferVersion: String by project
+val okHttpVersion: String by project
+val rsApi: String by project
+val metaModelVersion: String by project
+
 
 dependencies {
-    implementation("${edcGroup}:control-plane-core:${edcVersion}")
-	implementation("${edcGroup}:dsp:${edcVersion}")
-    implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
-    implementation("${edcGroup}:vault-filesystem:${edcVersion}")
-    implementation("${edcGroup}:iam-mock:${edcVersion}")
-    implementation("${edcGroup}:management-api:${edcVersion}")
-    implementation("${edcGroup}:transfer-data-plane:${edcVersion}")
-    implementation("${edcGroup}:transfer-pull-http-receiver:${edcVersion}")
 
-    implementation("${edcGroup}:data-plane-selector-api:${edcVersion}")
-    implementation("${edcGroup}:data-plane-selector-core:${edcVersion}")
-    implementation("${edcGroup}:data-plane-selector-client:${edcVersion}")
+	implementation("${edcGroup}:control-plane-core:${edcVersion}")
+	
+	implementation("${edcGroup}:api-observability:${edcVersion}")
+	
+	implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
 
-    implementation("${edcGroup}:data-plane-api:${edcVersion}")
-    implementation("${edcGroup}:data-plane-core:${edcVersion}")
-    implementation("${edcGroup}:data-plane-http:${edcVersion}")
-
-	implementation(project(":edc-ionos-extension:data-plane-ionos-s3"))
+	implementation("${edcGroup}:http:${edcVersion}")
+	
+	implementation("${edcGroup}:auth-tokenbased:${edcVersion}")	
+	
+	//implementation("$edcGroup:ids:+")
+	
+	implementation("${edcGroup}:management-api:${edcVersion}")
+	
+	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
+	
+	implementation(project(":edc-ionos-extension:provision-ionos-s3"))
 
     implementation("${edcGroup}:asset-index-sql:$edcVersion")
     implementation("${edcGroup}:policy-definition-store-sql:$edcVersion")
@@ -63,10 +67,27 @@ dependencies {
     implementation("${edcGroup}:transaction-local:$edcVersion")
     implementation("${edcGroup}:transaction-datasource-spi:$edcVersion")
     implementation("org.postgresql:postgresql:42.6.0")
+	
+	implementation("${edcGroup}:data-plane-client:${edcVersion}")
+    implementation("${edcGroup}:data-plane-selector-client:${edcVersion}")
+    implementation("${edcGroup}:data-plane-selector-core:${edcVersion}")
+	//implementation("${edcGroup}:data-plane-selector-api:${edcVersion}")
+	//implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
+	
+
+		
+	implementation("${edcGroup}:iam-mock:${edcVersion}")
+	
+	
+	//new
+	implementation("${edcGroup}:dsp:${edcVersion}")
 }
 
 application {
     mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
+}
+tasks.shadowJar {
+   isZip64 = true  
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {

@@ -4,31 +4,20 @@ services:
     build:
       context: ./provider/
     ports:
-        - "19191:19191"
-        - "19192:19192"
-        - "19193:19193"
-        - "19194:19194"
-        - "19195:19195"
-        - "19291:19291"
+      - "8181:8181"
+      - "8182:8182"
+      - "8282:8282"
     environment:
       EDC_FS_CONFIG: /resources/provider-config.properties
   consumer:
     build:
       context:  ./consumer/
     ports:
-        - "29191:29191"
-        - "29192:29192"
-        - "29193:29193"
-        - "29194:29194"
-        - "29195:29195"
-        - "29291:29291"
+      - "9191:9191"
+      - "9192:9192"
+      - "9292:9292"
     environment:
       EDC_FS_CONFIG: /resources/consumer-config.properties
-  backend-service:
-    build:
-      context:  ./backend-service/
-    ports:
-        - "4000:4000"
   hashicorp-vault:
     container_name: hashicorp-vault
     image: vault:1.9.7
