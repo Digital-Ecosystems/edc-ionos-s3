@@ -33,6 +33,7 @@ repositories {
 val javaVersion: String by project
 val edcGroup: String by project
 val edcVersion: String by project
+val postgresVersion: String by project
 val okHttpVersion: String by project
 val rsApi: String by project
 val metaModelVersion: String by project
@@ -81,7 +82,15 @@ dependencies {
  
 	testImplementation ("${edcGroup}:junit:${edcVersion}")	
 	
-	
+    implementation("${edcGroup}:asset-index-sql:$edcVersion")
+    implementation("${edcGroup}:policy-definition-store-sql:$edcVersion")
+    implementation("${edcGroup}:contract-definition-store-sql:$edcVersion")
+    implementation("${edcGroup}:contract-negotiation-store-sql:$edcVersion")
+    implementation("${edcGroup}:transfer-process-store-sql:$edcVersion")
+    implementation("${edcGroup}:sql-pool-apache-commons:$edcVersion")
+    implementation("${edcGroup}:transaction-local:$edcVersion")
+    implementation("${edcGroup}:transaction-datasource-spi:$edcVersion")
+    implementation("org.postgresql:postgresql:$postgresVersion")
 	
 	implementation("de.fraunhofer.iais.eis.ids.infomodel:java:${fraunhoferVersion}")
 
