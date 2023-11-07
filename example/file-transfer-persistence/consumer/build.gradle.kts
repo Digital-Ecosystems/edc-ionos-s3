@@ -25,9 +25,6 @@ repositories {
     maven {// while runtime-metamodel dependency is still a snapshot
 		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
     }
-	  maven {
-        url = uri("https://maven.iais.fraunhofer.de/artifactory/eis-ids-public/")
-    }
 }
 val javaVersion: String by project
 val edcGroup: String by project
@@ -48,9 +45,7 @@ dependencies {
 
 	implementation("${edcGroup}:http:${edcVersion}")
 	
-	implementation("${edcGroup}:auth-tokenbased:${edcVersion}")	
-	
-	//implementation("$edcGroup:ids:+")
+	implementation("${edcGroup}:auth-tokenbased:${edcVersion}")
 	
 	implementation("${edcGroup}:management-api:${edcVersion}")
 	

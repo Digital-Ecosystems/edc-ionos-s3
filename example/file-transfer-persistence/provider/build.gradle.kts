@@ -25,11 +25,6 @@ repositories {
     maven {// while runtime-metamodel dependency is still a snapshot
 		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
     }
-
-	  maven {
-        url = uri("https://maven.iais.fraunhofer.de/artifactory/eis-ids-public/")
-    }
-	
 	  gradlePluginPortal()
 }
 val javaVersion: String by project
@@ -40,7 +35,6 @@ val edcVersion: String by project
 val okHttpVersion: String by project
 val rsApi: String by project
 val metaModelVersion: String by project
-val fraunhoferVersion: String by project
 
 dependencies {
 
@@ -58,10 +52,6 @@ dependencies {
 	
 	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")	
 
-	implementation("de.fraunhofer.iais.eis.ids.infomodel:java:${fraunhoferVersion}")
-	
-	//implementation("$edcGroup:ids:+")
-		
 	implementation("${edcGroup}:iam-mock:${edcVersion}")
 	
     implementation(project(":example:file-transfer-push:transfer-file"))
