@@ -24,14 +24,10 @@ repositories {
     maven {// while runtime-metamodel dependency is still a snapshot
 		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
     }
-	  maven {
-        url = uri("https://maven.iais.fraunhofer.de/artifactory/eis-ids-public/")
-    }
 }
 
 val edcGroupId = "org.eclipse.edc"
 val edcVersion: String by project
-val fraunhoferVersion: String by project
 
 dependencies {
     implementation("${edcGroupId}:control-plane-core:${edcVersion}")

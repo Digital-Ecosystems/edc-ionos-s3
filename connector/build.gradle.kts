@@ -22,9 +22,6 @@ repositories {
     maven {// while runtime-metamodel dependency is still a snapshot
 		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
     }
-	  maven {
-        url = uri("https://maven.iais.fraunhofer.de/artifactory/eis-ids-public/")
-    }
 	
 	mavenLocal()
 	mavenCentral()
@@ -37,7 +34,6 @@ val postgresVersion: String by project
 val okHttpVersion: String by project
 val rsApi: String by project
 val metaModelVersion: String by project
-val fraunhoferVersion: String by project
 
 
 
@@ -92,7 +88,6 @@ dependencies {
     implementation("${edcGroup}:transaction-datasource-spi:$edcVersion")
     implementation("org.postgresql:postgresql:$postgresVersion")
 	
-	implementation("de.fraunhofer.iais.eis.ids.infomodel:java:${fraunhoferVersion}")
 
 }
 

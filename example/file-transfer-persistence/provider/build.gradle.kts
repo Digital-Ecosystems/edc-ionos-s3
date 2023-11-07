@@ -25,43 +25,52 @@ repositories {
     maven {// while runtime-metamodel dependency is still a snapshot
 		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
     }
+	  gradlePluginPortal()
 }
 val javaVersion: String by project
+val faaastVersion: String by project
 val edcGroup: String by project
+val postgresqlGroupId: String by project
 val edcVersion: String by project
 val okHttpVersion: String by project
 val rsApi: String by project
 val metaModelVersion: String by project
 
-
 dependencies {
 
 	implementation("${edcGroup}:control-plane-core:${edcVersion}")
-
+	
 	implementation("${edcGroup}:api-observability:${edcVersion}")
-	  implementation("${edcGroup}:data-plane-client:${edcVersion}")
-    implementation("${edcGroup}:data-plane-selector-client:${edcVersion}")
-    implementation("${edcGroup}:data-plane-selector-core:${edcVersion}")
-	 implementation("${edcGroup}:data-plane-selector-api:${edcVersion}")
+	
 	implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
 
 	implementation("${edcGroup}:http:${edcVersion}")
-	
-	implementation("${edcGroup}:dsp:${edcVersion}")
-	
+
 	implementation("${edcGroup}:auth-tokenbased:${edcVersion}")	
+
+    implementation("${edcGroup}:management-api:${edcVersion}")
 	
-	
-	implementation("${edcGroup}:management-api:${edcVersion}")
-	
-	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
-	
-	implementation(project(":edc-ionos-extension:provision-ionos-s3"))
-			
+	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")	
+
 	implementation("${edcGroup}:iam-mock:${edcVersion}")
 	
+    implementation(project(":example:file-transfer-push:transfer-file"))
 	
+	//new
+	implementation("${edcGroup}:dsp:${edcVersion}")
+	
+	implementation(project(":edc-ionos-extension:data-plane-ionos-s3"))
 
+    implementation("${edcGroup}:asset-index-sql:$edcVersion")
+    implementation("${edcGroup}:policy-definition-store-sql:$edcVersion")
+    implementation("${edcGroup}:contract-definition-store-sql:$edcVersion")
+    implementation("${edcGroup}:contract-negotiation-store-sql:$edcVersion")
+    implementation("${edcGroup}:transfer-process-store-sql:$edcVersion")
+    implementation("${edcGroup}:sql-pool-apache-commons:$edcVersion")
+    implementation("${edcGroup}:transaction-local:$edcVersion")
+    implementation("${edcGroup}:transaction-datasource-spi:$edcVersion")
+    implementation("org.postgresql:postgresql:42.6.0")
+	
 }
 
 application {

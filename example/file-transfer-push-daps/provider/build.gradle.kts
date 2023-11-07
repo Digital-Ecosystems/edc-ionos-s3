@@ -26,9 +26,6 @@ repositories {
 		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
     }
 
-	  maven {
-        url = uri("https://maven.iais.fraunhofer.de/artifactory/eis-ids-public/")
-    }
 	
 	  gradlePluginPortal()
 }
@@ -39,7 +36,6 @@ val edcVersion: String by project
 val okHttpVersion: String by project
 val rsApi: String by project
 val metaModelVersion: String by project
-val fraunhoferVersion: String by project
 
 dependencies {
 
@@ -61,8 +57,6 @@ dependencies {
     implementation("${edcGroup}:oauth2-service:${edcVersion}")
     implementation("${edcGroup}:oauth2-daps:${edcVersion}")
 
-	implementation("de.fraunhofer.iais.eis.ids.infomodel:java:${fraunhoferVersion}")
-	
 	implementation("$edcGroup:dsp:$edcVersion")
 		
 	implementation("${edcGroup}:iam-mock:${edcVersion}")
