@@ -24,7 +24,6 @@
  import org.eclipse.edc.runtime.metamodel.annotation.Inject;
  import org.eclipse.edc.spi.asset.AssetIndex;
  import org.eclipse.edc.spi.system.ServiceExtension;
- import org.eclipse.edc.spi.system.ServiceExtensionContext;
  import org.eclipse.edc.spi.types.domain.DataAddress;
  import org.eclipse.edc.spi.types.domain.asset.Asset;
  
@@ -43,7 +42,7 @@
      }
  
      @Override
-     public void initialize(ServiceExtensionContext context) {
+     public void start() {
          var policy = createPolicy();
          policyDefinitionStore.create(policy);
  

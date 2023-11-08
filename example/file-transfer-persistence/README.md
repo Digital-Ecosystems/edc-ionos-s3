@@ -41,17 +41,16 @@ docker compose -f "docker-compose.yml" up --build
 We will have to call some URL's in order to transfer the file:
 1) Contract offers
 ```console
-curl -X POST "http://provider:9192/management/v2/catalog/request" \
+curl -X POST "http://localhost:9192/management/v2/catalog/request" \
 --header 'X-API-Key: password' \
 --header 'Content-Type: application/json' \
 -d '{
       "@context": {
         "edc": "https://w3id.org/edc/v0.0.1/ns/"
       },
-      "providerUrl": "http://consumer:8282/protocol",
+      "providerUrl": "http://provider:8282/protocol",
       "protocol": "dataspace-protocol-http"
     }'-s | jq -r
-
 ```
 
 You will have an output like the following:
@@ -83,7 +82,7 @@ You will have an output like the following:
 		"@id": "80e665f9-85f1-4ede-b2b5-0df6ed2d5ee3",
 		"@type": "dcat:DataService",
 		"dct:terms": "connector",
-		"dct:endpointUrl": "http://consumer:8282/protocol"
+		"dct:endpointUrl": "http://provider:8282/protocol"
 	},
 	"edc:participantId": "provider",
 	"@context": {
@@ -98,10 +97,10 @@ You will have an output like the following:
 
 2) Contract negotiation
 
-Copy the `policy{ @id` from the response of the first curl into this curl and execute it.
+Copy the `odrl:hasPolicy{ @id` from the response of the first curl into this curl and execute it.
 
 ```
-curl --location --request POST 'http://provider:9192/management/v2/contractnegotiations' \
+curl --location --request POST 'http://localhost:9192/management/v2/contractnegotiations' \
 --header 'X-API-Key: password' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -111,7 +110,7 @@ curl --location --request POST 'http://provider:9192/management/v2/contractnegot
   },
   "@type": "NegotiationInitiateRequestDto",
   "connectorId": "provider",
-  "connectorAddress": "http://consumer:8282/protocol",
+  "connectorAddress": "http://provider:8282/protocol",
   "protocol": "dataspace-protocol-http",
   "offer": {
     "offerId": "1:1:a345ad85-c240-4195-b954-13841a6331a1",
@@ -151,7 +150,7 @@ You will have an answer like the following:
 
 Copy the value of the `@id` from the response of the previous curl into this curl and execute it.
 ```
-curl -X GET -H 'X-Api-Key: password' "http://provider:9192/management/v2/contractnegotiations/{<ID>}"
+curl -X GET -H 'X-Api-Key: password' "http://localhost:9192/management/v2/contractnegotiations/{<ID>}"
 ```
 You will have an answer like the following:
 ```
@@ -161,7 +160,7 @@ You will have an answer like the following:
 	"edc:type": "CONSUMER",
 	"edc:protocol": "dataspace-protocol-http",
 	"edc:state": "FINALIZED",
-	"edc:counterPartyAddress": "http://consumer:8282/protocol",
+	"edc:counterPartyAddress": "http://provider:8282/protocol",
 	"edc:callbackAddresses": [],
 	"edc:contractAgreementId": "1:1:5c0a5d3c-69ea-4fb5-9d3d-e33ec280cde9",
 	"@context": {
@@ -176,11 +175,7 @@ You will have an answer like the following:
 
 4) Restart the provider connector Docker container:
 ```
-docker stop provider
-```
-
-```
-docker start provider
+docker restart file-transfer-persistence-provider-1
 ```
 
 
@@ -189,7 +184,7 @@ docker start provider
 Copy the value of the `edc:contractAgreementId` from the response of the previous curl into this curl and execute it.
 ```
 
-curl -X POST "http://provider:9192/management/v2/transferprocesses" \
+curl -X POST "http://localhost:9192/management/v2/transferprocesses" \
     --header "Content-Type: application/json" \
 	--header 'X-API-Key: password' \
     --data '{	
@@ -198,7 +193,7 @@ curl -X POST "http://provider:9192/management/v2/transferprocesses" \
 					},
 				"@type": "TransferRequestDto",
                 "connectorId": "consumer",
-                "connectorAddress": "http://consumer:8282/protocol",
+                "connectorAddress": "http://provider:8282/protocol",
 				"protocol": "dataspace-protocol-http",
                 "contractId": "<CONTRACT AGREEMENT ID>",
                 "assetId": "1",
@@ -207,8 +202,6 @@ curl -X POST "http://provider:9192/management/v2/transferprocesses" \
 					"storage":"s3-eu-central-1.ionoscloud.com",
 					"bucketName": "company2",
 					"keyName" : "device1-data.csv"
-				
-				
 				},
 				"managedResources": false
         }'
@@ -235,5 +228,5 @@ After executing all the steps, we can now check the `company2` bucket of our ION
 Deprovisioning 
 
 ```
-curl -X POST -H 'X-Api-Key: password' "http://provider:9192/management/v2/transferprocesses/{<ID>}/deprovision"
+curl -X POST -H 'X-Api-Key: password' "http://localhost:9192/management/v2/transferprocesses/{<ID>}/deprovision"
 ```

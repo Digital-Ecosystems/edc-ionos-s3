@@ -30,13 +30,24 @@ repositories {
 val javaVersion: String by project
 val faaastVersion: String by project
 val edcGroup: String by project
-val postgresqlGroupId: String by project
+val postgresqlGroup: String by project
+val postgresqlVersion: String by project
 val edcVersion: String by project
 val okHttpVersion: String by project
 val rsApi: String by project
 val metaModelVersion: String by project
 
 dependencies {
+    implementation("${edcGroup}:asset-index-sql:$edcVersion")
+    implementation("${edcGroup}:policy-definition-store-sql:$edcVersion")
+    implementation("${edcGroup}:contract-definition-store-sql:$edcVersion")
+    implementation("${edcGroup}:contract-negotiation-store-sql:$edcVersion")
+    implementation("${edcGroup}:transfer-process-store-sql:$edcVersion")
+    implementation("${edcGroup}:transaction-datasource-spi:$edcVersion")
+    implementation("${edcGroup}:sql-pool-apache-commons:$edcVersion")
+    implementation("${edcGroup}:transaction-local:$edcVersion")
+    implementation("${postgresqlGroup}:postgresql:$postgresqlVersion")
+    implementation("${edcGroup}:control-plane-sql:$edcVersion")
 
 	implementation("${edcGroup}:control-plane-core:${edcVersion}")
 	
@@ -51,26 +62,16 @@ dependencies {
     implementation("${edcGroup}:management-api:${edcVersion}")
 	
 	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")	
+	//implementation("$edcGroup:ids:+")
 
 	implementation("${edcGroup}:iam-mock:${edcVersion}")
 	
-    implementation(project(":example:file-transfer-push:transfer-file"))
+    implementation(project(":example:file-transfer-persistence:transfer-file"))
 	
 	//new
 	implementation("${edcGroup}:dsp:${edcVersion}")
 	
-	implementation(project(":edc-ionos-extension:data-plane-ionos-s3"))
 
-    implementation("${edcGroup}:asset-index-sql:$edcVersion")
-    implementation("${edcGroup}:policy-definition-store-sql:$edcVersion")
-    implementation("${edcGroup}:contract-definition-store-sql:$edcVersion")
-    implementation("${edcGroup}:contract-negotiation-store-sql:$edcVersion")
-    implementation("${edcGroup}:transfer-process-store-sql:$edcVersion")
-    implementation("${edcGroup}:sql-pool-apache-commons:$edcVersion")
-    implementation("${edcGroup}:transaction-local:$edcVersion")
-    implementation("${edcGroup}:transaction-datasource-spi:$edcVersion")
-    implementation("org.postgresql:postgresql:42.6.0")
-	
 }
 
 application {
