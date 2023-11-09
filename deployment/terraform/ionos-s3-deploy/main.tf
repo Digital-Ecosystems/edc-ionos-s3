@@ -31,6 +31,11 @@ variable "pg_port" {
   default = 5432
 }
 
+variable "pg_database" {
+  type = string
+  default = "postgres"
+}
+
 variable "pg_username" {
   type = string
   default = "postgres"
@@ -98,22 +103,27 @@ resource "helm_release" "edc-ionos-s3" {
   }
 
   set {
-    name  = "postgresql.host"
+    name  = "edc.postgresql.host"
     value = var.pg_host
   }
 
   set {
-    name  = "postgresql.port"
+    name  = "edc.postgresql.database"
+    value = var.pg_database
+  }
+
+  set {
+    name  = "edc.postgresql.port"
     value = var.pg_port
   }
 
   set {
-    name  = "postgresql.username"
+    name  = "edc.postgresql.username"
     value = var.pg_username
   }
 
   set {
-    name  = "postgresql.password"
+    name  = "edc.postgresql.password"
     value = var.pg_password
   }
 }

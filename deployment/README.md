@@ -56,6 +56,7 @@ export TF_VAR_datacenter_location="de/txl"
 export TF_VAR_kubernetes_cluster_name="federated-catalog"
 export TF_VAR_kubernetes_node_pool_name="pool2"
 export TF_VAR_private_lan_name="k8s-lan"
+export TF_VAR_pg_database="edcionos"
 export TF_VAR_pg_instances=1
 export TF_VAR_pg_cluster_cores=2
 export TF_VAR_pg_cluster_ram=2048

@@ -29,30 +29,30 @@ data:
     edc.public.key.alias={{ .Values.edc.public.key.alias }}
     edc.dataplane.token.validation.endpoint={{ .Values.edc.dataplane.token.validation.endpoint }}:{{ .Values.web.http.control.port }}{{ .Values.web.http.control.path }}/token
 
-    {{- if .Values.edc.persistenceType == "PostgreSQLaaS" }}
+    {{- if eq .Values.edc.persistenceType "PostgreSQLaaS" }}
     edc.datasource.asset.name=asset
     edc.datasource.asset.user={{ .Values.edc.postgresql.username }}
     edc.datasource.asset.password={{ .Values.edc.postgresql.password }}
-    edc.datasource.asset.url=jdbc:postgresql://{{ .Values.edc.postgresql.host }}:{{ .Values.edc.postgresql.port }}/
+    edc.datasource.asset.url=jdbc:postgresql://{{ .Values.edc.postgresql.host }}:{{ .Values.edc.postgresql.port }}/{{ .Values.edc.postgresql.database }}
 
     edc.datasource.policy.name=policy
     edc.datasource.policy.user={{ .Values.edc.postgresql.username }}
     edc.datasource.policy.password={{ .Values.edc.postgresql.password }}
-    edc.datasource.policy.url=jdbc:postgresql://{{ .Values.edc.postgresql.host }}:{{ .Values.edc.postgresql.port }}/
+    edc.datasource.policy.url=jdbc:postgresql://{{ .Values.edc.postgresql.host }}:{{ .Values.edc.postgresql.port }}/{{ .Values.edc.postgresql.database }}
 
     edc.datasource.contractdefinition.name=contractdefinition
     edc.datasource.contractdefinition.user={{ .Values.edc.postgresql.username }}
     edc.datasource.contractdefinition.password={{ .Values.edc.postgresql.password }}
-    edc.datasource.contractdefinition.url=jdbc:postgresql://{{ .Values.edc.postgresql.host }}:{{ .Values.edc.postgresql.port }}/
+    edc.datasource.contractdefinition.url=jdbc:postgresql://{{ .Values.edc.postgresql.host }}:{{ .Values.edc.postgresql.port }}/{{ .Values.edc.postgresql.database }}
 
     edc.datasource.contractnegotiation.name=contractnegotiation
     edc.datasource.contractnegotiation.user={{ .Values.edc.postgresql.username }}
     edc.datasource.contractnegotiation.password={{ .Values.edc.postgresql.password }}
-    edc.datasource.contractnegotiation.url=jdbc:postgresql://{{ .Values.edc.postgresql.host }}:{{ .Values.edc.postgresql.port }}/
+    edc.datasource.contractnegotiation.url=jdbc:postgresql://{{ .Values.edc.postgresql.host }}:{{ .Values.edc.postgresql.port }}/{{ .Values.edc.postgresql.database }}
 
     edc.datasource.transferprocess.name=transferprocess
     edc.datasource.transferprocess.user={{ .Values.edc.postgresql.username }}
     edc.datasource.transferprocess.password={{ .Values.edc.postgresql.password }}
-    edc.datasource.transferprocess.url=jdbc:postgresql://{{ .Values.edc.postgresql.host }}:{{ .Values.edc.postgresql.port }}/
+    edc.datasource.transferprocess.url=jdbc:postgresql://{{ .Values.edc.postgresql.host }}:{{ .Values.edc.postgresql.port }}/{{ .Values.edc.postgresql.database }}
 
     {{- end }}

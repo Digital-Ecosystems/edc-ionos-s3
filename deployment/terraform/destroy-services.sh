@@ -21,6 +21,11 @@ cd ../ionos-s3-deploy
 terraform init
 terraform destroy -auto-approve
 
+# Destroy Ionos Postgres Cluister
+cd ../ionos-postgresqlaas
+terraform init
+terraform destroy -auto-approve
+
 cd ../
 
 # remove terraform state

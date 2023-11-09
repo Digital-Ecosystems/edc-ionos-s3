@@ -145,5 +145,6 @@ edc:
   postgresql: # Only used if persistenceType is 'PostgreSQLaaS' or 'PostgreSQL'
     host: postgresql
     port: 5432
+    database: postgres
     username: postgres
     password: postgres

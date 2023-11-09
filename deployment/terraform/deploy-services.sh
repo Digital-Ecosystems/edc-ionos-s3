@@ -2,6 +2,7 @@
 
 set -e
 
+echo "Checking for required environment variables"
 # Check for environment variables
 if [ -z `printenv TF_VAR_kubeconfig` ]; then
     echo "Stopping because TF_VAR_kubeconfig is undefined"
@@ -106,31 +107,51 @@ if [ "$TF_VAR_persistence_type" == "PostgreSQLaaS" ]; then
     fi
 fi
 
+echo "Deploying vault"
 # Deploy vault
 cd vault-deploy
 terraform init
 terraform apply -auto-approve
 
+echo "Initializing vault"
 # Initialize vault
 cd ../vault-init
 terraform init
 terraform apply -auto-approve
 
 if [ "$TF_VAR_persistence_type" == "PostgreSQLaaS" ]; then
+    echo "Deploying ionos postgresqlaas"
     # Create Ionos Postgres cluster
     cd ../ionos-postgresqlaas
     terraform init
     terraform apply -auto-approve
 
     export TF_VAR_pg_host=$(terraform output -raw postgres_host)
+    kubectl run -i postgres-create-database --rm --image=postgres:latest --env="PGUSER=$TF_VAR_pg_username" --env="PGPASSWORD=$TF_VAR_pg_password" --env="PGHOST=$TF_VAR_pg_host" -- psql --dbname="postgres" --command="CREATE DATABASE edcionos;"
+
+    kubectl run -i postgres-restore-database --rm --image=postgres:latest --env="PGUSER=$TF_VAR_pg_username" --env="PGPASSWORD=$TF_VAR_pg_password" --env="PGHOST=$TF_VAR_pg_host" -- psql --dbname="edcionos" < ../db-scripts/init.sql
 fi
 
+if [ "$TF_VAR_persistence_type" == "Postgres" ]; then
+    echo "Deploying postgres"
+    helm repo add bitnami https://charts.bitnami.com/bitnami
+    helm install postgres bitnami/postgresql --set postgresql.auth.username=$TF_VAR_pg_username --set postgresql.auth.password=$TF_VAR_pg_password --set postgresql.auth.database=$TF_VAR_pg_database
+
+    kubectl run -i postgres-restore-database --rm --image=postgres:latest --env="PGUSER=$TF_VAR_pg_username" --env="PGPASSWORD=$TF_VAR_pg_password" --env="PGHOST=$TF_VAR_pg_host" -- psql --dbname="edcionos" < ../db-scripts/init.sql
+
+    export TF_VAR_pg_host=$(terraform output -raw postgres_host)
+fi
+
+echo "Deploying ionos s3"
 # Deploy ionos s3
 cd ../ionos-s3-deploy
 terraform init
 terraform apply -auto-approve
 
+echo "Configuring public address"
 # Configure public address
 cd ../configure-public-address
 terraform init
 terraform apply -auto-approve
+
+echo "Deployment complete"

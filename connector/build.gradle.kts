@@ -35,9 +35,6 @@ val okHttpVersion: String by project
 val rsApi: String by project
 val metaModelVersion: String by project
 
-
-
-
 dependencies {
 	implementation("${edcGroup}:boot:${edcVersion}")
 	
@@ -87,8 +84,6 @@ dependencies {
     implementation("${edcGroup}:transaction-local:$edcVersion")
     implementation("${edcGroup}:transaction-datasource-spi:$edcVersion")
     implementation("org.postgresql:postgresql:$postgresVersion")
-	
-
 }
 
 repositories {
