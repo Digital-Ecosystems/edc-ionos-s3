@@ -85,7 +85,7 @@ jobs:
             persistence-${{ github.sha }}
 
       - name: Build and push "connector-persistence"
-        id: build_and_push_connector
+        id: build_and_push_connector-persistence
         uses: docker/build-push-action@v4
         with:
           context: ./connector-persistence
