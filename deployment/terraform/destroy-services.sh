@@ -49,5 +49,11 @@ rm -f ./vault-deploy/terraform.tfstate
 rm -f ./vault-deploy/.terraform.lock.hcl
 rm -f ./vault-deploy/terraform.tfstate.backup
 
+rm -rf ./ionos-postgresqlaas/.terraform
+rm -f ./ionos-postgresqlaas/terraform.tfstate
+rm -f ./ionos-postgresqlaas/.terraform.lock.hcl
+rm -f ./ionos-postgresqlaas/terraform.tfstate.backup
+
 rm -f vault-init/vault-keys.json
+helm uninstall postgres -n $TF_VAR_namespace
 kubectl --kubeconfig $TF_VAR_kubeconfig delete namespace $TF_VAR_namespace
