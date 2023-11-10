@@ -21,6 +21,16 @@ variable "persistence_type" {
   default = "None"
 }
 
+variable "image_repository" {
+  type = string
+  default = "ghcr.io/digital-ecosystems/connector"
+}
+
+variable "image_tag" {
+  type = string
+  default = ""
+}
+
 variable "pg_host" {
   type = string
   default = "localhost"
@@ -125,5 +135,15 @@ resource "helm_release" "edc-ionos-s3" {
   set {
     name  = "edc.postgresql.password"
     value = var.pg_password
+  }
+
+  set {
+    name = "image.repository"
+    value = var.image_repository
+  }
+
+  set {
+    name = "image.tag"
+    value = var.image_tag
   }
 }
