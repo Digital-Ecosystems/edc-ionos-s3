@@ -1,4 +1,4 @@
-# File transfer using push method 
+# File transfer using push method - with persistency
 
  This example shows how to exchange a data file between two EDC's. It is based on a sample of the official EDC respository. The examples uses PostgreSQL for persistence.
 
@@ -173,11 +173,30 @@ You will have an answer like the following:
 }
 ```
 
-4) Restart the provider connector Docker container:
+4) Crashing an EDC:
+
+Let's simulate a crash of a connector.
 ```
-docker restart file-transfer-persistence-provider-1
+docker stop file-transfer-persistence-provider-1
 ```
 
+Let's check the database to see if the asset has been persisted.
+```sh
+docker exec -it edc-db-provider psql -U postgres -c "select * from edc_contract_negotiation;"
+```
+
+You will have an answer like the following:
+```sh
+                  id                  |  created_at   |  updated_at   |            correlation_id            | counterparty_id |     counterparty_address      |        protocol         |   type   | state | state_count | state_timestamp | error_detail |               agreement_id               |                                                                                                                                                                                                                          contract_offers                                                                                                                                                                                                                           | callback_addresses | trace_context | lease_id 
+--------------------------------------+---------------+---------------+--------------------------------------+-----------------+-------------------------------+-------------------------+----------+-------+-------------+-----------------+--------------+------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------+---------------+----------
+ 34ebb7ca-250d-4def-9270-27eea4ec1d96 | 1699602880839 | 1699602882759 | 1ca28ca9-8a7a-4318-97bd-66f9ba45392a | consumer        | http://consumer:9292/protocol | dataspace-protocol-http | PROVIDER |  1200 |           1 |   1699602882759 |              | 1:1:fc089674-ecb2-4910-a593-55e3a59784a1 | [{"id":"1:1:a345ad85-c240-4195-b954-13841a6331a1","policy":{"permissions":[{"edctype":"dataspaceconnector:permission","target":"1","action":{"type":"USE","includedIn":null,"constraint":null},"assignee":null,"assigner":null,"constraints":[],"duties":[]}],"prohibitions":[],"obligations":[],"extensibleProperties":{},"inheritsFrom":null,"assigner":null,"assignee":null,"target":"1","@type":{"@policytype":"set"}},"assetId":"1","providerId":"provider"}] | []                 | {}            | 
+(1 row)
+```
+
+Let's resume the file transfer process.
+```
+docker start file-transfer-persistence-provider-1
+```
 
 5) File transfer
 
