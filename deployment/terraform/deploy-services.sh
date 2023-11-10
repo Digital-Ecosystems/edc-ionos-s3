@@ -165,6 +165,8 @@ if [ "$TF_VAR_persistence_type" == "PostgreSQLaaS" ] || [ "$TF_VAR_persistence_t
     set -e
 
     kubectl run -n $TF_VAR_namespace --timeout=120s -i postgres-restore-database --rm --image=postgres:latest --env="PGUSER=$TF_VAR_pg_username" --env="PGPASSWORD=$TF_VAR_pg_password" --env="PGHOST=$TF_VAR_pg_host" -- psql --dbname="$TF_VAR_pg_database" < ../db-scripts/init.sql
+else
+    echo "WARNING: No persistence, the data will be lost if container pods are restarted"
 fi
 
 echo "Deploying ionos s3"

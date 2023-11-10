@@ -66,15 +66,15 @@ export TF_VAR_pg_version=15
 export TF_VAR_pg_display_name="EDC Ionos Postgres"
 export TF_VAR_pg_username="edc-ionos"
 export TF_VAR_pg_password="edc-ionos-pass"
-export TF_VAR_image_repository="ghcr.io/digital-ecosystems/connector-persistence"
-export TF_VAR_image_tag="latest"
+export TF_VAR_image_repository="ghcr.io/digital-ecosystems/connector"
+export TF_VAR_image_tag="persistence-latest"
 
 # Required if persistence_type is Postgres
 export TF_VAR_pg_username="edc-ionos"
 export TF_VAR_pg_database="edcionos"
 export TF_VAR_pg_password="edc-ionos-pass"
-export TF_VAR_image_repository="ghcr.io/digital-ecosystems/connector-persistence"
-export TF_VAR_image_tag="latest"
+export TF_VAR_image_repository="ghcr.io/digital-ecosystems/connector"
+export TF_VAR_image_tag="persistence-latest"
 
 # Required if persistence_type is None
 export TF_VAR_image_repository="ghcr.io/digital-ecosystems/connector"

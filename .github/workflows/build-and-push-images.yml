@@ -75,32 +75,32 @@ jobs:
         env:
           COSIGN_PASSWORD: ${{ secrets.SIGNING_SECRET_PASSWORD }}
 
-      - name: Docker "connector-persistence" meta
-        id: connector-persistence-meta
+      - name: Docker "connector" meta
+        id: connector-meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector-persistence
+          images: ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            ${{ github.sha }}
+            type=raw,value=persistence-latest,enable={{is_default_branch}}
+            persistence-${{ github.sha }}
 
       - uses: sigstore/cosign-installer@main
 
       - name: Write signing key to disk
         run: echo "${{ secrets.SIGNING_SECRET }}" > cosign.key
 
-      - name: Build and push "connector-persistence"
-        id: build_and_push_connector-persistence
+      - name: Build and push "connector"
+        id: build_and_push_connector
         uses: docker/build-push-action@v4
         with:
-          context: ./connector-persistence
-          file: ./connector-persistence/Dockerfile
+          context: ./connector
+          file: ./connector/Dockerfile
           push: true
-          tags: ${{ steps.connector-persistence-meta.outputs.tags }}
-          labels: ${{ steps.connector-persistence-meta.outputs.labels }}
-      - name: Sign "connector-persistence" image
+          tags: ${{ steps.connector-meta.outputs.tags }}
+          labels: ${{ steps.connector-meta.outputs.labels }}
+      - name: Sign "connector" image
         run: |
           cosign sign -y --key cosign.key \
-          ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector-persistence@${{ steps.build_and_push_connector-persistence.outputs.digest }}
+          ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector@${{ steps.build_and_push_connector.outputs.digest }}
         env:
           COSIGN_PASSWORD: ${{ secrets.SIGNING_SECRET_PASSWORD }}
