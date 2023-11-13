@@ -14,7 +14,6 @@
 
 package com.ionos.edc.dataplane.ionos.s3;
 
-
 import com.ionos.edc.dataplane.ionos.s3.validation.IonosSinkDataAddressValidationRule;
 import com.ionos.edc.extension.s3.api.S3ConnectorApi;
 import com.ionos.edc.extension.s3.api.S3ConnectorApiImpl;
@@ -34,9 +33,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ExecutorService;
 
+import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_MAX_FILES_DEFAULT;
+
 public class IonosDataSinkFactory implements DataSinkFactory {
 
-    private static final int CHUNK_SIZE_IN_BYTES = 1024 * 1024 * 500; // 500MB chunk size
     private static final String DEFAULT_STORAGE = "s3-eu-central-1.ionoscloud.com";
    
     private final ExecutorService executorService;
@@ -82,7 +82,10 @@ public class IonosDataSinkFactory implements DataSinkFactory {
             var Token = typeManager.readValue(secret, IonosToken.class);
 
             if (destination.getStringProperty(IonosBucketSchema.STORAGE_NAME) != null) {
-                var s3ApiTemp = new S3ConnectorApiImpl(destination.getStringProperty(IonosBucketSchema.STORAGE_NAME), Token.getAccessKey(), Token.getSecretKey(), "");
+                var s3ApiTemp = new S3ConnectorApiImpl(destination.getStringProperty(IonosBucketSchema.STORAGE_NAME),
+                        Token.getAccessKey(),
+                        Token.getSecretKey(),
+                        IONOS_MAX_FILES_DEFAULT);
                 return IonosDataSink.Builder.newInstance()
                             .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
             	            .blobName(destination.getStringProperty(IonosBucketSchema.BLOB_NAME))
@@ -91,9 +94,12 @@ public class IonosDataSinkFactory implements DataSinkFactory {
             	            .monitor(monitor).s3Api(s3ApiTemp)
                         .build();
             } else {
-                var s3ApiTemp = new S3ConnectorApiImpl(DEFAULT_STORAGE, Token.getAccessKey(), Token.getSecretKey(), "");
+                var s3ApiTemp = new S3ConnectorApiImpl(DEFAULT_STORAGE,
+                        Token.getAccessKey(),
+                        Token.getSecretKey(),
+                        IONOS_MAX_FILES_DEFAULT);
                 return IonosDataSink.Builder.newInstance()
-                        .bucketName(destination.getKeyName())
+                        .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
 				   	    .blobName(destination.getStringProperty(IonosBucketSchema.BLOB_NAME))
                         .requestId(request.getId())
                         .executorService(executorService)

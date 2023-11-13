@@ -50,7 +50,6 @@ public class DataPlaneIonosS3Extension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        
 
         var monitor = context.getMonitor();
         

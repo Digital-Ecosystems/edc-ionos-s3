@@ -17,10 +17,15 @@ package com.ionos.edc.dataplane.ionos.s3;
 import com.ionos.edc.extension.s3.api.S3ConnectorApi;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
-import java.io.ByteArrayInputStream;
+import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure;
+
 import java.io.InputStream;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure.Reason.GENERAL_ERROR;
+import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult.failure;
 import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult.success;
 
 class IonosDataSource implements DataSource {
@@ -34,7 +39,20 @@ class IonosDataSource implements DataSource {
 
     @Override
     public StreamResult<Stream<Part>> openPartStream() {
-        return success(Stream.of(new S3Part(s3Api, bucketName, blobName)));
+
+        var objects = s3Api.listObjects(bucketName, blobName);
+
+        if (objects.isEmpty()) {
+            return failure(new StreamFailure(
+                    List.of("No files found in bucket " + bucketName + " with blobName " + blobName), GENERAL_ERROR)
+            );
+        }
+
+       List<Part> partStream = objects.stream()
+               .map(objectName -> new S3Part(s3Api, bucketName, objectName))
+               .collect(Collectors.toList());
+
+        return success(partStream.stream());
     }
 
     private static class S3Part implements Part {
@@ -57,8 +75,7 @@ class IonosDataSource implements DataSource {
 
         @Override
         public InputStream openStream() {
-            InputStream targetStream = new ByteArrayInputStream(s3Api.getFile(bucketName, blobName));
-            return targetStream;
+            return s3Api.getObject(bucketName, blobName);
         }
     }
 
