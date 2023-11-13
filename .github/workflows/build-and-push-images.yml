@@ -74,3 +74,28 @@ jobs:
           ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector@${{ steps.build_and_push_connector.outputs.digest }}
         env:
           COSIGN_PASSWORD: ${{ secrets.SIGNING_SECRET_PASSWORD }}
+
+      - name: Docker "connector-persistence" meta
+        id: connector-persistence-meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector
+          tags: |
+            type=raw,value=persistence-latest,enable={{is_default_branch}}
+            persistence-${{ github.sha }}
+
+      - name: Build and push "connector-persistence"
+        id: build_and_push_connector-persistence
+        uses: docker/build-push-action@v4
+        with:
+          context: ./connector-persistence
+          file: ./connector-persistence/Dockerfile
+          push: true
+          tags: ${{ steps.connector-persistence-meta.outputs.tags }}
+          labels: ${{ steps.connector-persistence-meta.outputs.labels }}
+      - name: Sign "connector-persistence" image
+        run: |
+          cosign sign -y --key cosign.key \
+          ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector@${{ steps.build_and_push_connector.outputs.digest }}
+        env:
+          COSIGN_PASSWORD: ${{ secrets.SIGNING_SECRET_PASSWORD }}

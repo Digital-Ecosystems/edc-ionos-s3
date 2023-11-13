@@ -71,7 +71,6 @@ dependencies {
 	//new
 	implementation("${edcGroup}:dsp:${edcVersion}")
 	
-
 }
 
 application {

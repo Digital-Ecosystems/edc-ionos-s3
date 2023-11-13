@@ -36,6 +36,7 @@ include(":edc-ionos-extension:core-ionos-s3")
 include(":edc-ionos-extension:vault-hashicorp")
 
 include(":connector")
+include(":connector-persistence")
 
 include(":example:file-transfer-push-daps:transfer-file")
 include(":example:file-transfer-push-daps:provider")
