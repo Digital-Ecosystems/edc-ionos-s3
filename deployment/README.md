@@ -24,6 +24,7 @@ To deploy the EDC Ionos S3 connector to external kubernetes cluster on IONOS clo
 These are the services that are deployed:
 - [Vault](https://www.vaultproject.io/)
 - [EDC-Ionos-S3](https://github.com/Digital-Ecosystems/edc-ionos-s3)
+- [PostgreSQL](https://www.postgresql.org/)
 
 ***
 
@@ -36,7 +37,7 @@ Set environment variables
 - To create the IONOS token please take a look at the following [documentation](/ionos_token.md);
 - If you are deploying multiple EDC Connectors on the same Kubernetes cluster, make sure **TF_VAR_namespace** and **TF_VAR_vaultname** parameters are unique for each Connector.
 - The *TF_VAR_ionos_token*, *TF_VAR_s3_access_key* and *TF_VAR_s3_secret_key* parameters must be connected to the same IONOS DCD user and account.
-- The IONOS_S3 connector automatically creates S3 access keys for each file transfer. The limit in DCD is usually 5, some make sure there are less than 5 keys in before initiating a file transfer.
+- The IONOS_S3 connector automatically creates S3 access keys for each file transfer. The limit in DCD is usually 5, so make sure there are less than 5 keys before initiating a file transfer.
 - **WARNING**: For **TF_VAR_persistence_type** if you choose **None** the data will be lost if the container pods are restarted.
 
 ```sh
@@ -53,7 +54,7 @@ export TF_VAR_ionos_token='' # IONOS Cloud token, for further information: https
 # Required only if persistence_type is PostgreSQLaaS
 export TF_VAR_datacenter_name="Digital Ecosystems"
 export TF_VAR_datacenter_location="de/txl"
-export TF_VAR_kubernetes_cluster_name="federated-catalog"
+export TF_VAR_kubernetes_cluster_name="dataspace"
 export TF_VAR_kubernetes_node_pool_name="pool2"
 export TF_VAR_private_lan_name="k8s-lan"
 export TF_VAR_pg_database="edcionos"
