@@ -54,8 +54,6 @@ The extension has the following dependencies:
 | `org.eclipse.edc:data-plane-core`             | Main features of the data plane |
 | `org.eclipse.edc:data-plane-selector-client`             | Offers several implementations for the data plane selector |
 | `org.eclipse.edc:data-plane-selector-core`             | Main features of the data plane selector |
-| `org.eclipse.edc:ids`             | Support IDS |
-| `de.fraunhofer.iais.eis.ids.infomodel:java`             | IDS Information Model for Java |
 
 ### Configurations
 It is required to configure an `Access key` and a `Secret Access Key` from the IONOS S3 storage service.
