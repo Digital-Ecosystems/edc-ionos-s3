@@ -72,6 +72,8 @@ dependencies {
 	
 	implementation(project(":edc-ionos-extension:data-plane-ionos-s3"))
  
+	api(project(":extensions:possible-x"))
+ 
 	testImplementation ("${edcGroup}:junit:${edcVersion}")	
 }
 

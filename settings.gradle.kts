@@ -35,6 +35,8 @@ include(":edc-ionos-extension:core-ionos-s3")
 
 include(":edc-ionos-extension:vault-hashicorp")
 
+include(":extensions:possible-x")
+
 include(":connector")
 include(":connector-persistence")
 
