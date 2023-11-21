@@ -112,7 +112,7 @@ data "ionoscloud_k8s_node_pool_nodes" "postgresaas" {
 
 data "ionoscloud_nic" "node1privatenic" {
   datacenter_id   = data.ionoscloud_datacenter.postgresaas.id
-  server_id       = data.ionoscloud_k8s_node_pool_nodes.postgresaas.nodes[1].id
+  server_id       = data.ionoscloud_k8s_node_pool_nodes.postgresaas.nodes[0].id
   name            = "private-lan-1"
 }
 
