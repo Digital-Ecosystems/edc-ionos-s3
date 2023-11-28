@@ -1,4 +1,4 @@
-# File transfer using push method - with persistency
+# File transfer using pull method - with persistency
 
  This example shows how to exchange a data file between two EDC's. It is based on a sample of the official EDC respository. The examples uses PostgreSQL for persistence.
 
