@@ -62,6 +62,8 @@ public class IonosDataSourceFactory implements DataSourceFactory {
         return IonosDataSource.Builder.newInstance().client(s3Api)
                 .bucketName(source.getStringProperty(IonosBucketSchema.BUCKET_NAME))
                 .blobName(source.getStringProperty(IonosBucketSchema.BLOB_NAME))
+                .filterIncludes(source.getStringProperty(IonosBucketSchema.FILTER_INCLUDES))
+                .filterExcludes(source.getStringProperty(IonosBucketSchema.FILTER_EXCLUDES))
                 .build();
     }
 

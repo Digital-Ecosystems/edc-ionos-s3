@@ -108,7 +108,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
     }
 
     @Override
-    public List<String> listObjects(String bucketName, String objectName) {
+    public List<S3Object> listObjects(String bucketName, String objectName) {
 
         var objects = minioClient.listObjects(ListObjectsArgs.builder()
             .bucket(bucketName.toLowerCase())
@@ -117,15 +117,16 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
             .maxKeys(maxFiles)
             .build());
 
-        List<String> objectsName = StreamSupport
+        List<S3Object> objectsName = StreamSupport
                 .stream(objects.spliterator(), false)
                 .map(item -> {
                     try {
-                        return item.get().objectName();
+                        return item.get();
                     } catch (Exception e) {
                         throw new EdcException("Error fetching object", e);
                     }
                 })
+                .map(item -> new S3Object(item.objectName(), item.size()))
                 .collect(Collectors.toList());
 
         return objectsName;

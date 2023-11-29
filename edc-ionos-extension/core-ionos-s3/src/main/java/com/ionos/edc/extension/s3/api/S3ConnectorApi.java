@@ -32,7 +32,7 @@ public interface S3ConnectorApi {
     
     InputStream getObject(String bucketName, String objectName);
 
-    List<String> listObjects(String bucketName, String objectName);
+    List<S3Object> listObjects(String bucketName, String objectName);
 
     TemporaryKey createTemporaryKey();
     
