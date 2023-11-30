@@ -1,0 +1,20 @@
+{
+    "name": "ionos-s3",
+    "version": "1.0.0",
+    "description": "Fully configurable dataspace setup",
+    "main": "index.js",
+    "directories": {
+      "doc": "docs"
+    },
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "Apache-2.0",
+    "devDependencies": {
+      "@semantic-release/changelog": "^6.0.3",
+      "@semantic-release/git": "^10.0.1",
+      "semantic-release": "^21.0.7"
+    }
+  }
