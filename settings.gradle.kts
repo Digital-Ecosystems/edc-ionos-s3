@@ -13,9 +13,12 @@ dependencyResolutionManagement {
         
         mavenCentral()
         mavenLocal()
-    
     }
-   
+    versionCatalogs {
+        create("libs") {
+            from("org.eclipse.edc:edc-versions:0.1.2")
+        }
+    }
 }
 
 include(":edc-ionos-extension:data-plane-ionos-s3")

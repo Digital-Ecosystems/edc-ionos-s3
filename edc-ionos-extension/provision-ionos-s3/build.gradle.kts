@@ -15,6 +15,18 @@ val gitHubPkgsUrl: String by project
 val gitHubUser: String? by project
 val gitHubToken: String? by project
 
+dependencies {
+    api("${edcGroup}:runtime-metamodel:${metaModelVersion}")
+
+    implementation("${edcGroup}:transfer-spi:${edcVersion}")
+
+    implementation(project(":edc-ionos-extension:core-ionos-s3"))
+
+    implementation("dev.failsafe:failsafe:3.2.4")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
+}
+
 java {
     withJavadocJar()
     withSourcesJar()
