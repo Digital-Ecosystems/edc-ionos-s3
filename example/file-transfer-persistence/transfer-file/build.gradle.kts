@@ -18,9 +18,7 @@ plugins {
 repositories {
 	mavenLocal()
 	mavenCentral()
-    maven {// while runtime-metamodel dependency is still a snapshot
-		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-    }
+   
 }
 val javaVersion: String by project
 val edcGroup: String by project

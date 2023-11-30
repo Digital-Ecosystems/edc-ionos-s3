@@ -99,3 +99,22 @@ jobs:
           ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector@${{ steps.build_and_push_connector.outputs.digest }}
         env:
           COSIGN_PASSWORD: ${{ secrets.SIGNING_SECRET_PASSWORD }}
+  build-and-publish-artifacts:
+    runs-on: ubuntu-latest
+    permissions:
+              contents: read
+              packages: write
+    steps:
+          - name: Checkout repository
+            uses: actions/checkout@v3
+                
+          - name: Set up JDK 17
+            uses: actions/setup-java@v2
+            with:
+              java-version: '17'
+              distribution: 'temurin'
+          - name: Build project
+            run: ./gradlew clean build
+        
+          - name: Publish artifacts to GitHub Packages
+            run: ./gradlew publish -Dorg.gradle.project.gitHubUser=${{ github.actor }} -Dorg.gradle.project.gitHubToken=${{ secrets.GITHUB_TOKEN }}
