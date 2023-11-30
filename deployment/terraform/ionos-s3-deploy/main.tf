@@ -16,6 +16,46 @@ variable "ids_webhook_address" {
   default = "http://localhost:8282"
 }
 
+variable "persistence_type" {
+  type = string
+  default = "None"
+}
+
+variable "image_repository" {
+  type = string
+  default = "ghcr.io/digital-ecosystems/connector"
+}
+
+variable "image_tag" {
+  type = string
+  default = ""
+}
+
+variable "pg_host" {
+  type = string
+  default = "localhost"
+}
+
+variable "pg_port" {
+  type = number
+  default = 5432
+}
+
+variable "pg_database" {
+  type = string
+  default = "postgres"
+}
+
+variable "pg_username" {
+  type = string
+  default = "postgres"
+}
+
+variable "pg_password" {
+  type = string
+  default = "postgres"
+}
+
 variable "s3_access_key" {}
 variable "s3_secret_key" {}
 variable "s3_endpoint" {}
@@ -72,4 +112,38 @@ resource "helm_release" "edc-ionos-s3" {
     value = var.ids_webhook_address
   }
 
+  set {
+    name  = "edc.postgresql.host"
+    value = var.pg_host
+  }
+
+  set {
+    name  = "edc.postgresql.database"
+    value = var.pg_database
+  }
+
+  set {
+    name  = "edc.postgresql.port"
+    value = var.pg_port
+  }
+
+  set {
+    name  = "edc.postgresql.username"
+    value = var.pg_username
+  }
+
+  set {
+    name  = "edc.postgresql.password"
+    value = var.pg_password
+  }
+
+  set {
+    name = "image.repository"
+    value = var.image_repository
+  }
+
+  set {
+    name = "image.tag"
+    value = var.image_tag
+  }
 }
