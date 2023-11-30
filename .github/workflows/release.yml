@@ -2,7 +2,7 @@ name: Release
 on:
   push:
     branches:
-      - main
+      - create_action_and_package
 jobs:
   release:
     name: Release
