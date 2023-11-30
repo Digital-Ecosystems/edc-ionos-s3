@@ -13,10 +13,18 @@
  */
 plugins {
     `java-library`
+    `maven-publish`
 }
 
 val edcGroup: String by project
 val edcVersion: String by project
+val extensionsGroup: String by project
+val extensionsVersion: String by project
+
+val gitHubPkgsName: String by project
+val gitHubPkgsUrl: String by project
+val gitHubUser: String? by project
+val gitHubToken: String? by project
 
 dependencies {
     api("${edcGroup}:core-spi:${edcVersion}")
@@ -25,3 +33,35 @@ dependencies {
     implementation("${edcGroup}:util:${edcVersion}")
 }
 
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = extensionsGroup
+            artifactId = "vault-hashicorp"
+            version = extensionsVersion
+
+            from(components["java"])
+
+            pom {
+                name.set("vault-hashicorp")
+                description.set("Extension to use Hashicorp Vault to store certificates and secrets")
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = gitHubPkgsName
+            url = uri(gitHubPkgsUrl)
+            credentials {
+                username = gitHubUser
+                password = gitHubToken
+            }
+        }
+    }
+}
