@@ -71,7 +71,7 @@ jobs:
       - name: Sign "connector" image
         run: |
           cosign sign -y --key cosign.key \
-          ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector@${{ steps.build-and-push-connector.outputs.digest }}
+          ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector@${{ github.ref_name }}.sig
         env:
           COSIGN_PASSWORD: ${{ secrets.SIGNING_SECRET_PASSWORD }}
 
@@ -82,7 +82,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector
           tags: |
             type=raw,value=persistence-latest,enable={{is_default_branch}}
-            persistence-${{ github.ref_name }}
+            ${{ github.ref_name }}-persistence
 
       - name: Build and push "connector-persistence"
         id: build-and-push-connector-persistence
@@ -97,7 +97,7 @@ jobs:
       - name: Sign "connector-persistence" image
         run: |
           cosign sign -y --key cosign.key \
-          ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector@${{ steps.build-and-push-connector-persistence.outputs.digest }}
+          ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector@${{ github.ref_name }}-persistence.sig
         env:
           COSIGN_PASSWORD: ${{ secrets.SIGNING_SECRET_PASSWORD }}
 
