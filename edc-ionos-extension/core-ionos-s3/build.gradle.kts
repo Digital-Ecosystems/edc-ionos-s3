@@ -51,8 +51,9 @@ publishing {
 	}
 	repositories {
 		maven {
-			name = gitHubPkgsName
-			url = uri(gitHubPkgsUrl)
+			name = "GitHubPackages"
+			url = uri("https://maven.pkg.github.com/${project.properties["github_owner"]}/${project.properties["github_repo"]}")
+                    
 			credentials {
 				username = gitHubUser
 				password = gitHubToken
