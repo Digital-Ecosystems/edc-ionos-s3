@@ -22,9 +22,7 @@ plugins {
 repositories {
 	mavenLocal()
 	mavenCentral()
-    maven {// while runtime-metamodel dependency is still a snapshot
-		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-    }
+   
 	  gradlePluginPortal()
 }
 val javaVersion: String by project
@@ -62,7 +60,6 @@ dependencies {
     implementation("${edcGroup}:management-api:${edcVersion}")
 	
 	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")	
-	//implementation("$edcGroup:ids:+")
 
 	implementation("${edcGroup}:iam-mock:${edcVersion}")
 	
