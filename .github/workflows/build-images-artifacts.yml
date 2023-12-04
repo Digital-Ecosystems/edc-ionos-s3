@@ -59,7 +59,7 @@ jobs:
         run: echo "${{ secrets.SIGNING_SECRET }}" > cosign.key
 
       - name: Build and push "connector"
-        id: build_and_push_connector
+        id: build-and-push-connector
         uses: docker/build-push-action@v4
         with:
           context: ./connector
@@ -71,7 +71,7 @@ jobs:
       - name: Sign "connector" image
         run: |
           cosign sign -y --key cosign.key \
-          ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector@${{ github.ref_name }}
+          ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector@${{ steps.build-and-push-connector.outputs.digest }}
         env:
           COSIGN_PASSWORD: ${{ secrets.SIGNING_SECRET_PASSWORD }}
 
@@ -85,7 +85,7 @@ jobs:
             persistence-${{ github.ref_name }}
 
       - name: Build and push "connector-persistence"
-        id: build_and_push_connector-persistence
+        id: build-and-push-connector-persistence
         uses: docker/build-push-action@v4
         with:
           context: ./connector-persistence
@@ -97,7 +97,7 @@ jobs:
       - name: Sign "connector-persistence" image
         run: |
           cosign sign -y --key cosign.key \
-          ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector@$${{ github.ref_name }}
+          ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/connector@${{ steps.build-and-push-connector-persistence.outputs.digest }}
         env:
           COSIGN_PASSWORD: ${{ secrets.SIGNING_SECRET_PASSWORD }}
 
