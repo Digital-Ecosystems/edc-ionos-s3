@@ -3,6 +3,8 @@ name: Build and publish Docker images and Maven artifacts
 on:
   release:
     types: [published]
+  push:
+    branches: ["fix/release-workflow"]
 
 env:
   REGISTRY: ghcr.io
