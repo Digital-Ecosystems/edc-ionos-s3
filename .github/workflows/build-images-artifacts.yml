@@ -3,8 +3,6 @@ name: Build and publish Docker images and Maven artifacts
 on:
   release:
     types: [published]
-  push:
-    branches: ["fix/release-workflow"]
 
 env:
   REGISTRY: ghcr.io
@@ -123,7 +121,7 @@ jobs:
 
       - name: Publish artifacts to GitHub Packages
         run: |  
-            ./gradlew -Pversion=${{ github.ref_name }} \
+            ./gradlew -PextensionsVersion=${{ github.ref_name }} \
             -Pgithub_owner=${{ github.repository_owner }} \
             -Pgithub_repo=edc-ionos-s3 publish \
             -Dorg.gradle.project.gitHubUser=${{ github.actor }} \
