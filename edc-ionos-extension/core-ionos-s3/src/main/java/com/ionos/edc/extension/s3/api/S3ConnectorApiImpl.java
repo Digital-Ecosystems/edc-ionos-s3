@@ -49,12 +49,14 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
     HttpConnector ionosApi = new HttpConnector();
     
     private MinioClient minioClient;
+    private String region;
     private String token;
 
     
     public S3ConnectorApiImpl(String endpoint, String accessKey, String secretKey, String token) {
     	if(accessKey != null && secretKey  != null && endpoint !=null)
     		this.minioClient = minConnector.connect(endpoint, accessKey, secretKey);
+        this.region = getRegion(endpoint);
         this.token = token; 
     }
 
@@ -62,6 +64,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
     public void s3ConnectorApi(String endpoint, String accessKey, String secretKey, String token) {
     	if(accessKey != null && secretKey  != null && endpoint !=null)
     		this.minioClient = minConnector.connect(endpoint, accessKey, secretKey);
+        this.region = getRegion(endpoint);
         this.token = token; 
     }
 
@@ -185,7 +188,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
         boolean found = false;
         try {
         	
-            found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName.toLowerCase()).build());
+            found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName.toLowerCase()).region(this.region).build());
         } catch (InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException |
                 InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException |
                 IllegalArgumentException | IOException e) {
@@ -208,5 +211,20 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
 		ionosApi.deleteTemporaryAccount(token,accessKey);
 		
 	}
-    
+
+    private String getRegion(String endpoint) {
+        if (!endpoint.contains(".ionoscloud.com"))
+            return endpoint;
+
+        var region = endpoint.substring(0, endpoint.indexOf(".ionoscloud.com"));
+
+        if (region.contains("https://" )) {
+            return region.substring(region.indexOf("https://") + 8);
+        } else if (region.contains("http://" )) {
+            return region.substring(region.indexOf("http://") + 7);
+        } else {
+            return region;
+        }
+    }
+
 }
