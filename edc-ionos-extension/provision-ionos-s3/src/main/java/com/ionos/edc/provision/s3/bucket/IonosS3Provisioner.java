@@ -23,14 +23,12 @@ import org.eclipse.edc.connector.transfer.spi.types.DeprovisionedResource;
 import org.eclipse.edc.connector.transfer.spi.types.ProvisionResponse;
 import org.eclipse.edc.connector.transfer.spi.types.ProvisionedResource;
 import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
-import org.eclipse.edc.spi.response.ResponseStatus;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.response.StatusResult;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.OffsetDateTime;
 import java.util.concurrent.CompletableFuture;
-import static java.util.concurrent.CompletableFuture.completedFuture;
 import static dev.failsafe.Failsafe.with;
 
 public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition, IonosS3ProvisionedResource> {
@@ -64,7 +62,7 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
             createBucket(bucketName);
         }
 
-        var serviceAccount =s3Api.createTemporaryKey();
+        var serviceAccount = s3Api.createTemporaryKey();
 
         String resourceName = resourceDefinition.getKeyName();
 

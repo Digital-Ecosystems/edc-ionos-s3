@@ -82,10 +82,10 @@ public class IonosDataSinkFactory implements DataSinkFactory {
 
         var secret = vault.resolveSecret(destination.getKeyName());
         if (secret != null) {
-            var Token = typeManager.readValue(secret, IonosToken.class);
+            var token = typeManager.readValue(secret, IonosToken.class);
 
             if (destination.getProperty(IonosBucketSchema.STORAGE_NAME) != null) {
-                var s3ApiTemp = new S3ConnectorApiImpl(destination.getProperty(IonosBucketSchema.STORAGE_NAME), Token.getAccessKey(), Token.getSecretKey(), "");
+                var s3ApiTemp = new S3ConnectorApiImpl(destination.getProperty(IonosBucketSchema.STORAGE_NAME), token.getAccessKey(), token.getSecretKey(), "");
                 return IonosDataSink.Builder.newInstance()
                         .bucketName(destination.getProperty(IonosBucketSchema.BUCKET_NAME))
                         .blobName(destination.getProperty(IonosBucketSchema.BLOB_NAME))
@@ -94,9 +94,9 @@ public class IonosDataSinkFactory implements DataSinkFactory {
                         .monitor(monitor).s3Api(s3ApiTemp)
                         .build();
             } else {
-                var s3ApiTemp = new S3ConnectorApiImpl(DEFAULT_STORAGE, Token.getAccessKey(), Token.getSecretKey(), "");
+                var s3ApiTemp = new S3ConnectorApiImpl(DEFAULT_STORAGE, token.getAccessKey(), token.getSecretKey(), "");
                 return IonosDataSink.Builder.newInstance()
-                        .bucketName(destination.getKeyName())
+                        .bucketName(destination.getProperty(IonosBucketSchema.BUCKET_NAME))
                         .blobName(destination.getProperty(IonosBucketSchema.BLOB_NAME))
                         .requestId(request.getId())
                         .executorService(executorService)

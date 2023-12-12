@@ -40,7 +40,7 @@ class IonosDataSource implements DataSource {
     private static class S3Part implements Part {
         private final S3ConnectorApi s3Api;
         private final String bucketName;
-        private String blobName;
+        private final String blobName;
 
         S3Part(S3ConnectorApi s3Api, String bucketName, String blobName) {
             super();
@@ -56,8 +56,7 @@ class IonosDataSource implements DataSource {
 
         @Override
         public InputStream openStream() {
-            InputStream targetStream = new ByteArrayInputStream(s3Api.getFile(bucketName, blobName));
-            return targetStream;
+            return new ByteArrayInputStream(s3Api.getFile(bucketName, blobName));
         }
     }
 
