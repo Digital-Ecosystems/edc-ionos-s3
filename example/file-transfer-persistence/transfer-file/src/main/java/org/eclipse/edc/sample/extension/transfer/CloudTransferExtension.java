@@ -22,11 +22,13 @@
  import org.eclipse.edc.policy.model.Permission;
  import org.eclipse.edc.policy.model.Policy;
  import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+ import org.eclipse.edc.spi.EdcException;
  import org.eclipse.edc.spi.asset.AssetIndex;
  import org.eclipse.edc.spi.system.ServiceExtension;
  import org.eclipse.edc.spi.types.domain.DataAddress;
  import org.eclipse.edc.spi.types.domain.asset.Asset;
- 
+
+ import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.*;
  import static org.eclipse.edc.spi.query.Criterion.criterion;
  public class CloudTransferExtension implements ServiceExtension {
      @Inject
@@ -54,17 +56,14 @@
          try {
              var asset = Asset.Builder.newInstance().id("1").build();
              var dataAddress = DataAddress.Builder.newInstance().type("IonosS3")
-                     .property("storage", "s3-eu-central-1.ionoscloud.com")
-                     .property("bucketName", "company1")
-                     .property("container", "company1")
-                     .property("blobName", "device1-data.csv")
-                     .keyName("device1-data.csv").build();
- 
-             
+                     .property(STORAGE_NAME, "s3-eu-central-1.ionoscloud.com")
+                     .property(BUCKET_NAME, "company1")
+                     .property(BLOB_NAME, "device1-data.csv")
+                     .keyName("device1").build();
+
              assetIndex.create(asset, dataAddress);
          } catch (Exception e) {
-             // TODO: handle exception
-             System.out.println(e);
+             throw new EdcException("Error creating Data Entries", e);
          }
      }
  

@@ -39,10 +39,8 @@ dependencies {
     implementation("${postgresqlGroup}:postgresql:$postgresqlVersion")
     implementation("${edcGroup}:control-plane-sql:$edcVersion")
 
-
 	implementation("${edcGroup}:control-plane-core:${edcVersion}")
 	implementation("${edcGroup}:data-plane-core:${edcVersion}")
-	implementation(project(":edc-ionos-extension:data-plane-ionos-s3"))
     implementation("${edcGroup}:data-plane-client:${edcVersion}")
     implementation("${edcGroup}:data-plane-selector-client:${edcVersion}")
     implementation("${edcGroup}:data-plane-selector-core:${edcVersion}")
@@ -51,4 +49,7 @@ dependencies {
 	implementation("${edcGroup}:policy-model:${edcVersion}")
 	implementation("${edcGroup}:policy-spi:${edcVersion}")
 	implementation("${edcGroup}:core-spi:${edcVersion}")
+
+    implementation(project(":edc-ionos-extension:core-ionos-s3"))
+    implementation(project(":edc-ionos-extension:data-plane-ionos-s3"))
 }

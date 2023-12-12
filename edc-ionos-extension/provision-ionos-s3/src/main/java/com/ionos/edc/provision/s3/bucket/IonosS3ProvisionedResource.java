@@ -21,34 +21,26 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
 import org.eclipse.edc.connector.transfer.spi.types.ProvisionedDataDestinationResource;
 
-import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.BUCKET_NAME;
-import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.STORAGE_NAME;
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.*;
 
 @JsonDeserialize(builder = IonosS3ProvisionedResource.Builder.class)
 @JsonTypeName("dataspaceconnector:ionosprovisionedresource")
 public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResource {
-    private String keyId;
-    
+
+    private String accessKey;
+
     public String getStorage() {
         return getDataAddress().getProperty(STORAGE_NAME);
     }
     public String getBucketName() {
         return getDataAddress().getProperty(BUCKET_NAME);
     }
-    
-    
- 
-    public String getKeyId() {
-		return keyId;
-	}
-	public void setKeyId(String keyId) {
-		this.keyId = keyId;
-	}
-	@Override
-    public String getResourceName() {
-        return dataAddress.getProperty(BUCKET_NAME);
+    public String getBlobName() {
+        return getDataAddress().getProperty(BLOB_NAME);
     }
-
+    public String getAccessKey() {
+        return accessKey;
+    }
  
     private IonosS3ProvisionedResource() {
     }
@@ -71,14 +63,19 @@ public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResour
             dataAddressBuilder.property(STORAGE_NAME, storage);
             return this;
         }
+
         public Builder bucketName(String bucketName) {
             dataAddressBuilder.property(BUCKET_NAME, bucketName);
-            dataAddressBuilder.keyName(bucketName + "-key");
             return this;
         }
 
-        public Builder keyId(String arn) {
-            provisionedResource.keyId = arn;
+        public Builder blobName(String blobName) {
+            dataAddressBuilder.property(BLOB_NAME, blobName);
+            return this;
+        }
+
+        public Builder accessKey(String accessKey) {
+            provisionedResource.accessKey = accessKey;
             return this;
         }
     }

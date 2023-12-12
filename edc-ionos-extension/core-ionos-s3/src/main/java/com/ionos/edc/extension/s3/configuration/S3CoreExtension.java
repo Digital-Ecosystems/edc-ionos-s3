@@ -26,8 +26,6 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.security.CertificateResolver;
 import org.eclipse.edc.spi.security.PrivateKeyResolver;
-//import org.eclipse.edc.spi.system.vault.NoopCertificateResolver;
-//import org.eclipse.edc.spi.system.vault.NoopPrivateKeyResolver;
 
 @Provides(S3ConnectorApi.class)
 @Extension(value = S3CoreExtension.NAME)
@@ -57,10 +55,12 @@ public class S3CoreExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
+
         var accessKey = vault.resolveSecret(IONOS_ACCESS_KEY);
         var secretKey = vault.resolveSecret(IONOS_SECRET_KEY);
         var endPoint = vault.resolveSecret(IONOS_ENDPOINT);
         var token =  vault.resolveSecret(IONOS_TOKEN);
+
         if(accessKey == null || secretKey  == null || endPoint ==null) {
               monitor.warning("Couldn't connect or the vault didn't return values, falling back to ConfigMap Configuration");
         	  accessKey = context.getSetting(IONOS_ACCESS_KEY, IONOS_ACCESS_KEY);
@@ -71,12 +71,5 @@ public class S3CoreExtension implements ServiceExtension {
         
         var s3Api = new S3ConnectorApiImpl(endPoint, accessKey, secretKey, token);
         context.registerService(S3ConnectorApi.class, s3Api);
-
-        // var privateKeyResolver = new NoopPrivateKeyResolver();
-        // context.registerService(PrivateKeyResolver.class, privateKeyResolver);
-
-        // var certificateResolver = new NoopCertificateResolver();
-        // context.registerService(CertificateResolver.class, certificateResolver);
     }
-
 }

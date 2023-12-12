@@ -14,62 +14,43 @@
 
 package com.ionos.edc.provision.s3.bucket;
 
+import java.util.Objects;
 import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
 
-
 public class IonosS3ResourceDefinition extends ResourceDefinition {
+    private String keyName;
     private String storage;
     private String accessKey;
     private String secretKey;
     private String bucketName;
-
+    private String blobName;
 
     public IonosS3ResourceDefinition() {
         super();
     }
 
+    public String getKeyName() {
+        return keyName;
+    }
     public String getStorage() {
         return storage;
     }
-
-    public void setStorage(String storage) {
-        this.storage = storage;
-    }
-
     public String getAccessKey() {
 		return accessKey;
 	}
-
-
-
-	public void setAccessKey(String accessKey) {
-		this.accessKey = accessKey;
-	}
-
-
-
 	public String getSecretKey() {
 		return secretKey;
 	}
-
-
-
-	public void setSecretKey(String secretKey) {
-		this.secretKey = secretKey;
-	}
-
-
-	public String getbucketName() {
+	public String getBucketName() {
         return bucketName;
     }
-
-    public void setbucketName(String bucketName) {
-        this.bucketName = bucketName;
+    public String getBlobName() {
+        return blobName;
     }
 
     @Override
     public Builder toBuilder() {
-        return initializeBuilder(new Builder()).storage(storage).accessKey(accessKey).secretKey(secretKey).bucketName(bucketName);
+        return initializeBuilder(new Builder()).keyName(keyName).storage(storage).accessKey(accessKey).secretKey(secretKey).bucketName(bucketName).blobName(blobName);
     }
 
     public static class Builder extends ResourceDefinition.Builder<IonosS3ResourceDefinition, Builder> {
@@ -81,7 +62,12 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
         public static Builder newInstance() {
             return new Builder();
         }
-        
+
+        public Builder keyName(String keyName) {
+            resourceDefinition.keyName = keyName;
+            return this;
+        }
+
         public Builder storage(String storage) {
             resourceDefinition.storage = storage;
             return this;
@@ -101,14 +87,17 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
             resourceDefinition.bucketName = bucketName;
             return this;
         }
-        
-        
+
+        public Builder blobName(String blobName) {
+            resourceDefinition.blobName = blobName;
+            return this;
+        }
 
         @Override
         protected void verify() {
             super.verify();
-
+            Objects.requireNonNull(resourceDefinition.keyName, "Key Name is required");
+            Objects.requireNonNull(resourceDefinition.bucketName, "Bucket Name is required");
         }
     }
-
 }

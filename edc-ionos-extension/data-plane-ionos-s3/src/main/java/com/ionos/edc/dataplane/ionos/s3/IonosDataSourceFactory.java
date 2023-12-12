@@ -63,15 +63,18 @@ public class IonosDataSourceFactory implements DataSourceFactory {
 
     @Override
     public DataSource createSource(DataFlowRequest request) {
+
         var validationResult = validateRequest(request);
         if (validationResult.failed()) {
             throw new EdcException(String.join(", ", validationResult.getFailureMessages()));
         }
         
         var source = request.getSourceDataAddress();
-       
-        return IonosDataSource.Builder.newInstance().client(s3Api).bucketName(source.getProperty(IonosBucketSchema.BUCKET_NAME)).blobName(source.getProperty(IonosBucketSchema.BLOB_NAME))
-                .keyName(source.getKeyName()).build();
+
+        return IonosDataSource.Builder.newInstance().client(s3Api)
+                .bucketName(source.getProperty(IonosBucketSchema.BUCKET_NAME))
+                .blobName(source.getProperty(IonosBucketSchema.BLOB_NAME))
+                .build();
     }
 
 }
