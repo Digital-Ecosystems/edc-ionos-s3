@@ -18,27 +18,33 @@ import com.ionos.edc.extension.s3.api.S3ConnectorApi;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.util.sink.ParallelSink;
-import org.eclipse.edc.spi.response.ResponseStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
+import java.util.Objects;
 
 import static java.lang.String.format;
 
 public class IonosDataSink extends ParallelSink {
+
     private S3ConnectorApi s3Api;
     private String bucketName;
     private String blobName;
-    private String accessKey;
-    private String secretkey;
     
     private IonosDataSink() {}
 
     @Override
     protected StreamResult<Void> transferParts(List<DataSource.Part> parts) {
 
-        for (var part : parts) {
+        for (DataSource.Part part : parts) {
+            String blobName;
+            if (this.blobName != null) {
+                blobName = this.blobName;
+            } else {
+                blobName = part.name();
+            }
+
             try (var input = part.openStream()) {
                 s3Api.uploadParts(bucketName, blobName, new ByteArrayInputStream(input.readAllBytes()));
             } catch (Exception e) {
@@ -57,6 +63,7 @@ public class IonosDataSink extends ParallelSink {
     }
 
     public static class Builder extends ParallelSink.Builder<Builder, IonosDataSink> {
+
         private Builder() {
             super(new IonosDataSink());
         }
@@ -79,18 +86,10 @@ public class IonosDataSink extends ParallelSink {
             sink.blobName = blobName;
             return this;
         }
-        
-        public Builder accessKey(String accessKey) {
-            sink.accessKey = accessKey;
-            return this;
-        }
-
-        public Builder secretkey(String secretkey) {
-            sink.secretkey = secretkey;
-            return this;
-        }
 
         @Override
-        protected void validate() {}
+        protected void validate() {
+            Objects.requireNonNull(sink.bucketName, "Bucket Name is required");
+        }
     }
 }

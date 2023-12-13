@@ -23,8 +23,6 @@ import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
 import org.eclipse.edc.policy.model.Policy;
 
-
-
 import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
 
 public class IonosS3ConsumerResourceDefinitionGenerator implements ConsumerResourceDefinitionGenerator {
@@ -36,13 +34,22 @@ public class IonosS3ConsumerResourceDefinitionGenerator implements ConsumerResou
 
         var destination = dataRequest.getDataDestination();
         var id = randomUUID().toString();
-        var bucket = destination.getProperty(IonosBucketSchema.BUCKET_NAME);
-        var acc = destination.getProperty(IonosBucketSchema.STORAGE_NAME);
+        var keyName = destination.getKeyName();
+        var storage = destination.getProperty(IonosBucketSchema.STORAGE_NAME);
+        var bucketName = destination.getProperty(IonosBucketSchema.BUCKET_NAME);
+        var blobName = destination.getProperty(IonosBucketSchema.BLOB_NAME);
         var accessKey = destination.getProperty(IonosBucketSchema.ACCESS_KEY_ID);
         var secretKey = destination.getProperty(IonosBucketSchema.SECRET_ACCESS_KEY);
 
-        return IonosS3ResourceDefinition.Builder.newInstance().id(id).accessKey(accessKey).secretKey(secretKey).storage(acc).bucketName(bucket).build();
-
+        return IonosS3ResourceDefinition.Builder.newInstance()
+                .id(id)
+                .keyName(keyName)
+                .storage(storage)
+                .bucketName(bucketName)
+                .blobName(blobName)
+                .accessKey(accessKey)
+                .secretKey(secretKey)
+                .build();
     }
 
     @Override

@@ -14,11 +14,13 @@
 
 package com.ionos.edc.extension.s3.schema;
 
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+
 public interface IonosBucketSchema {
     String TYPE = "IonosS3";
-    String STORAGE_NAME = "storage";
-    String BUCKET_NAME = "bucketName";
-    String BLOB_NAME = "blobName";
-    String ACCESS_KEY_ID = "accessKey";
-    String SECRET_ACCESS_KEY = "secretKey";
+    String STORAGE_NAME = EDC_NAMESPACE + "storage";
+    String BUCKET_NAME = EDC_NAMESPACE + "bucketName";
+    String BLOB_NAME = EDC_NAMESPACE + "blobName";
+    String ACCESS_KEY_ID = EDC_NAMESPACE + "accessKey";
+    String SECRET_ACCESS_KEY = EDC_NAMESPACE + "secretKey";
 }

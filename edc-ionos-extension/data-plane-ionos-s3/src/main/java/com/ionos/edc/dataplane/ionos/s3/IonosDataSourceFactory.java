@@ -17,24 +17,18 @@ package com.ionos.edc.dataplane.ionos.s3;
 import com.ionos.edc.dataplane.ionos.s3.validation.IonosSourceDataAddressValidationRule;
 import com.ionos.edc.extension.s3.api.S3ConnectorApi;
 import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
-import org.eclipse.edc.connector.dataplane.spi.client.DataPlaneClient;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSourceFactory;
-import org.eclipse.edc.connector.transfer.spi.callback.ControlPlaneApiUrl;
-import org.eclipse.edc.connector.transfer.spi.flow.DataFlowController;
-import org.eclipse.edc.connector.transfer.spi.types.DataFlowResponse;
-import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.connector.dataplane.util.validation.ValidationRule;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.jetbrains.annotations.NotNull;
 
 public class IonosDataSourceFactory implements DataSourceFactory {
-    private S3ConnectorApi s3Api;
+    private final S3ConnectorApi s3Api;
    
     private final TypeManager typeManager;
     
@@ -63,15 +57,18 @@ public class IonosDataSourceFactory implements DataSourceFactory {
 
     @Override
     public DataSource createSource(DataFlowRequest request) {
+
         var validationResult = validateRequest(request);
         if (validationResult.failed()) {
             throw new EdcException(String.join(", ", validationResult.getFailureMessages()));
         }
         
         var source = request.getSourceDataAddress();
-       
-        return IonosDataSource.Builder.newInstance().client(s3Api).bucketName(source.getProperty(IonosBucketSchema.BUCKET_NAME)).blobName(source.getProperty(IonosBucketSchema.BLOB_NAME))
-                .keyName(source.getKeyName()).build();
+
+        return IonosDataSource.Builder.newInstance().client(s3Api)
+                .bucketName(source.getProperty(IonosBucketSchema.BUCKET_NAME))
+                .blobName(source.getProperty(IonosBucketSchema.BLOB_NAME))
+                .build();
     }
 
 }

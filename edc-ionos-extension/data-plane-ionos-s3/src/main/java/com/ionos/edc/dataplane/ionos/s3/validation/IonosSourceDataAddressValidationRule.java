@@ -25,13 +25,18 @@ import java.util.Map;
 
 import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.BLOB_NAME;
 import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.BUCKET_NAME;
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.STORAGE_NAME;
+import static org.eclipse.edc.spi.types.domain.DataAddress.SIMPLE_KEY_NAME;
+
 
 public class IonosSourceDataAddressValidationRule implements ValidationRule<DataAddress> {
 
     private final CompositeValidationRule<Map<String, String>> mandatoryPropertyValidationRule  = new CompositeValidationRule<>(
             List.of(
-
-                    new EmptyValueValidationRule(BUCKET_NAME)
+                    new EmptyValueValidationRule(SIMPLE_KEY_NAME),
+                    new EmptyValueValidationRule(STORAGE_NAME),
+                    new EmptyValueValidationRule(BUCKET_NAME),
+                    new EmptyValueValidationRule(BLOB_NAME)
             )
     );
 
