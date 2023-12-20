@@ -16,6 +16,7 @@ package com.ionos.edc.provision.s3.bucket;
 
 import com.ionos.edc.extension.s3.api.S3ConnectorApi;
 import com.ionos.edc.extension.s3.configuration.IonosToken;
+import com.ionos.edc.extension.s3.connector.ionosapi.TemporaryKey;
 
 import dev.failsafe.RetryPolicy;
 import org.eclipse.edc.connector.transfer.spi.provision.Provisioner;
@@ -62,10 +63,10 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
         if (!s3Api.bucketExists(bucketName)) {
             createBucket(bucketName);
         }
+        TemporaryKey serviceAccount = null;
 
-        com.ionos.edc.extension.s3.connector.ionosapi.TemporaryKey serviceAccount = null;
         try {
-            serviceAccount = s3Api.createTemporaryKey();
+           serviceAccount = s3Api.createTemporaryKey();
         } catch (Exception e) {
             failureCreatingKey(e);
         }
