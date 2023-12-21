@@ -23,19 +23,10 @@ import io.minio.GetObjectArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
-import io.minio.errors.ErrorResponseException;
-import io.minio.errors.InsufficientDataException;
-import io.minio.errors.InternalException;
-import io.minio.errors.InvalidResponseException;
-import io.minio.errors.ServerException;
-import io.minio.errors.XmlParserException;
+import org.eclipse.edc.spi.EdcException;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
 
 public class S3ConnectorApiImpl implements S3ConnectorApi {
 
@@ -59,14 +50,12 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
         if (!bucketExists(bucketName.toLowerCase())) {
             try {
                 minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName.toLowerCase()).region(region).build());
-            } catch (InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException |
-                     InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException |
-                     IllegalArgumentException | IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                throw new EdcException("Creating bucket: " + e.getMessage());
             }
         }
     }
-    
+
     @Override
     public void uploadParts(String bucketName, String fileName, ByteArrayInputStream  part) {
         if (!bucketExists(bucketName.toLowerCase())) {
@@ -75,28 +64,23 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
        
         try {
             minioClient.putObject(PutObjectArgs.builder().bucket(bucketName.toLowerCase()).region(region).object(fileName).stream(part, part.available(), -1).build());
-        } catch (InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException |
-                 InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException |
-                 IllegalArgumentException | IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new EdcException("Uploading parts: " + e.getMessage());
         }
     }
 
     @Override
     public byte[] getFile(String bucketName, String fileName) {
         if (!bucketExists(bucketName.toLowerCase())) {
-            return null;
+            throw new EdcException("Bucket not found - " + bucketName);
         }
 
         InputStream stream;
         try {
             stream = minioClient.getObject(GetObjectArgs.builder().bucket(bucketName.toLowerCase()).region(region).object(fileName).build());
             return stream.readAllBytes();
-        } catch (InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException |
-                InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException |
-                IllegalArgumentException | IOException e) {
-            e.printStackTrace();
-            return null;
+        } catch (Exception e) {
+            throw new EdcException("Getting file - " + e.getMessage());
         }
     }
 
@@ -104,22 +88,27 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
     public boolean bucketExists(String bucketName) {
         try {
             return minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName.toLowerCase()).region(this.region).build());
-        } catch (InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException |
-                InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException |
-                IllegalArgumentException | IOException e) {
-            e.printStackTrace();
-            return false;
+        } catch (Exception e) {
+            throw new EdcException("Verifying if bucket exists - " + e.getMessage());
         }
     }
     
     @Override
     public  TemporaryKey createTemporaryKey() {
-		return ionosApi.createTemporaryKey(token);
+		try{
+            return ionosApi.createTemporaryKey(token);
+        } catch (Exception e) {
+            throw new EdcException("Creating temporary key - (Warning: max 5 keys on the storage) - " + e.getMessage());
+        }
     }
  
 	@Override
 	public void deleteTemporaryKey(String accessKey) {
-		ionosApi.deleteTemporaryAccount(token,accessKey);
+        try{
+            ionosApi.deleteTemporaryAccount(token,accessKey);
+        } catch (Exception e) {
+            throw new EdcException("Deleting temporary key: " + e.getMessage());
+        }
 	}
 
     private String getRegion(String endpoint) {

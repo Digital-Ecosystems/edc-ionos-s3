@@ -17,10 +17,15 @@ package com.ionos.edc.dataplane.ionos.s3;
 import com.ionos.edc.extension.s3.api.S3ConnectorApi;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
+import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult.success;
 
 class IonosDataSource implements DataSource {
@@ -28,6 +33,7 @@ class IonosDataSource implements DataSource {
     private S3ConnectorApi s3Api;
     private String bucketName;
     private String blobName;
+    private static Monitor monitor;
 
     private IonosDataSource() {
     }
@@ -56,9 +62,29 @@ class IonosDataSource implements DataSource {
 
         @Override
         public InputStream openStream() {
-            return new ByteArrayInputStream(s3Api.getFile(bucketName, blobName));
+            try {
+                byte[] file = s3Api.getFile(bucketName, blobName);
+                if (file == null) {
+                    throw new EdcException("Error trying to getFile");
+                }
+
+                InputStream targetStream = new ByteArrayInputStream(file);
+                return targetStream;
+            } catch (Exception e) {
+                openingFailure(e, blobName);
+            }
+            return null;
+        }
+
+        @NotNull
+        private StreamResult<Void> openingFailure(Exception e, String blobName) {
+            var message = format("Error opening file: %s", blobName, e.getMessage());
+            monitor.severe(message, e);
+            return StreamResult.error(message);
         }
     }
+
+
 
     public static class Builder {
         private final IonosDataSource source;

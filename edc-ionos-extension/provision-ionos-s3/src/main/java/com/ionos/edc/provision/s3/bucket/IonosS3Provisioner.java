@@ -16,6 +16,7 @@ package com.ionos.edc.provision.s3.bucket;
 
 import com.ionos.edc.extension.s3.api.S3ConnectorApi;
 import com.ionos.edc.extension.s3.configuration.IonosToken;
+import com.ionos.edc.extension.s3.connector.ionosapi.TemporaryKey;
 
 import dev.failsafe.RetryPolicy;
 import org.eclipse.edc.connector.transfer.spi.provision.Provisioner;
@@ -30,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import java.time.OffsetDateTime;
 import java.util.concurrent.CompletableFuture;
 import static dev.failsafe.Failsafe.with;
+import static java.lang.String.format;
 
 public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition, IonosS3ProvisionedResource> {
     private final RetryPolicy<Object> retryPolicy;
@@ -61,9 +63,13 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
         if (!s3Api.bucketExists(bucketName)) {
             createBucket(bucketName);
         }
+        TemporaryKey serviceAccount = null;
 
-        var serviceAccount = s3Api.createTemporaryKey();
-
+        try {
+           serviceAccount = s3Api.createTemporaryKey();
+        } catch (Exception e) {
+            failureCreatingKey(e);
+        }
         String resourceName = resourceDefinition.getKeyName();
 
         var resourceBuilder = IonosS3ProvisionedResource.Builder.newInstance()
@@ -87,6 +93,12 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
         var response = ProvisionResponse.Builder.newInstance().resource(resource).secretToken(secretToken).build();
 
         return CompletableFuture.completedFuture(StatusResult.success(response));
+    }
+
+    @NotNull
+    private void failureCreatingKey(Exception e) {
+        var message = format("Error creating temporary key: ", e.getMessage());
+        monitor.severe(message, e);
     }
 
     @Override

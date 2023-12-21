@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.eclipse.edc.spi.EdcException;
 
 
 public class HttpConnector {
@@ -45,8 +46,7 @@ public class HttpConnector {
 					        TemporaryKey temp = new TemporaryKey(resp.getId().toString(),resp.getProperties().get("secretKey").toString());
 					        return temp;
 				    } catch (IOException e) {
-						e.printStackTrace();
-						return new TemporaryKey("", "");
+						throw new EdcException("Error getting S3 temporary key", e);
 					}				    
 	}
 	
