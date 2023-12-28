@@ -30,13 +30,13 @@ public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResour
     private String accessKey;
 
     public String getStorage() {
-        return getDataAddress().getProperty(STORAGE_NAME);
+        return getDataAddress().getStringProperty(STORAGE_NAME);
     }
     public String getBucketName() {
-        return getDataAddress().getProperty(BUCKET_NAME);
+        return getDataAddress().getStringProperty(BUCKET_NAME);
     }
     public String getBlobName() {
-        return getDataAddress().getProperty(BLOB_NAME);
+        return getDataAddress().getStringProperty(BLOB_NAME);
     }
     public String getAccessKey() {
         return accessKey;

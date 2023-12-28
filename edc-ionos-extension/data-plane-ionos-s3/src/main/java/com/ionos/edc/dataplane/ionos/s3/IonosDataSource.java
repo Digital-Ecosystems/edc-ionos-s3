@@ -43,6 +43,10 @@ class IonosDataSource implements DataSource {
         return success(Stream.of(new S3Part(s3Api, bucketName, blobName)));
     }
 
+    @Override
+    public void close() {
+    }
+
     private static class S3Part implements Part {
         private final S3ConnectorApi s3Api;
         private final String bucketName;
@@ -78,7 +82,7 @@ class IonosDataSource implements DataSource {
 
         @NotNull
         private StreamResult<Void> openingFailure(Exception e, String blobName) {
-            var message = format("Error opening file: %s", blobName, e.getMessage());
+            var message = format("Error opening file %s: %s", blobName, e.getMessage());
             monitor.severe(message, e);
             return StreamResult.error(message);
         }

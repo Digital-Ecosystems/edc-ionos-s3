@@ -16,16 +16,13 @@ package com.ionos.edc.provision.s3;
 
 import com.ionos.edc.extension.s3.api.S3ConnectorApi;
 import com.ionos.edc.extension.s3.configuration.IonosToken;
-import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
 import com.ionos.edc.provision.s3.bucket.IonosS3ConsumerResourceDefinitionGenerator;
 import com.ionos.edc.provision.s3.bucket.IonosS3ProvisionedResource;
 import com.ionos.edc.provision.s3.bucket.IonosS3Provisioner;
 import com.ionos.edc.provision.s3.bucket.IonosS3ResourceDefinition;
-import com.ionos.edc.provision.s3.bucket.IonosS3StatusChecker;
 import dev.failsafe.RetryPolicy;
 import org.eclipse.edc.connector.transfer.spi.provision.ProvisionManager;
 import org.eclipse.edc.connector.transfer.spi.provision.ResourceManifestGenerator;
-import org.eclipse.edc.connector.transfer.spi.status.StatusCheckerRegistry;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -33,9 +30,6 @@ import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
-
-
-
 
 @Extension(value = IonosProvisionExtension.NAME)
 public class IonosProvisionExtension implements ServiceExtension {
@@ -59,7 +53,6 @@ public class IonosProvisionExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        // TODO Auto-generated method stub
         monitor = context.getMonitor();
         monitor.debug("IonosProvisionExtension" + "provisionManager");
         var provisionManager = context.getService(ProvisionManager.class);
@@ -73,9 +66,6 @@ public class IonosProvisionExtension implements ServiceExtension {
         monitor.debug("IonosProvisionExtension" + "manifestGenerator");
         var manifestGenerator = context.getService(ResourceManifestGenerator.class);
         manifestGenerator.registerGenerator(new IonosS3ConsumerResourceDefinitionGenerator());
-        monitor.debug("IonosProvisionExtension" + "statusCheckerReg");
-        var statusCheckerReg = context.getService(StatusCheckerRegistry.class);
-        statusCheckerReg.register(IonosBucketSchema.TYPE, new IonosS3StatusChecker(clientApi, retryPolicy));
         monitor.debug("IonosProvisionExtension" + "registerTypes");
         registerTypes(typeManager);
     }

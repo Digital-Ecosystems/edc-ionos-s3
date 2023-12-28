@@ -31,6 +31,8 @@ val edcVersion: String by project
 
 dependencies {
     implementation("${edcGroupId}:control-plane-core:${edcVersion}")
+    implementation("${edcGroupId}:control-plane-api-client:${edcVersion}")
+
     implementation("${edcGroupId}:dsp:${edcVersion}")
     implementation("${edcGroupId}:configuration-filesystem:${edcVersion}")
     implementation("${edcGroupId}:vault-filesystem:${edcVersion}")

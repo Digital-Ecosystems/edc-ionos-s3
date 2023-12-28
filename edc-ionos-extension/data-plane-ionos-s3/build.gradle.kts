@@ -23,6 +23,7 @@ dependencies {
 	implementation("${edcGroup}:data-plane-util:${edcVersion}")
     implementation("${edcGroup}:data-plane-core:${edcVersion}")
 	implementation("${edcGroup}:http:${edcVersion}")
+	implementation("${edcGroup}:validator-spi:${edcVersion}")
 
 	implementation(project(":edc-ionos-extension:core-ionos-s3"))
 
