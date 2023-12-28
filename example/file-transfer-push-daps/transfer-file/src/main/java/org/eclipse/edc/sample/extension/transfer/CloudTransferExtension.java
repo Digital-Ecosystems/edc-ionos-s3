@@ -55,14 +55,13 @@
  
      public void registerDataEntries() {
          try {
-             var asset = Asset.Builder.newInstance().id("1").build();
              var dataAddress = DataAddress.Builder.newInstance().type("IonosS3")
                      .property(STORAGE_NAME, "s3-eu-central-1.ionoscloud.com")
                      .property(BUCKET_NAME, "company1")
                      .property(BLOB_NAME, "device1-data.csv")
                      .keyName("device1").build();
-
-             assetIndex.create(asset, dataAddress);
+             var asset = Asset.Builder.newInstance().id("1").dataAddress(dataAddress).build();
+             assetIndex.create(asset);
          } catch (Exception e) {
              throw new EdcException("Error creating Data Entries", e);
          }

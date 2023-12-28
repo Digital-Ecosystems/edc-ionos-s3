@@ -38,7 +38,8 @@ dependencies {
 	implementation("${edcGroup}:boot:${edcVersion}")
 	
     implementation("${edcGroup}:control-plane-core:${edcVersion}")
-	
+	implementation("${edcGroup}:control-plane-api-client:${edcVersion}")
+
 	implementation("${edcGroup}:api-observability:${edcVersion}")
 	
 	implementation("${edcGroup}:configuration-filesystem:${edcVersion}")

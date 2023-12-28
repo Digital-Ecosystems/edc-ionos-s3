@@ -36,7 +36,7 @@ public class IonosDataSink extends ParallelSink {
     private IonosDataSink() {}
 
     @Override
-    protected StreamResult<Void> transferParts(List<DataSource.Part> parts) {
+    protected StreamResult<Object> transferParts(List<DataSource.Part> parts) {
 
         for (DataSource.Part part : parts) {
             String blobName;
@@ -60,7 +60,7 @@ public class IonosDataSink extends ParallelSink {
     }
 
     @NotNull
-    private StreamResult<Void> uploadFailure(Exception e, String blobName) {
+    private StreamResult<Object> uploadFailure(Exception e, String blobName) {
         var message = format("Error writing the %s object on the %s bucket: %s", blobName, bucketName, e.getMessage());
         monitor.severe(message, e);
         return StreamResult.error(message);

@@ -31,7 +31,9 @@ val edcVersion: String by project
 
 dependencies {
     implementation("${edcGroup}:control-plane-core:${edcVersion}")
-	implementation("${edcGroup}:dsp:${edcVersion}")
+    implementation("${edcGroup}:control-plane-api-client:${edcVersion}")
+
+    implementation("${edcGroup}:dsp:${edcVersion}")
     implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
     implementation("${edcGroup}:vault-filesystem:${edcVersion}")
     implementation("${edcGroup}:iam-mock:${edcVersion}")

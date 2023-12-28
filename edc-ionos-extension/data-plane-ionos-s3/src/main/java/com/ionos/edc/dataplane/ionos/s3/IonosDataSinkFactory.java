@@ -22,7 +22,6 @@ import com.ionos.edc.extension.s3.configuration.IonosToken;
 import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSink;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSinkFactory;
-import org.eclipse.edc.connector.dataplane.util.validation.ValidationRule;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
@@ -30,6 +29,8 @@ import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.validator.spi.Validator;
+import org.eclipse.edc.validator.spi.ValidationResult;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ExecutorService;
@@ -43,7 +44,7 @@ public class IonosDataSinkFactory implements DataSinkFactory {
     private final Vault vault;
     private final TypeManager typeManager;
 
-    private final ValidationRule<DataAddress> validation = new IonosSinkDataAddressValidationRule();
+    private final Validator<DataAddress> validator = new IonosSinkDataAddressValidationRule();
     
     public IonosDataSinkFactory(S3ConnectorApi s3Api, ExecutorService executorService, Monitor monitor,
             Vault vault, TypeManager typeManager) {
@@ -62,12 +63,7 @@ public class IonosDataSinkFactory implements DataSinkFactory {
     @Override
     public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
         var destination = request.getDestinationDataAddress();
-        return validation.apply(destination).map(it -> null);
-    }
-    @Override
-    public  @NotNull Result<Boolean> validate(DataFlowRequest request) {
-        var destination = request.getDestinationDataAddress();
-        return  validation.apply(destination).map(it -> true);
+        return validator.validate(destination).flatMap(ValidationResult::toResult);
     }
 
     @Override
@@ -84,11 +80,11 @@ public class IonosDataSinkFactory implements DataSinkFactory {
         if (secret != null) {
             var token = typeManager.readValue(secret, IonosToken.class);
 
-            if (destination.getProperty(IonosBucketSchema.STORAGE_NAME) != null) {
-                var s3ApiTemp = new S3ConnectorApiImpl(destination.getProperty(IonosBucketSchema.STORAGE_NAME), token.getAccessKey(), token.getSecretKey(), "");
+            if (destination.getStringProperty(IonosBucketSchema.STORAGE_NAME) != null) {
+                var s3ApiTemp = new S3ConnectorApiImpl(destination.getStringProperty(IonosBucketSchema.STORAGE_NAME), token.getAccessKey(), token.getSecretKey(), "");
                 return IonosDataSink.Builder.newInstance()
-                        .bucketName(destination.getProperty(IonosBucketSchema.BUCKET_NAME))
-                        .blobName(destination.getProperty(IonosBucketSchema.BLOB_NAME))
+                        .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
+                        .blobName(destination.getStringProperty(IonosBucketSchema.BLOB_NAME))
                         .requestId(request.getId())
                         .executorService(executorService)
                         .monitor(monitor).s3Api(s3ApiTemp)
@@ -96,8 +92,8 @@ public class IonosDataSinkFactory implements DataSinkFactory {
             } else {
                 var s3ApiTemp = new S3ConnectorApiImpl(DEFAULT_STORAGE, token.getAccessKey(), token.getSecretKey(), "");
                 return IonosDataSink.Builder.newInstance()
-                        .bucketName(destination.getProperty(IonosBucketSchema.BUCKET_NAME))
-                        .blobName(destination.getProperty(IonosBucketSchema.BLOB_NAME))
+                        .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
+                        .blobName(destination.getStringProperty(IonosBucketSchema.BLOB_NAME))
                         .requestId(request.getId())
                         .executorService(executorService)
                         .monitor(monitor)
@@ -107,8 +103,8 @@ public class IonosDataSinkFactory implements DataSinkFactory {
         }
 
         return IonosDataSink.Builder.newInstance()
-                .bucketName(destination.getProperty(IonosBucketSchema.BUCKET_NAME))
-                .blobName(destination.getProperty(IonosBucketSchema.BLOB_NAME))
+                .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
+                .blobName(destination.getStringProperty(IonosBucketSchema.BLOB_NAME))
                 .requestId(request.getId()).executorService(executorService)
                 .monitor(monitor).s3Api(s3Api)
                 .build();

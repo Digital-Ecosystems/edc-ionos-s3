@@ -19,12 +19,13 @@ import com.ionos.edc.extension.s3.api.S3ConnectorApi;
 import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSourceFactory;
-import org.eclipse.edc.connector.dataplane.util.validation.ValidationRule;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.validator.spi.Validator;
+import org.eclipse.edc.validator.spi.ValidationResult;
 import org.jetbrains.annotations.NotNull;
 
 public class IonosDataSourceFactory implements DataSourceFactory {
@@ -32,7 +33,7 @@ public class IonosDataSourceFactory implements DataSourceFactory {
    
     private final TypeManager typeManager;
     
-    private final ValidationRule<DataAddress> validation = new IonosSourceDataAddressValidationRule();
+    private final Validator<DataAddress> validator = new IonosSourceDataAddressValidationRule();
     
     public IonosDataSourceFactory(S3ConnectorApi s3Api, TypeManager typeManager) {
         this.s3Api = s3Api;
@@ -43,16 +44,11 @@ public class IonosDataSourceFactory implements DataSourceFactory {
     public boolean canHandle(DataFlowRequest request) {
         return IonosBucketSchema.TYPE.equals(request.getSourceDataAddress().getType());
     }
-    @Override
-    public  @NotNull Result<Boolean> validate(DataFlowRequest request) {
-        var source = request.getSourceDataAddress();
-        return  validation.apply(source).map(it -> true);
-    }
 
     @Override
     public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
         var source = request.getSourceDataAddress();
-        return validation.apply(source).map(it -> null);
+        return validator.validate(source).flatMap(ValidationResult::toResult);
     }
 
     @Override
@@ -66,8 +62,8 @@ public class IonosDataSourceFactory implements DataSourceFactory {
         var source = request.getSourceDataAddress();
 
         return IonosDataSource.Builder.newInstance().client(s3Api)
-                .bucketName(source.getProperty(IonosBucketSchema.BUCKET_NAME))
-                .blobName(source.getProperty(IonosBucketSchema.BLOB_NAME))
+                .bucketName(source.getStringProperty(IonosBucketSchema.BUCKET_NAME))
+                .blobName(source.getStringProperty(IonosBucketSchema.BLOB_NAME))
                 .build();
     }
 
