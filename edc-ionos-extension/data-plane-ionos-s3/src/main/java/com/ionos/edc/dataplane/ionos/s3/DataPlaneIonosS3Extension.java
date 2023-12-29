@@ -33,7 +33,7 @@ public class DataPlaneIonosS3Extension implements ServiceExtension {
     
     @Inject
     private S3ConnectorApi s3Api;
-    
+
     @Inject
     private DataTransferExecutorServiceContainer executorContainer;
     
@@ -50,15 +50,12 @@ public class DataPlaneIonosS3Extension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        
-
         var monitor = context.getMonitor();
         
-        var sourceFactory = new IonosDataSourceFactory(s3Api,typeManager);
+        var sourceFactory = new IonosDataSourceFactory(s3Api, monitor);
         pipelineService.registerFactory(sourceFactory);
         
-        var sinkFactory = new IonosDataSinkFactory(s3Api, executorContainer.getExecutorService(), monitor, vault,
-            typeManager);
+        var sinkFactory = new IonosDataSinkFactory(s3Api, executorContainer.getExecutorService(), monitor, vault, typeManager);
         pipelineService.registerFactory(sinkFactory);
         context.getMonitor().info("File Transfer Extension initialized!");
     }
