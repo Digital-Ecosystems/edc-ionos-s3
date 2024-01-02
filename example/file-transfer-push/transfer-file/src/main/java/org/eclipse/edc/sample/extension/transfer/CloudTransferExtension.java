@@ -22,16 +22,24 @@
  import org.eclipse.edc.policy.model.Permission;
  import org.eclipse.edc.policy.model.Policy;
  import org.eclipse.edc.runtime.metamodel.annotation.Inject;
- import org.eclipse.edc.spi.EdcException;
  import org.eclipse.edc.spi.asset.AssetIndex;
  import org.eclipse.edc.spi.system.ServiceExtension;
  import org.eclipse.edc.spi.system.ServiceExtensionContext;
  import org.eclipse.edc.spi.types.domain.DataAddress;
  import org.eclipse.edc.spi.types.domain.asset.Asset;
 
+ import java.util.UUID;
+
  import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.*;
  import static org.eclipse.edc.spi.query.Criterion.criterion;
+
  public class CloudTransferExtension implements ServiceExtension {
+
+     public static final String ASSET_BUCKET_NAME = "edc.ionos.examples.provider.bucketName";
+     public static final String ASSET_BLOB_NAME = "edc.ionos.examples.provider.blobName";
+     public static final String ASSET_FILTER_INCLUDES = "edc.ionos.examples.provider.filter.includes";
+     public static final String ASSET_FILES_EXCLUDES = "edc.ionos.examples.provider.filter.excludes";
+
      @Inject
      private AssetIndex assetIndex;
      @Inject
@@ -46,42 +54,59 @@
  
      @Override
      public void initialize(ServiceExtensionContext context) {
+         var bucketName = context.getSetting(ASSET_BUCKET_NAME, "company1");
+         var blobName = context.getSetting(ASSET_BLOB_NAME, "device1-data.csv");
+         var filterIncludes = context.getSetting(ASSET_FILTER_INCLUDES, null);
+         var filterExcludes = context.getSetting(ASSET_FILES_EXCLUDES, null);
+
          var policy = createPolicy();
-         policyDefinitionStore.create(policy);
- 
-         registerDataEntries();
+         registerDataEntries(bucketName, blobName, filterIncludes, filterExcludes);
          registerContractDefinition(policy.getUid());
      }
- 
-     public void registerDataEntries() {
-         try {
-             var dataAddress = DataAddress.Builder.newInstance().type("IonosS3")
-                     .property(STORAGE_NAME, "s3-eu-central-1.ionoscloud.com")
-                     .property(BUCKET_NAME, "company1")
-                     .property(BLOB_NAME, "device1-data.csv")
-                     .keyName("device1").build();
-             var asset = Asset.Builder.newInstance().id("1").dataAddress(dataAddress).build();
-             assetIndex.create(asset);
-         } catch (Exception e) {
-             throw new EdcException("Error creating Data Entries", e);
+
+     private PolicyDefinition createPolicy() {
+         var usePermission = Permission.Builder.newInstance()
+                 .action(Action.Builder.newInstance().type("USE").build())
+                 .build();
+
+         var policy = PolicyDefinition.Builder.newInstance()
+                 .policy(Policy.Builder.newInstance().permission(usePermission).build())
+                 .build();
+
+         policyDefinitionStore.create(policy);
+         return policy;
+     }
+
+     public void registerDataEntries(String bucketName, String blobName, String filterIncludes, String filterExcludes) {
+         var dataAddressBuilder = DataAddress.Builder.newInstance().type("IonosS3")
+                 .property(STORAGE_NAME, "s3-eu-central-1.ionoscloud.com")
+                 .property(BUCKET_NAME, bucketName)
+                 .property(BLOB_NAME, blobName)
+                 .keyName(UUID.randomUUID().toString());
+         if (filterIncludes != null) {
+             dataAddressBuilder.property(FILTER_INCLUDES, filterIncludes);
          }
+         if (filterExcludes != null) {
+             dataAddressBuilder.property(FILTER_EXCLUDES, filterExcludes);
+         }
+         var dataAddress = dataAddressBuilder.build();
+
+         var asset = Asset.Builder.newInstance()
+                 .id("asset-1")
+                 .dataAddress(dataAddress)
+                 .build();
+         assetIndex.create(asset);
      }
  
      public void registerContractDefinition(String policyId) {
-         var contractDefinition1 = ContractDefinition.Builder.newInstance().id("1").accessPolicyId(policyId)
+         var contractDefinition = ContractDefinition.Builder.newInstance()
+                 .id("contract-1")
+                 .accessPolicyId(policyId)
                  .contractPolicyId(policyId)
-                 .assetsSelectorCriterion(criterion(Asset.PROPERTY_ID, "=", "1"))
+                 .assetsSelectorCriterion(criterion(Asset.PROPERTY_ID, "=", "asset-1"))
                  .build();
- 
-         contractDefinitionStore.save(contractDefinition1);
+
+         contractDefinitionStore.save(contractDefinition);
      }
- 
-     private PolicyDefinition createPolicy() {
-         var usePermission = Permission.Builder.newInstance().action(Action.Builder.newInstance().type("USE").build())
-                 .build();
- 
-         return PolicyDefinition.Builder.newInstance()
-                 .policy(Policy.Builder.newInstance().permission(usePermission).build()).build();
-     }
+
  }
- 
