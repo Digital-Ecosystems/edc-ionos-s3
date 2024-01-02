@@ -21,7 +21,6 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.util.string.StringUtils;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStream;
 import java.util.List;
@@ -29,7 +28,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.lang.String.format;
 import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure.Reason.GENERAL_ERROR;
 import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult.success;
 import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult.failure;
@@ -65,8 +63,14 @@ class IonosDataSource implements DataSource {
 
         if (this.filterExcludes != null) {
             objects = objects.stream()
-                    .filter(object -> ! applyFilterExcludes(object))
+                    .filter(object -> applyFilterExcludes(object))
                     .collect(Collectors.toList());
+        }
+
+        if (objects.isEmpty()) {
+            return failure(new StreamFailure(
+                    List.of("No files found in bucket " + bucketName + " with blobName " + blobName), GENERAL_ERROR)
+            );
         }
 
         List<Part> partStream = objects.stream()
@@ -100,7 +104,6 @@ class IonosDataSource implements DataSource {
         private final String blobName;
         private final long size;
 
-
         S3Part(S3ConnectorApi s3Api, Monitor monitor, String bucketName, String blobName, long size) {
             super();
             this.s3Api = s3Api;
@@ -122,13 +125,6 @@ class IonosDataSource implements DataSource {
 
         @Override
         public void close() {
-        }
-
-        @NotNull
-        private StreamResult<Void> openingFailure(Exception e, String blobName) {
-            var message = format("Error opening file %s: %s", blobName, e.getMessage());
-            monitor.severe(message, e);
-            return StreamResult.error(message);
         }
     }
 
