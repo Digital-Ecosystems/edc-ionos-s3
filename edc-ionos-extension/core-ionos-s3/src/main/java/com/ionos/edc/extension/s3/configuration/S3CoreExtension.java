@@ -24,15 +24,17 @@ import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
+import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_ACCESS_KEY;
+import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_SECRET_KEY;
+import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_ENDPOINT;
+import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_TOKEN;
+import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_MAX_FILES_DEFAULT;
+
 @Provides(S3ConnectorApi.class)
 @Extension(value = S3CoreExtension.NAME)
 public class S3CoreExtension implements ServiceExtension {
 
     public static final String NAME = "IonosS3";
-    private static final String IONOS_ACCESS_KEY = "edc.ionos.access.key";
-    private static final String IONOS_SECRET_KEY = "edc.ionos.secret.key";
-    private static final String IONOS_ENDPOINT = "edc.ionos.endpoint";
-    private static final String IONOS_TOKEN = "edc.ionos.token";
     
     @Inject
     private Vault vault;
@@ -61,7 +63,7 @@ public class S3CoreExtension implements ServiceExtension {
               token = context.getSetting(IONOS_TOKEN, IONOS_TOKEN);
         }
         
-        var s3Api = new S3ConnectorApiImpl(endPoint, accessKey, secretKey, token);
+        var s3Api = new S3ConnectorApiImpl(endPoint, accessKey, secretKey, token, IONOS_MAX_FILES_DEFAULT);
         context.registerService(S3ConnectorApi.class, s3Api);
     }
 }
