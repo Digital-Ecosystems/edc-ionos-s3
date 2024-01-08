@@ -21,6 +21,8 @@ public interface IonosBucketSchema {
     String STORAGE_NAME = EDC_NAMESPACE + "storage";
     String BUCKET_NAME = EDC_NAMESPACE + "bucketName";
     String BLOB_NAME = EDC_NAMESPACE + "blobName";
+    String FILTER_INCLUDES = EDC_NAMESPACE + "filter.includes";
+    String FILTER_EXCLUDES = EDC_NAMESPACE + "filter.excludes";
     String ACCESS_KEY_ID = EDC_NAMESPACE + "accessKey";
     String SECRET_ACCESS_KEY = EDC_NAMESPACE + "secretKey";
 }
