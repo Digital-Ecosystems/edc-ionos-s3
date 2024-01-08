@@ -44,7 +44,7 @@ dependencies {
     implementation("${edcGroup}:contract-negotiation-store-sql:$edcVersion")
     implementation("${edcGroup}:transfer-process-store-sql:$edcVersion")
 
-    implementation("${edcGroup}:oauth2-core:${edcVersion}")
+    implementation("${edcGroup}:iam-mock:${edcVersion}")
 }
 
 application {

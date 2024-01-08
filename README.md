@@ -76,8 +76,17 @@ cd extensions
 ./gradlew clean build
 ```
 
+To run a connector with memory persistence:
+
 ```bash
 cd launchers/prod/connector
+java -Dedc.fs.config=resources/config.properties -jar build/libs/dataspace-connector.jar
+```
+
+To run a connector with database persistence:
+
+```bash
+cd launchers/prod/connector-persistence
 java -Dedc.fs.config=resources/config.properties -jar build/libs/dataspace-connector.jar
 ```
 

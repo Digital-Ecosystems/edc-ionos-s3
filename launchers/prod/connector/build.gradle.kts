@@ -32,7 +32,7 @@ val edcVersion: String by project
 dependencies {
 	implementation(project(":launchers:base:connector"))
 
-	implementation("${edcGroup}:oauth2-core:${edcVersion}")
+	implementation("${edcGroup}:iam-mock:${edcVersion}")
 }
 
 application {
