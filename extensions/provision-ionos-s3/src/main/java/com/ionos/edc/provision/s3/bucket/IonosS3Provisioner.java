@@ -63,13 +63,9 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
         if (!s3Api.bucketExists(bucketName)) {
             createBucket(bucketName);
         }
-        TemporaryKey serviceAccount = null;
 
-        try {
-           serviceAccount = s3Api.createTemporaryKey();
-        } catch (Exception e) {
-            failureCreatingKey(e);
-        }
+        var serviceAccount = s3Api.createTemporaryKey();
+
         String resourceName = resourceDefinition.getKeyName();
 
         var resourceBuilder = IonosS3ProvisionedResource.Builder.newInstance()
@@ -93,12 +89,6 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
         var response = ProvisionResponse.Builder.newInstance().resource(resource).secretToken(secretToken).build();
 
         return CompletableFuture.completedFuture(StatusResult.success(response));
-    }
-
-    @NotNull
-    private void failureCreatingKey(Exception e) {
-        var message = format("Error creating temporary key: ", e.getMessage());
-        monitor.severe(message, e);
     }
 
     @Override

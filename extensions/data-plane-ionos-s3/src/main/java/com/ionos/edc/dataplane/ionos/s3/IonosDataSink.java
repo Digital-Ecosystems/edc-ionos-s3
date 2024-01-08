@@ -46,9 +46,6 @@ public class IonosDataSink extends ParallelSink {
             }
 
             try (var input = part.openStream()) {
-                if(input == null) {
-                    throw new EdcException("Error transferring file");
-                }
                 s3Api.uploadObject(bucketName, blobName, input);
             } catch (Exception e) {
                 return uploadFailure(e, blobName);
