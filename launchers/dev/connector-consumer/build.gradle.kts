@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020, 2021 Microsoft Corporation
+ *  Copyright (c) 2024 Microsoft Corporation
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -11,7 +11,6 @@
  *       Microsoft Corporation - initial API and implementation
  *       Fraunhofer Institute for Software and Systems Engineering - added dependencies
  *       ZF Friedrichshafen AG - add dependency
- *
  */
 
 plugins {
@@ -19,56 +18,22 @@ plugins {
     id("application")
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
+
 repositories {
 	mavenLocal()
 	mavenCentral()
     maven {// while runtime-metamodel dependency is still a snapshot
 		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
     }
-
-
-	
-	  gradlePluginPortal()
 }
-val javaVersion: String by project
-val faaastVersion: String by project
+
 val edcGroup: String by project
 val edcVersion: String by project
-val okHttpVersion: String by project
-val rsApi: String by project
-val metaModelVersion: String by project
-
 
 dependencies {
+	implementation(project(":launchers:base:connector"))
 
-	implementation("${edcGroup}:control-plane-core:${edcVersion}")
-    implementation("${edcGroup}:control-plane-api-client:${edcVersion}")
-
-    implementation("${edcGroup}:api-observability:${edcVersion}")
-	
-	implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
-
-	implementation("${edcGroup}:http:${edcVersion}")
-
-	implementation("${edcGroup}:auth-tokenbased:${edcVersion}")	
-
-    implementation("${edcGroup}:management-api:${edcVersion}")
-	
-	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")	
-
-	
-	
-	//implementation("$edcGroup:ids:+")
-		
 	implementation("${edcGroup}:iam-mock:${edcVersion}")
-	
-    implementation(project(":example:file-transfer-push:transfer-file"))
-	
-	//new
-	implementation("${edcGroup}:dsp:${edcVersion}")
-	
-	
-	
 }
 
 application {

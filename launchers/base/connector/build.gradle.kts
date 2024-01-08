@@ -17,71 +17,45 @@ plugins {
     id("application")
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
+
 repositories {
-	
     maven {// while runtime-metamodel dependency is still a snapshot
 		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
     }
-	
-	mavenLocal()
 	mavenCentral()
+	mavenLocal()
 }
 
-val javaVersion: String by project
 val edcGroup: String by project
 val edcVersion: String by project
-val okHttpVersion: String by project
-val rsApi: String by project
-val metaModelVersion: String by project
 
 dependencies {
 	implementation("${edcGroup}:boot:${edcVersion}")
-	
+
+	// Control Plane
     implementation("${edcGroup}:control-plane-core:${edcVersion}")
 	implementation("${edcGroup}:control-plane-api-client:${edcVersion}")
 
-	implementation("${edcGroup}:api-observability:${edcVersion}")
-	
+	implementation("${edcGroup}:http:${edcVersion}")
+	implementation("${edcGroup}:dsp:${edcVersion}")
+	implementation("${edcGroup}:auth-tokenbased:${edcVersion}")
 	implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
 
-	implementation("${edcGroup}:http:${edcVersion}")
-	implementation("${edcGroup}:dsp:${edcVersion}")	
-	
-	implementation("${edcGroup}:auth-tokenbased:${edcVersion}")	
-
     implementation("$edcGroup:management-api:$edcVersion")
-	
-	//Data plane
-	//implementation("${edcGroup}:data-plane-transfer-client:${edcVersion}")
-	
-	implementation("${edcGroup}:data-plane-selector-client:${edcVersion}")
-	
-	implementation("${edcGroup}:data-plane-selector-core:${edcVersion}")
-	
-	implementation("${edcGroup}:data-plane-core:${edcVersion}")	
-	
-	implementation("${edcGroup}:iam-mock:${edcVersion}")
-	
+	implementation("${edcGroup}:api-observability:${edcVersion}")
+
 	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
 	
+	// Data Plane
+	implementation("${edcGroup}:data-plane-selector-client:${edcVersion}")
+	implementation("${edcGroup}:data-plane-selector-core:${edcVersion}")
+	implementation("${edcGroup}:data-plane-core:${edcVersion}")
 	implementation("${edcGroup}:data-plane-client:${edcVersion}")
-	
 	implementation("${edcGroup}:transfer-data-plane:${edcVersion}")
-	
-	//Ionos Extension 
-	implementation(project(":edc-ionos-extension:provision-ionos-s3"))
-	
-	implementation(project(":edc-ionos-extension:data-plane-ionos-s3"))
- 
-	testImplementation ("${edcGroup}:junit:${edcVersion}")	
-}
 
-repositories {
-	mavenLocal()
-	mavenCentral()
-    maven {// while runtime-metamodel dependency is still a snapshot
-		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-    }
+	// Ionos Extensions
+	implementation(project(":extensions:provision-ionos-s3"))
+	implementation(project(":extensions:data-plane-ionos-s3"))
 }
 
 application {
