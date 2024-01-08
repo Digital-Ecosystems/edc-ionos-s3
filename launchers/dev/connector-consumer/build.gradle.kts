@@ -16,15 +16,6 @@
 plugins {
     `java-library`
     id("application")
-    id("com.github.johnrengelman.shadow") version "7.1.2"
-}
-
-repositories {
-	mavenLocal()
-	mavenCentral()
-    maven {// while runtime-metamodel dependency is still a snapshot
-		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-    }
 }
 
 val edcGroup: String by project
@@ -39,12 +30,8 @@ dependencies {
 application {
     mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
 }
-tasks.shadowJar {
-   isZip64 = true  
+
+java {
+
 }
 
-tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
-    exclude("**/pom.properties", "**/pom.xm")
-    mergeServiceFiles()
-    archiveFileName.set("dataspace-connector.jar")
-}

@@ -14,8 +14,6 @@
 
 plugins {
     `java-library`
-    id("application")
-    id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 repositories {
@@ -58,12 +56,6 @@ dependencies {
 	implementation(project(":extensions:data-plane-ionos-s3"))
 }
 
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-}
-
-tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
-	exclude("**/pom.properties", "**/pom.xm")
-    mergeServiceFiles()
-    archiveFileName.set("dataspace-connector.jar")
+tasks.jar {
+	archiveFileName.set("base-connector.jar")
 }
