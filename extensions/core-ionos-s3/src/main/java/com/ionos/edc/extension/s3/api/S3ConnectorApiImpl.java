@@ -68,7 +68,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
         try {
             return minioClient.bucketExists(BucketExistsArgs.builder()
                     .bucket(bucketName.toLowerCase())
-                    .region(this.region)
+                    .region(region)
                     .build());
         } catch (Exception e) {
             throw new EdcException("Verifying if bucket exists - " + e.getMessage());
@@ -115,6 +115,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
 
         var objects = minioClient.listObjects(ListObjectsArgs.builder()
                 .bucket(bucketName.toLowerCase())
+                .region(region)
                 .prefix(objectName)
                 .recursive(true)
                 .maxKeys(maxFiles)
