@@ -6,8 +6,6 @@ Disclaimer: The code of this repo is provided on an "AS IS" BASIS, WITHOUT WARRA
 
 Please refer to the official [site](https://github.com/ionos-cloud/edc-ionos-s3).
 
-
-
 ## Based on the following
 
 - [https://github.com/eclipse-dataspaceconnector/DataSpaceConnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector) - v0.1.2;
@@ -25,35 +23,30 @@ You will need the following:
 
 ## Folders Description
 
-### `connector`
-Contains the required instructions to create an EDC docker image with the IONOS S3 Extension.
-
-### `edc-ionos-extension`
+### `extensions`
 Contains the source code of the IONOS S3 Extension.
 
-### `example`
-Contains an example with a file transfer process between two S3 buckets.
-
-### `gradle/wrapper`
-Contains gradle's files required for the building process.
+### `launchers`
+Contains the required instructions to run an EDC Connector or create an EDC docker image with the IONOS S3 Extension.
 
 ## Dependencies and Configurations
+
 ### Dependencies
 The extension has the following dependencies:
 
-| Module name                          | Description                                                      |
-|-----------------------------------------|------------------------------------------------------------------|
-| `edc-ionos-extension:provision-ionos-s3`                    | Provisioning operations for IONOS S3 storage     |
-| `edc-ionos-extension:data-plane-ionos-s3`             | Copy data do and from IONOS S3 buckets |
-| `org.eclipse.edc:api-observability`             | Health data regarding the state of the connector |
-| `org.eclipse.edc:auth-tokenbased`             | Securing the API |
-| `org.eclipse.edc:api-control-plane-core`             | Main features of the control plane | 
-| `org.eclipse.edc:configuration-filesystem`             | Configuration file features | 
-| `org.eclipse.edc:http`             | HTTP support | 
-| `org.eclipse.edc:data-management-api`             | EDC asset and contract management |
-| `org.eclipse.edc:data-plane-core`             | Main features of the data plane |
-| `org.eclipse.edc:data-plane-selector-client`             | Offers several implementations for the data plane selector |
-| `org.eclipse.edc:data-plane-selector-core`             | Main features of the data plane selector |
+| Module name                                  | Description                                                      |
+|----------------------------------------------|------------------------------------------------------------------|
+| `extensions:provision-ionos-s3`              | Provisioning operations for IONOS S3 storage     |
+| `extensions:data-plane-ionos-s3`             | Copy data do and from IONOS S3 buckets |
+| `org.eclipse.edc:api-observability`          | Health data regarding the state of the connector |
+| `org.eclipse.edc:auth-tokenbased`            | Securing the API |
+| `org.eclipse.edc:api-control-plane-core`     | Main features of the control plane | 
+| `org.eclipse.edc:configuration-filesystem`   | Configuration file features | 
+| `org.eclipse.edc:http`                       | HTTP support | 
+| `org.eclipse.edc:data-management-api`        | EDC asset and contract management |
+| `org.eclipse.edc:data-plane-core`            | Main features of the data plane |
+| `org.eclipse.edc:data-plane-selector-client` | Offers several implementations for the data plane selector |
+| `org.eclipse.edc:data-plane-selector-core`   | Main features of the data plane selector |
 
 ### Configurations
 It is required to configure an `Access key` and a `Secret Access Key` from the IONOS S3 storage service.
@@ -78,18 +71,27 @@ To create the token please take a look at the following [documentation](./ionos_
 ## Building and Running
 
 ```bash
-git clone [TBD]
-cd EDC-IONOS-Extension
+git clone git@github.com:ionos-cloud/edc-ionos-s3.git
+cd extensions
 ./gradlew clean build
 ```
 
+To run a connector with memory persistence:
+
 ```bash
-cd connector
+cd launchers/prod/connector
 java -Dedc.fs.config=resources/config.properties -jar build/libs/dataspace-connector.jar
 ```
 
-## Example
-In order to see a working example, go to the [example](./example/README.md) folder.
+To run a connector with database persistence:
+
+```bash
+cd launchers/prod/connector-persistence
+java -Dedc.fs.config=resources/config.properties -jar build/libs/dataspace-connector.jar
+```
+
+## Examples
+In order to see working examples go to [edc-ionos-samples](https://github.com/ionos-cloud/edc-ionos-samples).
 
 ## Deploying to IONOS Kubernetes
 Check the [deployment readme](./deployment/README.md) to see how to deploy the Connector locally or to an external Kubernetes cluster.

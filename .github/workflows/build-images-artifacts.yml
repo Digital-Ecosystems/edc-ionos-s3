@@ -62,8 +62,8 @@ jobs:
         id: build-and-push-connector
         uses: docker/build-push-action@v4
         with:
-          context: ./connector
-          file: ./connector/Dockerfile
+          context: ./launchers/prod/connector
+          file: ./launchers/prod/connector/Dockerfile
           push: true
           tags: ${{ steps.connector-meta.outputs.tags }}
           labels: ${{ steps.connector-meta.outputs.labels }}
@@ -88,8 +88,8 @@ jobs:
         id: build-and-push-connector-persistence
         uses: docker/build-push-action@v4
         with:
-          context: ./connector-persistence
-          file: ./connector-persistence/Dockerfile
+          context: ./launchers/prod/connector-persistence
+          file: ./launchers/prod/connector-persistence/Dockerfile
           push: true
           tags: ${{ steps.connector-persistence-meta.outputs.tags }}
           labels: ${{ steps.connector-persistence-meta.outputs.labels }}
