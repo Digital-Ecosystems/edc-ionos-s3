@@ -21,6 +21,7 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSourceFactory;
 import org.eclipse.edc.connector.dataplane.util.validation.ValidationRule;
 import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -28,15 +29,19 @@ import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.jetbrains.annotations.NotNull;
 
 public class IonosDataSourceFactory implements DataSourceFactory {
+
     private final S3ConnectorApi s3Api;
    
     private final TypeManager typeManager;
-    
+
+    private final Monitor monitor;
+
     private final ValidationRule<DataAddress> validation = new IonosSourceDataAddressValidationRule();
     
-    public IonosDataSourceFactory(S3ConnectorApi s3Api, TypeManager typeManager) {
+    public IonosDataSourceFactory(S3ConnectorApi s3Api, TypeManager typeManager, Monitor monitor) {
         this.s3Api = s3Api;
         this.typeManager = typeManager;
+        this.monitor = monitor;
     }
 
     @Override
@@ -65,7 +70,9 @@ public class IonosDataSourceFactory implements DataSourceFactory {
         
         var source = request.getSourceDataAddress();
 
-        return IonosDataSource.Builder.newInstance().client(s3Api)
+        return IonosDataSource.Builder.newInstance()
+                .monitor(monitor)
+                .client(s3Api)
                 .bucketName(source.getProperty(IonosBucketSchema.BUCKET_NAME))
                 .blobName(source.getProperty(IonosBucketSchema.BLOB_NAME))
                 .build();

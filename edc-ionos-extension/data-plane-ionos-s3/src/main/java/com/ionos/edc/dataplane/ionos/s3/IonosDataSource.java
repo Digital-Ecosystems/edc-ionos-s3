@@ -19,13 +19,11 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
-import static java.lang.String.format;
 import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult.success;
 
 class IonosDataSource implements DataSource {
@@ -33,26 +31,28 @@ class IonosDataSource implements DataSource {
     private S3ConnectorApi s3Api;
     private String bucketName;
     private String blobName;
-    private static Monitor monitor;
+    private Monitor monitor;
 
     private IonosDataSource() {
     }
 
     @Override
     public StreamResult<Stream<Part>> openPartStream() {
-        return success(Stream.of(new S3Part(s3Api, bucketName, blobName)));
+        return success(Stream.of(new S3Part(s3Api, bucketName, blobName, monitor)));
     }
 
     private static class S3Part implements Part {
         private final S3ConnectorApi s3Api;
         private final String bucketName;
         private final String blobName;
+        private final Monitor monitor;
 
-        S3Part(S3ConnectorApi s3Api, String bucketName, String blobName) {
+        S3Part(S3ConnectorApi s3Api, String bucketName, String blobName, Monitor monitor) {
             super();
             this.s3Api = s3Api;
             this.bucketName = bucketName;
             this.blobName = blobName;
+            this.monitor = monitor;
         }
 
         @Override
@@ -71,20 +71,10 @@ class IonosDataSource implements DataSource {
                 InputStream targetStream = new ByteArrayInputStream(file);
                 return targetStream;
             } catch (Exception e) {
-                openingFailure(e, blobName);
+                throw new EdcException("Error trying to getFile - " + e.getMessage());
             }
-            return null;
-        }
-
-        @NotNull
-        private StreamResult<Void> openingFailure(Exception e, String blobName) {
-            var message = format("Error opening file: %s", blobName, e.getMessage());
-            monitor.severe(message, e);
-            return StreamResult.error(message);
         }
     }
-
-
 
     public static class Builder {
         private final IonosDataSource source;
@@ -100,6 +90,12 @@ class IonosDataSource implements DataSource {
         public IonosDataSource build() {
             return source;
         }
+
+        public Builder monitor(Monitor monitor) {
+            source.monitor = monitor;
+            return this;
+        }
+
 
         public Builder client(S3ConnectorApi s3Api) {
             source.s3Api = s3Api;
