@@ -18,9 +18,9 @@ import com.ionos.edc.extension.s3.api.S3ConnectorApi;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.util.sink.ParallelSink;
-import org.eclipse.edc.spi.EdcException;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,7 +46,8 @@ public class IonosDataSink extends ParallelSink {
             }
 
             try (var input = part.openStream()) {
-                s3Api.uploadObject(bucketName, blobName, input);
+                var byteArray = new ByteArrayInputStream(input.readAllBytes());
+                s3Api.uploadObject(bucketName, blobName, byteArray);
             } catch (Exception e) {
                 return uploadFailure(e, blobName);
             }

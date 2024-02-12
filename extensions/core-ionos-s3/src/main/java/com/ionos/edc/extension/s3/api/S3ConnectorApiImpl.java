@@ -21,6 +21,7 @@ import com.ionos.edc.extension.s3.connector.ionosapi.TemporaryKey;
 import io.minio.*;
 import org.eclipse.edc.spi.EdcException;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,7 +77,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
     }
 
     @Override
-    public void uploadObject(String bucketName, String objectName, InputStream stream) {
+    public void uploadObject(String bucketName, String objectName, ByteArrayInputStream stream) {
         if (!bucketExists(bucketName.toLowerCase())) {
             createBucket(bucketName.toLowerCase());
         }

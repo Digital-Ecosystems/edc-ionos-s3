@@ -18,6 +18,7 @@ import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 
 import com.ionos.edc.extension.s3.connector.ionosapi.TemporaryKey;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public interface S3ConnectorApi {
 
     boolean bucketExists(String bucketName);
     
-    void uploadObject(String bucketName, String objectName, InputStream stream);
+    void uploadObject(String bucketName, String objectName, ByteArrayInputStream stream);
 
     InputStream getObject(String bucketName, String objectName);
 
