@@ -24,6 +24,10 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 
+import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_CHUNK_SIZE;
+import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_ENDPOINT;
+import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_TOKEN;
+
 @Extension(value = DataPlaneIonosS3Extension.NAME)
 public class DataPlaneIonosS3Extension implements ServiceExtension {
 
@@ -50,12 +54,18 @@ public class DataPlaneIonosS3Extension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
+        var chunkSize =  vault.resolveSecret(IONOS_CHUNK_SIZE);
+
+        if (chunkSize == null){
+            chunkSize = context.getSetting(IONOS_CHUNK_SIZE, IONOS_CHUNK_SIZE);
+        }
+
         var monitor = context.getMonitor();
         
         var sourceFactory = new IonosDataSourceFactory(s3Api, monitor);
         pipelineService.registerFactory(sourceFactory);
         
-        var sinkFactory = new IonosDataSinkFactory(s3Api, executorContainer.getExecutorService(), monitor, vault, typeManager);
+        var sinkFactory = new IonosDataSinkFactory(s3Api, executorContainer.getExecutorService(), monitor, vault, typeManager, chunkSize);
         pipelineService.registerFactory(sinkFactory);
         context.getMonitor().info("File Transfer Extension initialized!");
     }

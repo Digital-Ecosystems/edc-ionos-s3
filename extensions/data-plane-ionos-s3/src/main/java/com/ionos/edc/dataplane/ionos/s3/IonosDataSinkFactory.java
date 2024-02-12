@@ -47,14 +47,16 @@ public class IonosDataSinkFactory implements DataSinkFactory {
     private final TypeManager typeManager;
 
     private final Validator<DataAddress> validator = new IonosSinkDataAddressValidationRule();
-    
+    private final String chunkSize;
+
     public IonosDataSinkFactory(S3ConnectorApi s3Api, ExecutorService executorService, Monitor monitor,
-            Vault vault, TypeManager typeManager) {
+            Vault vault, TypeManager typeManager, String chunkSize) {
         this.s3Api = s3Api;
         this.executorService = executorService;
         this.monitor = monitor;
         this.vault = vault;
         this.typeManager = typeManager;
+        this.chunkSize = chunkSize;
     }
 
     @Override
@@ -93,7 +95,9 @@ public class IonosDataSinkFactory implements DataSinkFactory {
                         .blobName(destination.getStringProperty(IonosBucketSchema.BLOB_NAME))
                         .requestId(request.getId())
                         .executorService(executorService)
-                        .monitor(monitor).s3Api(s3ApiTemp)
+                        .monitor(monitor)
+                        .s3Api(s3ApiTemp)
+                        .chunkSize(chunkSize)
                         .build();
             } else {
                 var s3ApiTemp = new S3ConnectorApiImpl(DEFAULT_STORAGE,
@@ -108,6 +112,7 @@ public class IonosDataSinkFactory implements DataSinkFactory {
                         .executorService(executorService)
                         .monitor(monitor)
                         .s3Api(s3ApiTemp)
+                        .chunkSize(chunkSize)
                         .build();
             }
         }
@@ -116,7 +121,9 @@ public class IonosDataSinkFactory implements DataSinkFactory {
                 .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
                 .blobName(destination.getStringProperty(IonosBucketSchema.BLOB_NAME))
                 .requestId(request.getId()).executorService(executorService)
-                .monitor(monitor).s3Api(s3Api)
+                .monitor(monitor)
+                .s3Api(s3Api)
+                .chunkSize(chunkSize)
                 .build();
     }
 }

@@ -34,6 +34,7 @@ public class IonosDataSink extends ParallelSink {
     private S3ConnectorApi s3Api;
     private String bucketName;
     private String blobName;
+    private String chunkSize;
     
     private IonosDataSink() {}
 
@@ -51,7 +52,7 @@ public class IonosDataSink extends ParallelSink {
             try (var input = part.openStream()) {
 
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                byte[] buffer = new byte[4096];
+                byte[] buffer = new byte[Integer.parseInt(chunkSize)];
                 int bytesRead;
                 while ((bytesRead = input.read(buffer)) != -1) {
                     byteArrayOutputStream.write(buffer, 0, bytesRead);
@@ -99,9 +100,15 @@ public class IonosDataSink extends ParallelSink {
             return this;
         }
 
+        public Builder chunkSize(String chunkSize) {
+            sink.chunkSize = chunkSize;
+            return this;
+        }
+
         @Override
         protected void validate() {
             Objects.requireNonNull(sink.bucketName, "Bucket Name is required");
         }
     }
+
 }
