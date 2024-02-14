@@ -91,7 +91,8 @@ public class IonosDataSinkFactory implements DataSinkFactory {
                         .blobName(destination.getProperty(IonosBucketSchema.BLOB_NAME))
                         .requestId(request.getId())
                         .executorService(executorService)
-                        .monitor(monitor).s3Api(s3ApiTemp)
+                        .monitor(monitor)
+                        .s3Api(s3ApiTemp)
                         .build();
             } else {
                 var s3ApiTemp = new S3ConnectorApiImpl(DEFAULT_STORAGE, token.getAccessKey(), token.getSecretKey(), "");

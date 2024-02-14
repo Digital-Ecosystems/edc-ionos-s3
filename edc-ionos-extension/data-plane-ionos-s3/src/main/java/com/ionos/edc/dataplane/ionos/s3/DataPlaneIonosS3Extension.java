@@ -50,11 +50,9 @@ public class DataPlaneIonosS3Extension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        
-
         var monitor = context.getMonitor();
         
-        var sourceFactory = new IonosDataSourceFactory(s3Api,typeManager);
+        var sourceFactory = new IonosDataSourceFactory(s3Api, typeManager, monitor);
         pipelineService.registerFactory(sourceFactory);
         
         var sinkFactory = new IonosDataSinkFactory(s3Api, executorContainer.getExecutorService(), monitor, vault,
