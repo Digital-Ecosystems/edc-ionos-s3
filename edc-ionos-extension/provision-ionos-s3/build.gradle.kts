@@ -19,6 +19,7 @@ dependencies {
     api("${edcGroup}:runtime-metamodel:${metaModelVersion}")
 
     implementation("${edcGroup}:transfer-spi:${edcVersion}")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
 
     implementation(project(":edc-ionos-extension:core-ionos-s3"))
 

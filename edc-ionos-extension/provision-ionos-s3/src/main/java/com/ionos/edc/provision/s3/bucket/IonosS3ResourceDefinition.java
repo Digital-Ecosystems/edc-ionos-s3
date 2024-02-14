@@ -17,7 +17,7 @@ package com.ionos.edc.provision.s3.bucket;
 import java.util.Objects;
 import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonCreator;
 @JsonDeserialize(as=IonosS3ResourceDefinition.class)
 public class IonosS3ResourceDefinition extends ResourceDefinition {
     private String keyName;
