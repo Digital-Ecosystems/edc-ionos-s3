@@ -15,50 +15,58 @@
 package com.ionos.edc.provision.s3.bucket;
 
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
 
+@JsonDeserialize(as=IonosS3ResourceDefinition.class)
 public class IonosS3ResourceDefinition extends ResourceDefinition {
     private String keyName;
     private String storage;
-    private String accessKey;
-    private String secretKey;
+
     private String bucketName;
     private String blobName;
+    private String accessKey = "DEFAULT";
+
 
     public IonosS3ResourceDefinition() {
-        super();
-    }
 
+    }
     public String getKeyName() {
         return keyName;
     }
     public String getStorage() {
         return storage;
     }
-    public String getAccessKey() {
-		return accessKey;
-	}
-	public String getSecretKey() {
-		return secretKey;
-	}
+
 	public String getBucketName() {
         return bucketName;
     }
     public String getBlobName() {
         return blobName;
     }
-
+    public String getAccessKey() {
+        return accessKey;
+    }
     @Override
     public Builder toBuilder() {
-        return initializeBuilder(new Builder()).keyName(keyName).storage(storage).accessKey(accessKey).secretKey(secretKey).bucketName(bucketName).blobName(blobName);
+        return initializeBuilder(new Builder())
+                .keyName(keyName)
+                .storage(storage)
+                .accessKey(accessKey)
+                .bucketName(bucketName)
+                .blobName(blobName);
     }
 
     public static class Builder extends ResourceDefinition.Builder<IonosS3ResourceDefinition, Builder> {
 
         private Builder() {
+
             super(new IonosS3ResourceDefinition());
         }
-
+        @JsonCreator
         public static Builder newInstance() {
             return new Builder();
         }
@@ -72,16 +80,7 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
             resourceDefinition.storage = storage;
             return this;
         }
-        
-        public Builder accessKey(String accessKey) {
-            resourceDefinition.accessKey = accessKey;
-            return this;
-        }
-        
-        public Builder secretKey(String secretKey) {
-            resourceDefinition.secretKey = secretKey;
-            return this;
-        }
+
         
         public Builder bucketName(String bucketName) {
             resourceDefinition.bucketName = bucketName;
@@ -92,11 +91,15 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
             resourceDefinition.blobName = blobName;
             return this;
         }
+        public Builder accessKey(String accessKey) {
+            resourceDefinition.accessKey = accessKey;
+            return this;
+        }
 
         @Override
         protected void verify() {
             super.verify();
-            Objects.requireNonNull(resourceDefinition.keyName, "Key Name is required");
+           // Objects.requireNonNull(resourceDefinition.keyName, "Key Name is required");
             Objects.requireNonNull(resourceDefinition.bucketName, "Bucket Name is required");
         }
     }
