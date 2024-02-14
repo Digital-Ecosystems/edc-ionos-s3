@@ -16,7 +16,9 @@ package com.ionos.edc.provision.s3.bucket;
 
 import java.util.Objects;
 import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
-
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonCreator;
+@JsonDeserialize(as=IonosS3ResourceDefinition.class)
 public class IonosS3ResourceDefinition extends ResourceDefinition {
     private String keyName;
     private String storage;
@@ -58,7 +60,7 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
         private Builder() {
             super(new IonosS3ResourceDefinition());
         }
-
+        @JsonCreator
         public static Builder newInstance() {
             return new Builder();
         }
