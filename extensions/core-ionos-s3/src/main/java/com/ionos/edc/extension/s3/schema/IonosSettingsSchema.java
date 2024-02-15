@@ -20,6 +20,4 @@ public interface IonosSettingsSchema {
     String IONOS_ENDPOINT = "edc.ionos.endpoint";
     String IONOS_TOKEN = "edc.ionos.token";
     int IONOS_MAX_FILES_DEFAULT = 1000;
-    String IONOS_CHUNK_SIZE = "edc.ionos.chunkSize";
-    int IONOS_CHUNK_SIZE_DEFAULT = 1024;
 }

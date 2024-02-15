@@ -16,6 +16,10 @@ package com.ionos.edc.extension.s3.api;
 
 public record S3Object(String objectName, long size) {
 
+    public boolean isDirectory() {
+        return objectName.endsWith("/");
+    }
+
     public boolean isRootObject(String blobName) {
         return (objectName.equals(blobName) ||  objectName.equals(blobName + "/"));
     }

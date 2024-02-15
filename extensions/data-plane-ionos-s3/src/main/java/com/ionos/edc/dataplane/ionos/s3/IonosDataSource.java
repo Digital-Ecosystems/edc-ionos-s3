@@ -14,11 +14,13 @@
 
 package com.ionos.edc.dataplane.ionos.s3;
 
+import com.ionos.edc.dataplane.ionos.s3.util.FileTransferHelper;
 import com.ionos.edc.extension.s3.api.S3ConnectorApi;
 import com.ionos.edc.extension.s3.api.S3Object;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.util.string.StringUtils;
 import org.eclipse.edc.spi.monitor.Monitor;
 
@@ -73,15 +75,10 @@ class IonosDataSource implements DataSource {
             );
         }
 
-        List<Part> partStream = objects.stream()
-                .map(object -> new S3Part(this.s3Api, this.monitor, this.bucketName, object.objectName(), object.size()))
+        List<Part> parts = objects.stream()
+                .map(object -> new S3Part(s3Api, monitor, bucketName, object.objectName(), object.isDirectory(), object.size()))
                 .collect(Collectors.toList());
-
-        return success(partStream.stream());
-    }
-
-    @Override
-    public void close() {
+        return success(parts.stream());
     }
 
     boolean applyFilterIncludes(S3Object object) {
@@ -97,20 +94,29 @@ class IonosDataSource implements DataSource {
         return !filterExcludes.matcher(object.shortObjectName(blobName)).find();
     }
 
+    @Override
+    public void close() {
+    }
+
     private static class S3Part implements Part {
         private final S3ConnectorApi s3Api;
         private final Monitor monitor;
         private final String bucketName;
         private final String blobName;
-        private final long size;
+        private boolean isDirectory;
+        private final long fileSize;
 
-        S3Part(S3ConnectorApi s3Api, Monitor monitor, String bucketName, String blobName, long size) {
+        private boolean isOpened = true;
+        private long currentOffset = 0;
+
+        S3Part(S3ConnectorApi s3Api, Monitor monitor, String bucketName, String blobName, boolean isDirectory, long fileSize) {
             super();
             this.s3Api = s3Api;
             this.monitor = monitor;
             this.bucketName = bucketName;
             this.blobName = blobName;
-            this.size = size;
+            this.isDirectory = isDirectory;
+            this.fileSize = fileSize;
         }
 
         @Override
@@ -119,12 +125,41 @@ class IonosDataSource implements DataSource {
         }
 
         @Override
-        public InputStream openStream() {
-            return s3Api.getObject(bucketName, blobName);
+        public long size() {
+            return fileSize;
+        }
+
+        private long chunkSize() {
+            return FileTransferHelper.calculateChunkSize(fileSize);
         }
 
         @Override
-        public void close() {
+        public InputStream openStream() {
+
+            if (isOpened && (isDirectory || (currentOffset >= fileSize)))
+                return null;
+
+            InputStream stream;
+            if (isDirectory || (fileSize <= chunkSize())) {
+                stream = s3Api.getObject(bucketName, blobName);
+            } else {
+                stream = s3Api.getObject(bucketName, blobName, currentOffset, chunkSize());
+            }
+
+            if (!isDirectory) {
+                int responseSize;
+                try {
+                    responseSize = stream.available();
+                } catch (Exception e) {
+                    throw new EdcException("Error reading response size", e);
+                }
+
+                currentOffset += responseSize;
+            }
+
+            if (!isOpened)
+                isOpened = true;
+            return stream;
         }
     }
 

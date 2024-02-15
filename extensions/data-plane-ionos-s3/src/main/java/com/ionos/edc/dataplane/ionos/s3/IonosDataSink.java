@@ -18,12 +18,10 @@ import com.ionos.edc.extension.s3.api.S3ConnectorApi;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.util.sink.ParallelSink;
-import org.eclipse.edc.spi.EdcException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,8 +32,7 @@ public class IonosDataSink extends ParallelSink {
     private S3ConnectorApi s3Api;
     private String bucketName;
     private String blobName;
-    private String chunkSize;
-    
+
     private IonosDataSink() {}
 
     @Override
@@ -49,17 +46,25 @@ public class IonosDataSink extends ParallelSink {
                 blobName = part.name();
             }
 
-            try (var input = part.openStream()) {
+            var streamsOutput = new ByteArrayOutputStream();
+            var stream = part.openStream();
+            while (stream != null) {
+                try {
+                    streamsOutput.write(stream.readAllBytes());
+                    stream.close();
 
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                byte[] buffer = new byte[Integer.parseInt(chunkSize)];
-                int bytesRead;
-                while ((bytesRead = input.read(buffer)) != -1) {
-                    byteArrayOutputStream.write(buffer, 0, bytesRead);
+                } catch (Exception e) {
+                    return uploadFailure(e, blobName);
                 }
 
-                InputStream stream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-                s3Api.uploadObject(bucketName, blobName, stream);
+                stream = part.openStream();
+            }
+
+            var byteArray = streamsOutput.toByteArray();
+            try (var streamsInput = new ByteArrayInputStream(byteArray)) {
+                s3Api.uploadObject(bucketName, blobName, streamsInput);
+                streamsOutput.close();
+
             } catch (Exception e) {
                 return uploadFailure(e, blobName);
             }
@@ -100,15 +105,9 @@ public class IonosDataSink extends ParallelSink {
             return this;
         }
 
-        public Builder chunkSize(String chunkSize) {
-            sink.chunkSize = chunkSize;
-            return this;
-        }
-
         @Override
         protected void validate() {
             Objects.requireNonNull(sink.bucketName, "Bucket Name is required");
         }
     }
-
 }
