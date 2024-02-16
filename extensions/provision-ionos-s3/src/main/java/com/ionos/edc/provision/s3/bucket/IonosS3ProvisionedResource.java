@@ -24,7 +24,7 @@ import org.eclipse.edc.connector.transfer.spi.types.ProvisionedDataDestinationRe
 import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.*;
 
 @JsonDeserialize(builder = IonosS3ProvisionedResource.Builder.class)
-@JsonTypeName("dataspaceconnector:ionosprovisionedresource")
+@JsonTypeName("dataspaceconnector:ionoss3provisionedresource")
 public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResource {
 
     private String accessKey;
