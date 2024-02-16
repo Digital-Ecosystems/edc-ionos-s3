@@ -16,44 +16,18 @@
 -- table: edc_asset
 CREATE TABLE IF NOT EXISTS edc_asset
 (
-    asset_id   VARCHAR NOT NULL,
-    created_at BIGINT  NOT NULL,
+    asset_id           VARCHAR NOT NULL,
+    created_at         BIGINT  NOT NULL,
+    properties         JSON    DEFAULT '{}',
+    private_properties JSON    DEFAULT '{}',
+    data_address       JSON    DEFAULT '{}',
     PRIMARY KEY (asset_id)
 );
 
--- table: edc_asset_dataaddress
-CREATE TABLE IF NOT EXISTS edc_asset_dataaddress
-(
-    asset_id_fk VARCHAR NOT NULL,
-    properties  JSON    NOT NULL,
-    PRIMARY KEY (asset_id_fk),
-    FOREIGN KEY (asset_id_fk) REFERENCES edc_asset (asset_id) ON DELETE CASCADE
-);
-COMMENT ON COLUMN edc_asset_dataaddress.properties IS 'DataAddress properties serialized as JSON';
+COMMENT ON COLUMN edc_asset.properties IS 'Asset properties serialized as JSON';
+COMMENT ON COLUMN edc_asset.private_properties IS 'Asset private properties serialized as JSON';
+COMMENT ON COLUMN edc_asset.data_address IS 'Asset DataAddress serialized as JSON';
 
--- table: edc_asset_property
-CREATE TABLE IF NOT EXISTS edc_asset_property
-(
-    asset_id_fk         VARCHAR NOT NULL,
-    property_name       VARCHAR NOT NULL,
-    property_value      VARCHAR NOT NULL,
-    property_type       VARCHAR NOT NULL,
-    property_is_private BOOLEAN NOT NULL,
-    PRIMARY KEY (asset_id_fk, property_name),
-    FOREIGN KEY (asset_id_fk) REFERENCES edc_asset (asset_id) ON DELETE CASCADE
-);
-
-COMMENT ON COLUMN edc_asset_property.property_name IS
-    'Asset property key';
-COMMENT ON COLUMN edc_asset_property.property_value IS
-    'Asset property value';
-COMMENT ON COLUMN edc_asset_property.property_type IS
-    'Asset property class name';
-COMMENT ON COLUMN edc_asset_property.property_is_private IS
-    'Asset property private flag';
-
-CREATE INDEX IF NOT EXISTS idx_edc_asset_property_value
-    ON edc_asset_property (property_name, property_value);
 
 
 --
@@ -79,6 +53,7 @@ CREATE TABLE IF NOT EXISTS edc_contract_definitions
     access_policy_id       VARCHAR NOT NULL,
     contract_policy_id     VARCHAR NOT NULL,
     assets_selector        JSON    NOT NULL,
+    private_properties     JSON,
     PRIMARY KEY (contract_definition_id)
 );
 
@@ -122,17 +97,17 @@ CREATE TABLE IF NOT EXISTS edc_contract_agreement
 
 CREATE TABLE IF NOT EXISTS edc_contract_negotiation
 (
-    id                   VARCHAR                                            NOT NULL
+    id                   VARCHAR           NOT NULL
         CONSTRAINT contract_negotiation_pk
             PRIMARY KEY,
-    created_at           BIGINT                                             NOT NULL,
-    updated_at           BIGINT                                             NOT NULL,
+    created_at           BIGINT            NOT NULL,
+    updated_at           BIGINT            NOT NULL,
     correlation_id       VARCHAR,
-    counterparty_id      VARCHAR                                            NOT NULL,
-    counterparty_address VARCHAR                                            NOT NULL,
-    protocol             VARCHAR                                            NOT NULL,
-    type                 VARCHAR                                            NOT NULL,
-    state                INTEGER DEFAULT 0                                  NOT NULL,
+    counterparty_id      VARCHAR           NOT NULL,
+    counterparty_address VARCHAR           NOT NULL,
+    protocol             VARCHAR           NOT NULL,
+    type                 VARCHAR           NOT NULL,
+    state                INTEGER DEFAULT 0 NOT NULL,
     state_count          INTEGER DEFAULT 0,
     state_timestamp      BIGINT,
     error_detail         VARCHAR,
@@ -142,11 +117,12 @@ CREATE TABLE IF NOT EXISTS edc_contract_negotiation
     contract_offers      JSON,
     callback_addresses   JSON,
     trace_context        JSON,
+    pending              BOOLEAN DEFAULT FALSE,
+    protocol_messages    JSON,
     lease_id             VARCHAR
         CONSTRAINT contract_negotiation_lease_lease_id_fk
             REFERENCES edc_lease
-            ON DELETE SET NULL,
-    CONSTRAINT provider_correlation_id CHECK (type = '0' OR correlation_id IS NOT NULL)
+            ON DELETE SET NULL
 );
 
 COMMENT ON COLUMN edc_contract_negotiation.agreement_id IS 'ContractAgreement serialized as JSON';
@@ -197,6 +173,7 @@ CREATE TABLE IF NOT EXISTS edc_policydefinitions
     assignee              VARCHAR,
     target                VARCHAR,
     policy_type           VARCHAR NOT NULL,
+    private_properties    JSON,
     PRIMARY KEY (policy_id)
 );
 
@@ -243,8 +220,11 @@ CREATE TABLE IF NOT EXISTS edc_transfer_process
     provisioned_resource_set   JSON,
     content_data_address       JSON,
     deprovisioned_resources    JSON,
-    private_properties JSON,
+    private_properties         JSON,
     callback_addresses         JSON,
+    pending                    BOOLEAN  DEFAULT FALSE,
+    transfer_type              VARCHAR,
+    protocol_messages          JSON,
     lease_id                   VARCHAR
         CONSTRAINT transfer_process_lease_lease_id_fk
             REFERENCES edc_lease
@@ -277,17 +257,14 @@ CREATE TABLE IF NOT EXISTS edc_data_request
     asset_id            VARCHAR NOT NULL,
     contract_id         VARCHAR NOT NULL,
     data_destination    JSON    NOT NULL,
-    managed_resources   BOOLEAN DEFAULT TRUE,
-    properties          JSON,
     transfer_process_id VARCHAR NOT NULL
         CONSTRAINT data_request_transfer_process_id_fk
             REFERENCES edc_transfer_process
             ON UPDATE RESTRICT ON DELETE CASCADE
 );
 
-COMMENT ON COLUMN edc_data_request.data_destination IS 'DataAddress serialized as JSON';
 
-COMMENT ON COLUMN edc_data_request.properties IS 'java Map serialized as JSON';
+COMMENT ON COLUMN edc_data_request.data_destination IS 'DataAddress serialized as JSON';
 
 CREATE UNIQUE INDEX IF NOT EXISTS data_request_id_uindex
     ON edc_data_request (datarequest_id);
