@@ -99,7 +99,6 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
         @Override
         protected void verify() {
             super.verify();
-           // Objects.requireNonNull(resourceDefinition.keyName, "Key Name is required");
             Objects.requireNonNull(resourceDefinition.bucketName, "Bucket Name is required");
         }
     }
