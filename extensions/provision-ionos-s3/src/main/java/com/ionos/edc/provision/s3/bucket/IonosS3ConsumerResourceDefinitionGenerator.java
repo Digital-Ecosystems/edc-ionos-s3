@@ -48,7 +48,6 @@ public class IonosS3ConsumerResourceDefinitionGenerator implements ConsumerResou
                 .bucketName(bucketName)
                 .blobName(blobName)
                 .accessKey(accessKey)
-                .secretKey(secretKey)
                 .build();
     }
 
