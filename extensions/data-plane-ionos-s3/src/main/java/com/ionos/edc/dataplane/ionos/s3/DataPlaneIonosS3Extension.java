@@ -24,6 +24,8 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 
+import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_MAX_FILES_DEFAULT;
+
 @Extension(value = DataPlaneIonosS3Extension.NAME)
 public class DataPlaneIonosS3Extension implements ServiceExtension {
 
@@ -55,7 +57,7 @@ public class DataPlaneIonosS3Extension implements ServiceExtension {
         var sourceFactory = new IonosDataSourceFactory(s3Api, monitor);
         pipelineService.registerFactory(sourceFactory);
         
-        var sinkFactory = new IonosDataSinkFactory(s3Api, executorContainer.getExecutorService(), monitor, vault, typeManager);
+        var sinkFactory = new IonosDataSinkFactory(s3Api, executorContainer.getExecutorService(), monitor, vault, typeManager, IONOS_MAX_FILES_DEFAULT);
         pipelineService.registerFactory(sinkFactory);
         context.getMonitor().info("File Transfer Extension initialized!");
     }

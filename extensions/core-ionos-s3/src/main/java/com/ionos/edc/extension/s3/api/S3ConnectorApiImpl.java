@@ -18,17 +18,22 @@ import com.ionos.edc.extension.s3.connector.MinioConnector;
 import com.ionos.edc.extension.s3.connector.ionosapi.HttpConnector;
 import com.ionos.edc.extension.s3.connector.ionosapi.TemporaryKey;
 
-import io.minio.*;
+import io.minio.BucketExistsArgs;
+import io.minio.GetObjectArgs;
+import io.minio.ListObjectsArgs;
+import io.minio.MakeBucketArgs;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
 import org.eclipse.edc.spi.EdcException;
 
-import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class S3ConnectorApiImpl implements S3ConnectorApi {
 
-    MinioConnector minConnector = new MinioConnector();
+    MinioConnector miniConnector = new MinioConnector();
     HttpConnector ionosApi = new HttpConnector();
 
     private MinioClient minioClient;
@@ -38,11 +43,12 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
 
     public S3ConnectorApiImpl(String endpoint, String accessKey, String secretKey, int maxFiles) {
         if(accessKey != null && secretKey  != null && endpoint != null)
-            this.minioClient = minConnector.connect(endpoint, accessKey, secretKey);
+            this.minioClient = miniConnector.connect(endpoint, accessKey, secretKey);
         this.region = getRegion(endpoint);
         this.token = "";
         this.maxFiles = maxFiles;
     }
+
     public S3ConnectorApiImpl(String endpoint, String accessKey, String secretKey, String token, int maxFiles) {
         this(endpoint, accessKey, secretKey, maxFiles);
         this.token = token;
@@ -76,7 +82,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
     }
 
     @Override
-    public void uploadObject(String bucketName, String objectName, InputStream stream) {
+    public void uploadObject(String bucketName, String objectName, ByteArrayInputStream stream) {
         if (!bucketExists(bucketName.toLowerCase())) {
             createBucket(bucketName.toLowerCase());
         }
@@ -94,17 +100,40 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
     }
 
     @Override
-    public InputStream getObject(String bucketName, String objectName) {
+    public ByteArrayInputStream getObject(String bucketName, String objectName) {
         if (!bucketExists(bucketName.toLowerCase())) {
             throw new EdcException("Bucket not found - " + bucketName);
         }
 
-        try {
-            return minioClient.getObject(GetObjectArgs.builder()
-                    .bucket(bucketName.toLowerCase())
-                    .region(region)
-                    .object(objectName)
-                    .build());
+        var request = GetObjectArgs.builder()
+                .bucket(bucketName.toLowerCase())
+                .region(region)
+                .object(objectName)
+                .build();
+
+        try (var response = minioClient.getObject(request)) {
+            return new ByteArrayInputStream(response.readAllBytes());
+        } catch (Exception e) {
+            throw new EdcException("Getting file - " + e.getMessage());
+        }
+    }
+
+    @Override
+    public ByteArrayInputStream getObject(String bucketName, String objectName, long offset, long length) {
+        if (!bucketExists(bucketName.toLowerCase())) {
+            throw new EdcException("Bucket not found - " + bucketName);
+        }
+
+        var request = GetObjectArgs.builder()
+                .bucket(bucketName.toLowerCase())
+                .region(region)
+                .object(objectName)
+                .offset(offset)
+                .length(length)
+                .build();
+
+        try (var response = minioClient.getObject(request)) {
+            return new ByteArrayInputStream(response.readAllBytes());
         } catch (Exception e) {
             throw new EdcException("Getting file - " + e.getMessage());
         }

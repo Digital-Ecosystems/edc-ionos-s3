@@ -34,8 +34,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ExecutorService;
 
-import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_MAX_FILES_DEFAULT;
-
 public class IonosDataSinkFactory implements DataSinkFactory {
 
     private static final String DEFAULT_STORAGE = "s3-eu-central-1.ionoscloud.com";
@@ -45,16 +43,18 @@ public class IonosDataSinkFactory implements DataSinkFactory {
     private final S3ConnectorApi s3Api;
     private final Vault vault;
     private final TypeManager typeManager;
+    private final int maxFiles;
 
     private final Validator<DataAddress> validator = new IonosSinkDataAddressValidationRule();
-    
-    public IonosDataSinkFactory(S3ConnectorApi s3Api, ExecutorService executorService, Monitor monitor,
-            Vault vault, TypeManager typeManager) {
+
+    public IonosDataSinkFactory(S3ConnectorApi s3Api, ExecutorService executorService, Monitor monitor, Vault vault,
+                                TypeManager typeManager, int maxFiles) {
         this.s3Api = s3Api;
         this.executorService = executorService;
         this.monitor = monitor;
         this.vault = vault;
         this.typeManager = typeManager;
+        this.maxFiles = maxFiles;
     }
 
     @Override
@@ -87,20 +87,21 @@ public class IonosDataSinkFactory implements DataSinkFactory {
                         token.getAccessKey(),
                         token.getSecretKey(),
                         "",
-                        IONOS_MAX_FILES_DEFAULT);
+                        maxFiles);
                 return IonosDataSink.Builder.newInstance()
                         .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
                         .blobName(destination.getStringProperty(IonosBucketSchema.BLOB_NAME))
                         .requestId(request.getId())
                         .executorService(executorService)
-                        .monitor(monitor).s3Api(s3ApiTemp)
+                        .monitor(monitor)
+                        .s3Api(s3ApiTemp)
                         .build();
             } else {
                 var s3ApiTemp = new S3ConnectorApiImpl(DEFAULT_STORAGE,
                         token.getAccessKey(),
                         token.getSecretKey(),
                         "",
-                        IONOS_MAX_FILES_DEFAULT);
+                        maxFiles);
                 return IonosDataSink.Builder.newInstance()
                         .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
                         .blobName(destination.getStringProperty(IonosBucketSchema.BLOB_NAME))
@@ -116,7 +117,8 @@ public class IonosDataSinkFactory implements DataSinkFactory {
                 .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
                 .blobName(destination.getStringProperty(IonosBucketSchema.BLOB_NAME))
                 .requestId(request.getId()).executorService(executorService)
-                .monitor(monitor).s3Api(s3Api)
+                .monitor(monitor)
+                .s3Api(s3Api)
                 .build();
     }
 }
