@@ -17,11 +17,8 @@ package com.ionos.edc.extension.s3.connector;
 import io.minio.MinioClient;
 
 public class MinioConnector {
-
     
     public MinioClient connect(String endpoint, String accessKey, String secretKey) {
-        MinioClient minioClient = MinioClient.builder().endpoint(endpoint).credentials(accessKey, secretKey).build();
-
-        return minioClient;
+        return MinioClient.builder().endpoint(endpoint).credentials(accessKey, secretKey).build();
     }
 }
