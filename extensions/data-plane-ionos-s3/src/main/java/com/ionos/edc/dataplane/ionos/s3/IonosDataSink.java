@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,27 +47,56 @@ public class IonosDataSink extends ParallelSink {
                 blobName = part.name();
             }
 
-            var streamsOutput = new ByteArrayOutputStream();
-            var stream = part.openStream();
-            while (stream != null) {
-                try {
-                    streamsOutput.write(stream.readAllBytes());
-                    stream.close();
+            ByteArrayOutputStream streamsOutput = null;
+            InputStream stream = null;
+            try {
+                streamsOutput = new ByteArrayOutputStream();
+                stream = part.openStream();
+
+                if (part instanceof IonosDataSource.S3Part) {
+                    // Multiple fetches
+                    while (stream != null) {
+                        try {
+                            streamsOutput.write(stream.readAllBytes());
+                            stream.close();
+
+                        } catch (Exception e) {
+                            return uploadFailure(e, blobName);
+                        }
+
+                        stream = part.openStream();
+                    }
+                } else {
+                    // Single fetch
+                    try {
+                        streamsOutput.write(stream.readAllBytes());
+                        stream.close();
+
+                    } catch (Exception e) {
+                        return uploadFailure(e, blobName);
+                    }
+                }
+
+                var byteArray = streamsOutput.toByteArray();
+                try (var streamsInput = new ByteArrayInputStream(byteArray)) {
+                    s3Api.uploadObject(bucketName, blobName, streamsInput);
+                    streamsOutput.close();
 
                 } catch (Exception e) {
                     return uploadFailure(e, blobName);
                 }
+            } finally {
+                try {
+                    if (streamsOutput != null) {
+                        streamsOutput.close();
+                    }
+                    if (stream != null) {
+                        stream.close();
+                    }
 
-                stream = part.openStream();
-            }
-
-            var byteArray = streamsOutput.toByteArray();
-            try (var streamsInput = new ByteArrayInputStream(byteArray)) {
-                s3Api.uploadObject(bucketName, blobName, streamsInput);
-                streamsOutput.close();
-
-            } catch (Exception e) {
-                return uploadFailure(e, blobName);
+                } catch (Exception e) {
+                    monitor.severe("Error closing streams", e);
+                }
             }
         }
 
