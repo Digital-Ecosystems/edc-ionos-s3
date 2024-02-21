@@ -98,12 +98,12 @@ class IonosDataSource implements DataSource {
     public void close() {
     }
 
-    private static class S3Part implements Part {
+    public static class S3Part implements Part {
         private final S3ConnectorApi s3Api;
         private final Monitor monitor;
         private final String bucketName;
         private final String blobName;
-        private boolean isDirectory;
+        private final boolean isDirectory;
         private final long fileSize;
 
         private boolean isOpened = true;
