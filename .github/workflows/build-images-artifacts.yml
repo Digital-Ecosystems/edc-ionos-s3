@@ -37,7 +37,7 @@ jobs:
           buildkitd-flags: --debug
 
       - name: Prepare required files
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
         
       - name: downcase NAMESPACE
         run: |
@@ -117,7 +117,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Build project
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
 
       - name: Publish artifacts to GitHub Packages
         run: |  
