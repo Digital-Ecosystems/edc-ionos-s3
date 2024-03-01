@@ -8,6 +8,8 @@ val edcGroup: String by project
 val edcVersion: String by project
 val extensionsGroup: String by project
 val extensionsVersion: String by project
+val junitVersion: String by project
+val mockitoVersion: String by project
 
 val gitHubPkgsName: String by project
 val gitHubPkgsUrl: String by project
@@ -15,23 +17,19 @@ val gitHubUser: String? by project
 val gitHubToken: String? by project
 
 dependencies {
-
 	api("${edcGroup}:data-plane-spi:${edcVersion}")
 
+	implementation(project(":extensions:core-ionos-s3"))
 	implementation("${edcGroup}:util:${edcVersion}")
 	implementation("${edcGroup}:transfer-spi:${edcVersion}")
 	implementation("${edcGroup}:data-plane-util:${edcVersion}")
     implementation("${edcGroup}:data-plane-core:${edcVersion}")
 	implementation("${edcGroup}:http:${edcVersion}")
 	implementation("${edcGroup}:validator-spi:${edcVersion}")
-
-	implementation(project(":extensions:core-ionos-s3"))
-
-	implementation("org.realityforge.org.jetbrains.annotations:org.jetbrains.annotations:1.7.0")
 			
-	testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
-	testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.1")
-    testImplementation("org.assertj:assertj-core:3.22.0")
+	testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+	testImplementation("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+	testImplementation("org.mockito:mockito-core:${mockitoVersion}")
 }
 
 java {
