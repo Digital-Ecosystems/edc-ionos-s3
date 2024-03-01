@@ -1,17 +1,12 @@
 plugins {
 	`java-library`
 	`maven-publish`
-
 }
-val javaVersion: String by project
-val faaastVersion: String by project
+
 val edcGroup: String by project
 val edcVersion: String by project
-val okHttpVersion: String by project
-val rsApi: String by project
 val metaModelVersion: String by project
 val minIOVersion: String by project
-
 val extensionsGroup: String by project
 val extensionsVersion: String by project
 
@@ -21,14 +16,12 @@ val gitHubUser: String? by project
 val gitHubToken: String? by project
 
 dependencies {
-
 	api("${edcGroup}:runtime-metamodel:${metaModelVersion}")
 
 	implementation("${edcGroup}:transfer-spi:${edcVersion}")
 	implementation("io.minio:minio:${minIOVersion}")
-	
-	testImplementation ("${edcGroup}:junit:${edcVersion}")
 }
+
 java {
 	withJavadocJar()
 	withSourcesJar()
