@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure.Reason.GENERAL_ERROR;
+import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure.Reason.NOT_FOUND;
 import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult.success;
 import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult.failure;
 
@@ -53,7 +53,7 @@ class IonosDataSource implements DataSource {
 
         if (objects.isEmpty()) {
             return failure(new StreamFailure(
-                    List.of("No files found in bucket " + bucketName + " with blobName " + blobName), GENERAL_ERROR)
+                    List.of("No files found in bucket " + bucketName + " with blobName " + blobName), NOT_FOUND)
             );
         }
 
@@ -71,7 +71,7 @@ class IonosDataSource implements DataSource {
 
         if (objects.isEmpty()) {
             return failure(new StreamFailure(
-                    List.of("No files found in bucket " + bucketName + " with blobName " + blobName), GENERAL_ERROR)
+                    List.of("No files found in bucket " + bucketName + " with blobName " + blobName), NOT_FOUND)
             );
         }
 
@@ -85,25 +85,25 @@ class IonosDataSource implements DataSource {
         if (object.isRootObject(blobName))
             return true;
 
-        return filterIncludes.matcher(object.shortObjectName(blobName)).find();
+        return filterIncludes.matcher(object.shortObjectName(blobName)).matches();
     }
     boolean applyFilterExcludes(S3Object object) {
         if (object.isRootObject(blobName))
             return true;
 
-        return !filterExcludes.matcher(object.shortObjectName(blobName)).find();
+        return !filterExcludes.matcher(object.shortObjectName(blobName)).matches();
     }
 
     @Override
     public void close() {
     }
 
-    private static class S3Part implements Part {
+    public static class S3Part implements Part {
         private final S3ConnectorApi s3Api;
         private final Monitor monitor;
         private final String bucketName;
         private final String blobName;
-        private boolean isDirectory;
+        private final boolean isDirectory;
         private final long fileSize;
 
         private boolean isOpened = true;

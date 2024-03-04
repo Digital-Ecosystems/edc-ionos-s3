@@ -9,6 +9,7 @@ val edcVersion: String by project
 val metaModelVersion: String by project
 val extensionsGroup: String by project
 val extensionsVersion: String by project
+val junitVersion: String by project
 
 val gitHubPkgsName: String by project
 val gitHubPkgsUrl: String by project
@@ -18,13 +19,8 @@ val gitHubToken: String? by project
 dependencies {
     api("${edcGroup}:runtime-metamodel:${metaModelVersion}")
 
-    implementation("${edcGroup}:transfer-spi:${edcVersion}")
-
     implementation(project(":extensions:core-ionos-s3"))
-
-    implementation("dev.failsafe:failsafe:3.2.4")
-
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
+    implementation("${edcGroup}:transfer-spi:${edcVersion}")
 }
 
 java {

@@ -1,4 +1,4 @@
-package org.eclipse.edc.connector.dataplane.ionos.s3.util;
+package com.ionos.edc.dataplane.ionos.s3.util;
 
 import com.ionos.edc.dataplane.ionos.s3.util.FileTransferHelper;
 import org.eclipse.edc.spi.EdcException;
