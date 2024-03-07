@@ -17,7 +17,6 @@ package com.ionos.edc.provision.s3.bucket;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
 
@@ -25,11 +24,10 @@ import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
 public class IonosS3ResourceDefinition extends ResourceDefinition {
     private String keyName;
     private String storage;
-
     private String bucketName;
-    private String blobName;
-    private String accessKey = "DEFAULT";
-
+    private String path;
+    private String accessKey;
+    private String secretKey;
 
     public IonosS3ResourceDefinition() {
 
@@ -40,30 +38,27 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
     public String getStorage() {
         return storage;
     }
-
 	public String getBucketName() {
         return bucketName;
     }
-    public String getBlobName() {
-        return blobName;
+    public String getPath() {
+        return path;
     }
-    public String getAccessKey() {
-        return accessKey;
-    }
+
     @Override
     public Builder toBuilder() {
         return initializeBuilder(new Builder())
                 .keyName(keyName)
                 .storage(storage)
-                .accessKey(accessKey)
                 .bucketName(bucketName)
-                .blobName(blobName);
+                .path(path)
+                .accessKey(accessKey)
+                .secretKey(secretKey);
     }
 
     public static class Builder extends ResourceDefinition.Builder<IonosS3ResourceDefinition, Builder> {
 
         private Builder() {
-
             super(new IonosS3ResourceDefinition());
         }
         @JsonCreator
@@ -75,24 +70,24 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
             resourceDefinition.keyName = keyName;
             return this;
         }
-
         public Builder storage(String storage) {
             resourceDefinition.storage = storage;
             return this;
         }
-
-        
         public Builder bucketName(String bucketName) {
             resourceDefinition.bucketName = bucketName;
             return this;
         }
-
-        public Builder blobName(String blobName) {
-            resourceDefinition.blobName = blobName;
+        public Builder path(String path) {
+            resourceDefinition.path = path;
             return this;
         }
         public Builder accessKey(String accessKey) {
             resourceDefinition.accessKey = accessKey;
+            return this;
+        }
+        public Builder secretKey(String secretKey) {
+            resourceDefinition.secretKey = secretKey;
             return this;
         }
 

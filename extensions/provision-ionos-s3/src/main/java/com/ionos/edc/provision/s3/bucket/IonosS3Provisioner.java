@@ -16,7 +16,6 @@ package com.ionos.edc.provision.s3.bucket;
 
 import com.ionos.edc.extension.s3.api.S3ConnectorApi;
 import com.ionos.edc.extension.s3.configuration.IonosToken;
-import com.ionos.edc.extension.s3.connector.ionosapi.TemporaryKey;
 
 import dev.failsafe.RetryPolicy;
 import org.eclipse.edc.connector.transfer.spi.provision.Provisioner;
@@ -24,24 +23,19 @@ import org.eclipse.edc.connector.transfer.spi.types.DeprovisionedResource;
 import org.eclipse.edc.connector.transfer.spi.types.ProvisionResponse;
 import org.eclipse.edc.connector.transfer.spi.types.ProvisionedResource;
 import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.response.StatusResult;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.OffsetDateTime;
 import java.util.concurrent.CompletableFuture;
 import static dev.failsafe.Failsafe.with;
-import static java.lang.String.format;
 
 public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition, IonosS3ProvisionedResource> {
     private final RetryPolicy<Object> retryPolicy;
-    private final Monitor monitor;
     private final S3ConnectorApi s3Api;
 
-    public IonosS3Provisioner(RetryPolicy<Object> retryPolicy, Monitor monitor, S3ConnectorApi s3Api) {
+    public IonosS3Provisioner(RetryPolicy<Object> retryPolicy, S3ConnectorApi s3Api) {
 
         this.retryPolicy = retryPolicy;
-        this.monitor = monitor;
         this.s3Api = s3Api;
     }
 
@@ -79,8 +73,8 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
         if (resourceDefinition.getStorage() != null) {
             resourceBuilder = resourceBuilder.storage(resourceDefinition.getStorage());
         }
-        if (resourceDefinition.getBlobName() != null) {
-            resourceBuilder = resourceBuilder.blobName(resourceDefinition.getBlobName());
+        if (resourceDefinition.getPath() != null) {
+            resourceBuilder = resourceBuilder.path(resourceDefinition.getPath());
         }
         var resource = resourceBuilder.build();
 
@@ -99,12 +93,9 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
                         StatusResult.success(DeprovisionedResource.Builder.newInstance().provisionedResourceId(provisionedResource.getId()).build())
                 );
     }
-    
-    @NotNull
-    private CompletableFuture<Void> createBucket(String bucketName) {
-        return with(retryPolicy).runAsync(() -> {
-            s3Api.createBucket(bucketName);
-        });
+
+    private void createBucket(String bucketName) {
+        s3Api.createBucket(bucketName);
     }
 
 }

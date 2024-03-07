@@ -32,7 +32,7 @@ public class IonosDataSink extends ParallelSink {
 
     private S3ConnectorApi s3Api;
     private String bucketName;
-    private String blobName;
+    private String path;
 
     private IonosDataSink() {}
 
@@ -41,8 +41,8 @@ public class IonosDataSink extends ParallelSink {
 
         for (DataSource.Part part : parts) {
             String blobName;
-            if (this.blobName != null) {
-                blobName = this.blobName;
+            if (this.path != null) {
+                blobName = this.path + part.name();
             } else {
                 blobName = part.name();
             }
@@ -53,6 +53,8 @@ public class IonosDataSink extends ParallelSink {
                 streamsOutput = new ByteArrayOutputStream();
                 stream = part.openStream();
 
+
+                // TODO Make this more configurable
                 if (part instanceof IonosDataSource.S3Part) {
                     // Multiple fetches
                     while (stream != null) {
@@ -130,8 +132,8 @@ public class IonosDataSink extends ParallelSink {
             return this;
         }
 
-        public Builder blobName(String blobName) {
-            sink.blobName = blobName;
+        public Builder path(String path) {
+            sink.path = path;
             return this;
         }
 

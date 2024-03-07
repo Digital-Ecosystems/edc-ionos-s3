@@ -24,6 +24,7 @@ import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
 import org.eclipse.edc.policy.model.Policy;
 
 import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
+import org.eclipse.edc.spi.EdcException;
 
 public class IonosS3ConsumerResourceDefinitionGenerator implements ConsumerResourceDefinitionGenerator {
 
@@ -33,11 +34,16 @@ public class IonosS3ConsumerResourceDefinitionGenerator implements ConsumerResou
         Objects.requireNonNull(policy, "policy must always be provided");
 
         var destination = dataRequest.getDataDestination();
+
+        var path = destination.getStringProperty(IonosBucketSchema.PATH);
+        if ((path != null) && !path.endsWith("/")) {
+            throw new EdcException("path must be a directory");
+        }
+
         var id = randomUUID().toString();
         var keyName = destination.getKeyName();
         var storage = destination.getStringProperty(IonosBucketSchema.STORAGE_NAME);
         var bucketName = destination.getStringProperty(IonosBucketSchema.BUCKET_NAME);
-        var blobName = destination.getStringProperty(IonosBucketSchema.BLOB_NAME);
         var accessKey = destination.getStringProperty(IonosBucketSchema.ACCESS_KEY_ID);
         var secretKey = destination.getStringProperty(IonosBucketSchema.SECRET_ACCESS_KEY);
 
@@ -46,8 +52,9 @@ public class IonosS3ConsumerResourceDefinitionGenerator implements ConsumerResou
                 .keyName(keyName)
                 .storage(storage)
                 .bucketName(bucketName)
-                .blobName(blobName)
+                .path(path)
                 .accessKey(accessKey)
+                .secretKey(secretKey)
                 .build();
     }
 
