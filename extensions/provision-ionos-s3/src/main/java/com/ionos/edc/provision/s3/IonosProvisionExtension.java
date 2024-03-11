@@ -59,7 +59,7 @@ public class IonosProvisionExtension implements ServiceExtension {
         monitor.debug("IonosProvisionExtension" + "retryPolicy");
         var retryPolicy = (RetryPolicy<Object>) context.getService(RetryPolicy.class);
         monitor.debug("IonosProvisionExtension" + "s3BucketProvisioner");
-        var s3BucketProvisioner = new IonosS3Provisioner(retryPolicy, monitor, clientApi);
+        var s3BucketProvisioner = new IonosS3Provisioner(retryPolicy, clientApi);
         provisionManager.register(s3BucketProvisioner);
 
         // register the generator
