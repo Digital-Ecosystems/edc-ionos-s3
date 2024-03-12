@@ -44,9 +44,10 @@ The transfer of assets aims to transfer the files/folders from one connector to 
 |--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
 | `storage`    | IONOS S3 endpoint address. Refer to  [docs](https://docs.ionos.com/cloud/managed-services/s3-object-storage/s3-endpoints)  for further information. | yes       |
 | `bucketName` | IONOS S3 bucket name.   Refer to  [docs](https://docs.ionos.com/cloud/managed-services/s3-object-storage/concepts/buckets) for further information. | yes       |
-| `path`       | Path of destination where the file/folder will be placed.                                                                                                                                     | yes       |
+| `path`       | Path of destination where the file/folder will be placed. </br>  *if the path not filled, the file will be placed in the root of the bucket.        | no        |
 
-
+se o caminho não estiver preenchido, o arquivo será colocado na raiz do bucket.
+if the path not filled, the file will be placed in the root of the bucket.
 ## Example
 
 ```json
