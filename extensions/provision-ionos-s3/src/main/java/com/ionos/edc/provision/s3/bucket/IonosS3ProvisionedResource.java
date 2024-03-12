@@ -29,15 +29,6 @@ public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResour
 
     private String accessKey;
 
-    public String getStorage() {
-        return getDataAddress().getStringProperty(STORAGE_NAME);
-    }
-    public String getBucketName() {
-        return getDataAddress().getStringProperty(BUCKET_NAME);
-    }
-    public String getBlobName() {
-        return getDataAddress().getStringProperty(BLOB_NAME);
-    }
     public String getAccessKey() {
         return accessKey;
     }
@@ -69,8 +60,8 @@ public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResour
             return this;
         }
 
-        public Builder blobName(String blobName) {
-            dataAddressBuilder.property(BLOB_NAME, blobName);
+        public Builder path(String path) {
+            dataAddressBuilder.property(PATH, path);
             return this;
         }
 

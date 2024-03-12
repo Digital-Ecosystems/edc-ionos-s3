@@ -90,7 +90,7 @@ public class IonosDataSinkFactory implements DataSinkFactory {
                         maxFiles);
                 return IonosDataSink.Builder.newInstance()
                         .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
-                        .blobName(destination.getStringProperty(IonosBucketSchema.BLOB_NAME))
+                        .path(destination.getStringProperty(IonosBucketSchema.PATH))
                         .requestId(request.getId())
                         .executorService(executorService)
                         .monitor(monitor)
@@ -104,7 +104,7 @@ public class IonosDataSinkFactory implements DataSinkFactory {
                         maxFiles);
                 return IonosDataSink.Builder.newInstance()
                         .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
-                        .blobName(destination.getStringProperty(IonosBucketSchema.BLOB_NAME))
+                        .path(destination.getStringProperty(IonosBucketSchema.PATH))
                         .requestId(request.getId())
                         .executorService(executorService)
                         .monitor(monitor)
@@ -115,7 +115,7 @@ public class IonosDataSinkFactory implements DataSinkFactory {
 
         return IonosDataSink.Builder.newInstance()
                 .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
-                .blobName(destination.getStringProperty(IonosBucketSchema.BLOB_NAME))
+                .path(destination.getStringProperty(IonosBucketSchema.PATH))
                 .requestId(request.getId()).executorService(executorService)
                 .monitor(monitor)
                 .s3Api(s3Api)
