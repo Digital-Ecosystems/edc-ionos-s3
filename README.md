@@ -8,7 +8,7 @@ Please refer to the official [site](https://github.com/ionos-cloud/edc-ionos-s3)
 
 ## Based on the following
 
-- [https://github.com/eclipse-dataspaceconnector/DataSpaceConnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector) - v0.1.2;
+- [https://github.com/eclipse-dataspaceconnector/DataSpaceConnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector) - v0.4.1;
 - [International Data Spaces](https://www.internationaldataspaces.org);
 - [GAIA-X](https://gaia-x.eu) project;
 
@@ -91,8 +91,8 @@ java -Dedc.fs.config=resources/config.properties -jar build/libs/dataspace-conne
 ```
 
 ## Examples
-In order to see working examples go to [edc-ionos-samples](https://github.com/ionos-cloud/edc-ionos-samples).
+In order to see working examples go to [edc-ionos-samples](https://github.com/Digital-Ecosystems/edc-ionos-samples).
 
 ## Deploying to IONOS Kubernetes
-Check the [deployment readme](./deployment/README.md) to see how to deploy the Connector locally or to an external Kubernetes cluster.
+Check the [deployment readme](https://github.com/ionos-cloud/edc-ionos-s3/tree/main/deployment/README.md) to see how to deploy the Connector locally or to an external Kubernetes cluster.
 
