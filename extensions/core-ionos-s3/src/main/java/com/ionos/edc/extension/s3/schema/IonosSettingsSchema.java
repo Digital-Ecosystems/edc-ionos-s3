@@ -19,5 +19,11 @@ public interface IonosSettingsSchema {
     String IONOS_SECRET_KEY = "edc.ionos.secret.key";
     String IONOS_ENDPOINT = "edc.ionos.endpoint";
     String IONOS_TOKEN = "edc.ionos.token";
+    String IONOS_KEY_VALIDATION_ATTEMPTS = "edc.ionos.key.validation.attempts";
+    String IONOS_KEY_VALIDATION_DELAY = "edc.ionos.key.validation.attempts";
+    String IONOS_MAX_FILES = "edc.ionos.max.files";
+
+    int IONOS_KEY_VALIDATION_ATTEMPTS_DEFAULT = 5;
+    long IONOS_KEY_VALIDATION_DELAY_DEFAULT = 5000;
     int IONOS_MAX_FILES_DEFAULT = 1000;
 }

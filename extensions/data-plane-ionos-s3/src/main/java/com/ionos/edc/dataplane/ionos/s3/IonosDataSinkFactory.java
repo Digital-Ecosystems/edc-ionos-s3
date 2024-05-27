@@ -34,10 +34,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ExecutorService;
 
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.STORAGE_NAME_DEFAULT;
+
 public class IonosDataSinkFactory implements DataSinkFactory {
 
-    private static final String DEFAULT_STORAGE = "s3-eu-central-1.ionoscloud.com";
-   
     private final ExecutorService executorService;
     private final Monitor monitor;
     private final S3ConnectorApi s3Api;
@@ -47,8 +47,7 @@ public class IonosDataSinkFactory implements DataSinkFactory {
 
     private final Validator<DataAddress> validator = new IonosSinkDataAddressValidationRule();
 
-    public IonosDataSinkFactory(S3ConnectorApi s3Api, ExecutorService executorService, Monitor monitor, Vault vault,
-                                TypeManager typeManager, int maxFiles) {
+    public IonosDataSinkFactory(S3ConnectorApi s3Api, ExecutorService executorService, Monitor monitor, Vault vault, TypeManager typeManager, int maxFiles) {
         this.s3Api = s3Api;
         this.executorService = executorService;
         this.monitor = monitor;
@@ -86,7 +85,6 @@ public class IonosDataSinkFactory implements DataSinkFactory {
                 var s3ApiTemp = new S3ConnectorApiImpl(destination.getStringProperty(IonosBucketSchema.STORAGE_NAME),
                         token.getAccessKey(),
                         token.getSecretKey(),
-                        "",
                         maxFiles);
                 return IonosDataSink.Builder.newInstance()
                         .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
@@ -97,10 +95,9 @@ public class IonosDataSinkFactory implements DataSinkFactory {
                         .s3Api(s3ApiTemp)
                         .build();
             } else {
-                var s3ApiTemp = new S3ConnectorApiImpl(DEFAULT_STORAGE,
+                var s3ApiTemp = new S3ConnectorApiImpl(STORAGE_NAME_DEFAULT,
                         token.getAccessKey(),
                         token.getSecretKey(),
-                        "",
                         maxFiles);
                 return IonosDataSink.Builder.newInstance()
                         .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))

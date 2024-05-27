@@ -15,28 +15,41 @@
 package com.ionos.edc.provision.s3.bucket;
 
 import com.ionos.edc.extension.s3.api.S3ConnectorApi;
+import com.ionos.edc.extension.s3.api.S3ConnectorApiImpl;
 import com.ionos.edc.extension.s3.configuration.IonosToken;
 
+import com.ionos.edc.extension.s3.connector.ionosapi.TemporaryKey;
 import dev.failsafe.RetryPolicy;
 import org.eclipse.edc.connector.transfer.spi.provision.Provisioner;
 import org.eclipse.edc.connector.transfer.spi.types.DeprovisionedResource;
 import org.eclipse.edc.connector.transfer.spi.types.ProvisionResponse;
 import org.eclipse.edc.connector.transfer.spi.types.ProvisionedResource;
 import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
+import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.response.StatusResult;
 
 import java.time.OffsetDateTime;
 import java.util.concurrent.CompletableFuture;
 import static dev.failsafe.Failsafe.with;
 
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.STORAGE_NAME_DEFAULT;
+
 public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition, IonosS3ProvisionedResource> {
+
+    private final Monitor monitor;
     private final RetryPolicy<Object> retryPolicy;
     private final S3ConnectorApi s3Api;
+    private final Integer keyValidationAttempts;
+    private final Long keyValidationDelay;
 
-    public IonosS3Provisioner(RetryPolicy<Object> retryPolicy, S3ConnectorApi s3Api) {
+    public IonosS3Provisioner(Monitor monitor, RetryPolicy<Object> retryPolicy, S3ConnectorApi s3Api, int keyValidationAttempts, long keyValidationDelay) {
 
+        this.monitor = monitor;
         this.retryPolicy = retryPolicy;
         this.s3Api = s3Api;
+        this.keyValidationAttempts = keyValidationAttempts;
+        this.keyValidationDelay = keyValidationDelay;
     }
 
     @Override
@@ -58,7 +71,7 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
             createBucket(bucketName);
         }
 
-        var serviceAccount = s3Api.createTemporaryKey();
+        var temporaryKey = createTemporaryKey(resourceDefinition);
 
         String resourceName = resourceDefinition.getKeyName();
 
@@ -67,7 +80,7 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
                 .resourceName(resourceName)
                 .bucketName(resourceDefinition.getBucketName())
                 .resourceDefinitionId(resourceDefinition.getId())
-                .accessKey(serviceAccount.getAccessKey())
+                .accessKey(temporaryKey.getAccessKey())
                 .transferProcessId(resourceDefinition.getTransferProcessId())
                 .hasToken(true);
         if (resourceDefinition.getStorage() != null) {
@@ -79,7 +92,7 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
         var resource = resourceBuilder.build();
 
         var expiryTime = OffsetDateTime.now().plusHours(1);
-        var secretToken = new IonosToken(serviceAccount.getAccessKey(), serviceAccount.getSecretKey(), expiryTime.toInstant().toEpochMilli() );
+        var secretToken = new IonosToken(temporaryKey.getAccessKey(), temporaryKey.getSecretKey(), expiryTime.toInstant().toEpochMilli() );
         var response = ProvisionResponse.Builder.newInstance().resource(resource).secretToken(secretToken).build();
 
         return CompletableFuture.completedFuture(StatusResult.success(response));
@@ -92,6 +105,57 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
                 .thenApply(empty ->
                         StatusResult.success(DeprovisionedResource.Builder.newInstance().provisionedResourceId(provisionedResource.getId()).build())
                 );
+    }
+
+    private TemporaryKey createTemporaryKey(IonosS3ResourceDefinition resourceDefinition) {
+        var temporaryKey = s3Api.createTemporaryKey();
+
+        S3ConnectorApi s3ApiTemp;
+        if (resourceDefinition.getStorage() != null) {
+            s3ApiTemp = new S3ConnectorApiImpl(resourceDefinition.getStorage(),
+                    temporaryKey.getAccessKey(),
+                    temporaryKey.getSecretKey());
+        } else {
+            s3ApiTemp = new S3ConnectorApiImpl(STORAGE_NAME_DEFAULT,
+                    temporaryKey.getAccessKey(),
+                    temporaryKey.getSecretKey());
+        }
+
+        // Validate the temporary key
+        var validated = false;
+        for (int i = 1; i <= keyValidationAttempts; i++) {
+            if (validateKey(resourceDefinition, s3ApiTemp, i)) {
+                validated = true;
+                break;
+            }
+        }
+
+        if (validated)
+            return temporaryKey;
+        else {
+            // Delete the not validated temporary key
+            s3Api.deleteTemporaryKey(temporaryKey.getAccessKey());
+            throw new EdcException("Temporary key not validated after " + keyValidationAttempts + " attempts");
+        }
+    }
+
+    private boolean validateKey(IonosS3ResourceDefinition resourceDefinition, S3ConnectorApi s3ApiTemp, int count) {
+        try {
+            // Wait the delay * current retry
+            var delay = keyValidationDelay * count;
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            throw new EdcException("Error waiting delay to validate temporary key", e);
+        }
+
+        try {
+            // Validate the key with bucket exists method
+            s3ApiTemp.bucketExists(resourceDefinition.getBucketName());
+            return true;
+        } catch (Exception e) {
+            monitor.debug("Error validating temporary key: attempts " + count + " of " + keyValidationAttempts + " - " + e.getMessage());
+            return false;
+        }
     }
 
     private void createBucket(String bucketName) {

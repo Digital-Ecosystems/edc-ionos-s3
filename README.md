@@ -59,12 +59,15 @@ The credentials can be found/configured in one of the following:
 
 It is required to configure those parameters:
 
-| Parameter name                          | Description                            | Mandatory  |
-|-----------------------------------------|----------------------------------------| ---------- |
-| `edc.ionos.access.key`                    | IONOS Access Key Id to access S3     | Yes if the context is accessing file |
-| `edc.ionos.secret.access.key`             | IONOS Secret Access Key to access S3 | Yes if the context is accessing file |
-| `edc.ionos.token`                         | IONOS token to allow S3 provisioning | Yes if the context is provisioning access for others |
-| `edc.ionos.endpoint`    | IONOS S3 endpoint address. Refer to [docs](https://docs.ionos.com/cloud/managed-services/s3-object-storage/endpoints) for further information. | Yes, if the context is accessing file |
+| Parameter name                       | Description                                                                                                                             | Mandatory                                            |
+|--------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
+| `edc.ionos.access.key`               | IONOS Access Key Id to access S3                                                                                                        |  Yes if the context is accessing file                |
+| `edc.ionos.secret.access.key`        | IONOS Secret Access Key to access S3                                                                                                    | Yes if the context is accessing file                 |
+| `edc.ionos.token`                    | IONOS token to allow S3 provisioning                                                                                                    | Yes if the context is provisioning access for others |
+| `edc.ionos.endpoint`                 | IONOS S3 endpoint address. Refer to [docs](https://docs.ionos.com/cloud/managed-services/s3-object-storage/endpoints) for further information.                                                                | Yes, if the context is accessing file                | No, the default value is                             |
+| `edc.ionos.max.files`                | Maximum number of files retrieved by list files function.                                                                               | No, the default value is 5,000 files                 |
+| `edc.ionos.key.validation.attempts`  | Maximum number of attemps to validate a temporary key after its creation.                                                               | No, the default values is 5 attempts                 |
+| `edc.ionos.key.validation.delay`     | Time to wait (in milisseconds) before each key validation attempt. In each new attempt the delay is multiplied by the attempt number.   | No, the default value is 5,000 (5 seconds)           |
 
 To create the token please take a look at the following [documentation](./ionos_token.md).
 

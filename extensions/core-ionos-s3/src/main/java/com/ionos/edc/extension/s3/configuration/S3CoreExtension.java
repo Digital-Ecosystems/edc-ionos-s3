@@ -28,6 +28,7 @@ import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_ACCESS
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_SECRET_KEY;
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_ENDPOINT;
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_TOKEN;
+import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_MAX_FILES;
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_MAX_FILES_DEFAULT;
 
 @Provides(S3ConnectorApi.class)
@@ -62,8 +63,10 @@ public class S3CoreExtension implements ServiceExtension {
               endPoint = context.getSetting(IONOS_ENDPOINT, IONOS_ENDPOINT);
               token = context.getSetting(IONOS_TOKEN, IONOS_TOKEN);
         }
-        
-        var s3Api = new S3ConnectorApiImpl(endPoint, accessKey, secretKey, token, IONOS_MAX_FILES_DEFAULT);
+
+        var maxFiles =  context.getSetting(IONOS_MAX_FILES, IONOS_MAX_FILES_DEFAULT);
+
+        var s3Api = new S3ConnectorApiImpl(endPoint, accessKey, secretKey, token, maxFiles);
         context.registerService(S3ConnectorApi.class, s3Api);
     }
 }

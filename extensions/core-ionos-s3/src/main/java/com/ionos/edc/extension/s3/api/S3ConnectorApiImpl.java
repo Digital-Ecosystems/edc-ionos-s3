@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_MAX_FILES_DEFAULT;
+
 public class S3ConnectorApiImpl implements S3ConnectorApi {
 
     MinioConnector miniConnector = new MinioConnector();
@@ -49,11 +51,14 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
         this.maxFiles = maxFiles;
     }
 
+    public S3ConnectorApiImpl(String endpoint, String accessKey, String secretKey) {
+        this(endpoint, accessKey, secretKey, IONOS_MAX_FILES_DEFAULT);
+    }
+
     public S3ConnectorApiImpl(String endpoint, String accessKey, String secretKey, String token, int maxFiles) {
         this(endpoint, accessKey, secretKey, maxFiles);
         this.token = token;
     }
-
 
     @Override
     public void createBucket(String bucketName) {
