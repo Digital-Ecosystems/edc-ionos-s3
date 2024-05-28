@@ -185,18 +185,17 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
         }
 	}
 
-    private String getRegion(String endpoint) {
-        if (!endpoint.contains(".ionoscloud.com"))
-            return endpoint;
+    static String getRegion(String endpoint) {
 
-        var region = endpoint.substring(0, endpoint.indexOf(".ionoscloud.com"));
-
-        if (region.contains("https://" )) {
-            return region.substring(region.indexOf("https://") + 8);
-        } else if (region.contains("http://" )) {
-            return region.substring(region.indexOf("http://") + 7);
-        } else {
-            return region;
+        switch (endpoint) {
+            case "https://s3-eu-central-1.ionoscloud.com":
+                return "de";
+            case "https://s3-eu-central-2.ionoscloud.com":
+                return "eu-central-2";
+            case "https://s3-eu-south-2.ionoscloud.com":
+                return "eu-south-2";
+            default:
+                throw new EdcException("Invalid endpoint: " + endpoint);
         }
     }
 

@@ -27,5 +27,5 @@ public interface IonosBucketSchema {
     String ACCESS_KEY_ID = EDC_NAMESPACE + "accessKey";
     String SECRET_ACCESS_KEY = EDC_NAMESPACE + "secretKey";
 
-    String STORAGE_NAME_DEFAULT = "s3-eu-central-1.ionoscloud.com";
+    String STORAGE_NAME_DEFAULT = "https://s3-eu-central-1.ionoscloud.com";
 }
