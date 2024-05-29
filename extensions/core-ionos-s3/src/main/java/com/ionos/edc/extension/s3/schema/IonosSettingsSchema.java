@@ -23,7 +23,7 @@ public interface IonosSettingsSchema {
     String IONOS_KEY_VALIDATION_DELAY = "edc.ionos.key.validation.delay";
     String IONOS_MAX_FILES = "edc.ionos.max.files";
 
-    int IONOS_KEY_VALIDATION_ATTEMPTS_DEFAULT = 5;
-    long IONOS_KEY_VALIDATION_DELAY_DEFAULT = 5000;
+    int IONOS_KEY_VALIDATION_ATTEMPTS_DEFAULT = 10;
+    long IONOS_KEY_VALIDATION_DELAY_DEFAULT = 3000;
     int IONOS_MAX_FILES_DEFAULT = 1000;
 }

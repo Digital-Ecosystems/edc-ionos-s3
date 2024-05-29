@@ -14,9 +14,8 @@
 
 package com.ionos.edc.extension.s3.api;
 
+import com.ionos.edc.extension.s3.connector.ionosapi.S3AccessKey;
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
-
-import com.ionos.edc.extension.s3.connector.ionosapi.TemporaryKey;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -36,8 +35,10 @@ public interface S3ConnectorApi {
 
     List<S3Object> listObjects(String bucketName, String objectName);
 
-    TemporaryKey createTemporaryKey();
-    
-    void deleteTemporaryKey(String accessKey);
+    S3AccessKey createAccessKey();
+
+    S3AccessKey retrieveAccessKey(String keyID);
+
+    void deleteAccessKey(String keyID);
 
 }

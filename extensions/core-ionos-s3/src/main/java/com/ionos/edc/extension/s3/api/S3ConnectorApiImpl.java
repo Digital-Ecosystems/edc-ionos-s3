@@ -15,8 +15,8 @@
 package com.ionos.edc.extension.s3.api;
 
 import com.ionos.edc.extension.s3.connector.MinioConnector;
-import com.ionos.edc.extension.s3.connector.ionosapi.HttpConnector;
-import com.ionos.edc.extension.s3.connector.ionosapi.TemporaryKey;
+import com.ionos.edc.extension.s3.connector.ionosapi.S3AccessKey;
+import com.ionos.edc.extension.s3.connector.ionosapi.S3ApiConnector;
 
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
@@ -31,28 +31,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_MAX_FILES_DEFAULT;
-
 public class S3ConnectorApiImpl implements S3ConnectorApi {
 
     MinioConnector miniConnector = new MinioConnector();
-    HttpConnector ionosApi = new HttpConnector();
+    S3ApiConnector ionoss3Api = new S3ApiConnector();
 
-    private MinioClient minioClient;
+    private final MinioClient minioClient;
     private final String region;
     private String token;
     private final Integer maxFiles;
 
     public S3ConnectorApiImpl(String endpoint, String accessKey, String secretKey, int maxFiles) {
-        if(accessKey != null && secretKey  != null && endpoint != null)
-            this.minioClient = miniConnector.connect(endpoint, accessKey, secretKey);
+        this.minioClient = miniConnector.connect(endpoint, accessKey, secretKey);
         this.region = getRegion(endpoint);
         this.token = "";
         this.maxFiles = maxFiles;
-    }
-
-    public S3ConnectorApiImpl(String endpoint, String accessKey, String secretKey) {
-        this(endpoint, accessKey, secretKey, IONOS_MAX_FILES_DEFAULT);
     }
 
     public S3ConnectorApiImpl(String endpoint, String accessKey, String secretKey, String token, int maxFiles) {
@@ -168,18 +161,27 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
     }
     
     @Override
-    public  TemporaryKey createTemporaryKey() {
+    public S3AccessKey createAccessKey() {
 		try{
-            return ionosApi.createTemporaryKey(token);
+            return ionoss3Api.createAccessKey(token);
         } catch (Exception e) {
             throw new EdcException("Creating temporary key - (Warning: max 5 keys on the storage) - " + e.getMessage());
         }
     }
+
+    @Override
+    public  S3AccessKey retrieveAccessKey(String keyID) {
+        try{
+            return ionoss3Api.retrieveAccessKey(token, keyID);
+        } catch (Exception e) {
+            throw new EdcException("Retrieving temporary key: " + e.getMessage());
+        }
+    }
  
 	@Override
-	public void deleteTemporaryKey(String accessKey) {
+	public void deleteAccessKey(String keyID) {
         try{
-            ionosApi.deleteTemporaryAccount(token,accessKey);
+            ionoss3Api.deleteAccessKey(token, keyID);
         } catch (Exception e) {
             throw new EdcException("Deleting temporary key: " + e.getMessage());
         }
