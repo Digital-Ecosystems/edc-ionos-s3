@@ -190,9 +190,15 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
         switch (endpoint) {
             case "https://s3-eu-central-1.ionoscloud.com":
                 return "de";
+            case "s3-eu-central-1.ionoscloud.com":
+                return "de";
             case "https://s3-eu-central-2.ionoscloud.com":
                 return "eu-central-2";
+            case "s3-eu-central-2.ionoscloud.com":
+                return "eu-central-2";
             case "https://s3-eu-south-2.ionoscloud.com":
+                return "eu-south-2";
+            case "s3-eu-south-2.ionoscloud.com":
                 return "eu-south-2";
             default:
                 throw new EdcException("Invalid endpoint: " + endpoint);
