@@ -9,6 +9,7 @@ val metaModelVersion: String by project
 val minIOVersion: String by project
 val extensionsGroup: String by project
 val extensionsVersion: String by project
+val junitVersion: String by project
 
 val gitHubPkgsName: String by project
 val gitHubPkgsUrl: String by project
@@ -20,11 +21,18 @@ dependencies {
 
 	implementation("${edcGroup}:transfer-spi:${edcVersion}")
 	implementation("io.minio:minio:${minIOVersion}")
+
+	testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+	testImplementation("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }
 
 java {
 	withJavadocJar()
 	withSourcesJar()
+}
+
+tasks.test {
+	useJUnitPlatform()
 }
 
 publishing {

@@ -27,10 +27,10 @@ import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.*;
 @JsonTypeName("dataspaceconnector:ionoss3provisionedresource")
 public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResource {
 
-    private String accessKey;
+    private String accessKeyID;
 
-    public String getAccessKey() {
-        return accessKey;
+    public String getAccessKeyID() {
+        return accessKeyID;
     }
  
     private IonosS3ProvisionedResource() {
@@ -65,8 +65,8 @@ public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResour
             return this;
         }
 
-        public Builder accessKey(String accessKey) {
-            provisionedResource.accessKey = accessKey;
+        public Builder accessKeyID(String accessKeyID) {
+            provisionedResource.accessKeyID = accessKeyID;
             return this;
         }
     }

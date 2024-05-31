@@ -31,6 +31,11 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 
+import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_KEY_VALIDATION_ATTEMPTS;
+import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_KEY_VALIDATION_ATTEMPTS_DEFAULT;
+import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_KEY_VALIDATION_DELAY;
+import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_KEY_VALIDATION_DELAY_DEFAULT;
+
 @Extension(value = IonosProvisionExtension.NAME)
 public class IonosProvisionExtension implements ServiceExtension {
 
@@ -54,18 +59,24 @@ public class IonosProvisionExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         monitor = context.getMonitor();
+
+        var keyValidationAttempts =  context.getSetting(IONOS_KEY_VALIDATION_ATTEMPTS, IONOS_KEY_VALIDATION_ATTEMPTS_DEFAULT);
+        var keyValidationDelay =  context.getSetting(IONOS_KEY_VALIDATION_DELAY, IONOS_KEY_VALIDATION_DELAY_DEFAULT);
+
         monitor.debug("IonosProvisionExtension" + "provisionManager");
         var provisionManager = context.getService(ProvisionManager.class);
+
         monitor.debug("IonosProvisionExtension" + "retryPolicy");
         var retryPolicy = (RetryPolicy<Object>) context.getService(RetryPolicy.class);
+
         monitor.debug("IonosProvisionExtension" + "s3BucketProvisioner");
-        var s3BucketProvisioner = new IonosS3Provisioner(retryPolicy, clientApi);
+        var s3BucketProvisioner = new IonosS3Provisioner(monitor, retryPolicy, clientApi, keyValidationAttempts, keyValidationDelay);
         provisionManager.register(s3BucketProvisioner);
 
-        // register the generator
         monitor.debug("IonosProvisionExtension" + "manifestGenerator");
         var manifestGenerator = context.getService(ResourceManifestGenerator.class);
         manifestGenerator.registerGenerator(new IonosS3ConsumerResourceDefinitionGenerator());
+
         monitor.debug("IonosProvisionExtension" + "registerTypes");
         registerTypes(typeManager);
     }
