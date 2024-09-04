@@ -14,7 +14,7 @@
 
 package com.ionos.edc.extension.s3.schema;
 
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public interface IonosBucketSchema {
     String TYPE = "IonosS3";

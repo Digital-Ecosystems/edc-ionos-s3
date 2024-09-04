@@ -3,9 +3,9 @@ plugins {
     `maven-publish`
 }
 
-val javaVersion: String by project
 val edcGroup: String by project
 val edcVersion: String by project
+val metaModelVersion: String by project
 val extensionsGroup: String by project
 val extensionsVersion: String by project
 val junitVersion: String by project
@@ -17,16 +17,16 @@ val gitHubUser: String? by project
 val gitHubToken: String? by project
 
 dependencies {
-	api("${edcGroup}:data-plane-spi:${edcVersion}")
+	api("${edcGroup}:runtime-metamodel:${metaModelVersion}")
+
+	implementation("${edcGroup}:util-lib:${edcVersion}")
+	implementation("${edcGroup}:transfer-spi:${edcVersion}")
+	implementation("${edcGroup}:validator-spi:${edcVersion}")
+	implementation("${edcGroup}:data-plane-util:${edcVersion}")
 
 	implementation(project(":extensions:core-ionos-s3"))
-	implementation("${edcGroup}:util:${edcVersion}")
-	implementation("${edcGroup}:transfer-spi:${edcVersion}")
-	implementation("${edcGroup}:data-plane-util:${edcVersion}")
-    implementation("${edcGroup}:data-plane-core:${edcVersion}")
-	implementation("${edcGroup}:http:${edcVersion}")
-	implementation("${edcGroup}:validator-spi:${edcVersion}")
-			
+
+	testImplementation("${edcGroup}:junit:${edcVersion}")
 	testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
 	testImplementation("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 	testImplementation("org.mockito:mockito-core:${mockitoVersion}")

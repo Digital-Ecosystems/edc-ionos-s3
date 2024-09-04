@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   hashicorp-vault:
     container_name: hashicorp-vault

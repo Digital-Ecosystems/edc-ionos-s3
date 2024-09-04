@@ -24,7 +24,6 @@ dependencyResolutionManagement {
 include(":extensions:data-plane-ionos-s3")
 include(":extensions:provision-ionos-s3")
 include(":extensions:core-ionos-s3")
-include(":extensions:vault-hashicorp")
 
 include(":launchers:base:connector")
 include(":launchers:dev:connector-consumer")

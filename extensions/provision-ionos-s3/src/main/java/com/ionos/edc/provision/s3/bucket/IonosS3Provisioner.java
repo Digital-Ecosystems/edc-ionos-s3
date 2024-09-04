@@ -19,11 +19,12 @@ import com.ionos.edc.extension.s3.configuration.IonosToken;
 
 import com.ionos.edc.extension.s3.connector.ionosapi.S3AccessKey;
 import dev.failsafe.RetryPolicy;
-import org.eclipse.edc.connector.transfer.spi.provision.Provisioner;
-import org.eclipse.edc.connector.transfer.spi.types.DeprovisionedResource;
-import org.eclipse.edc.connector.transfer.spi.types.ProvisionResponse;
-import org.eclipse.edc.connector.transfer.spi.types.ProvisionedResource;
-import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
+import org.eclipse.edc.connector.controlplane.transfer.spi.provision.Provisioner;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.DeprovisionedResource;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionResponse;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionedResource;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ResourceDefinition;
+import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.response.StatusResult;
@@ -60,8 +61,7 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
     }
 
     @Override
-    public CompletableFuture<StatusResult<ProvisionResponse>> provision(IonosS3ResourceDefinition resourceDefinition,
-            org.eclipse.edc.policy.model.Policy policy) {
+    public CompletableFuture<StatusResult<ProvisionResponse>> provision(IonosS3ResourceDefinition resourceDefinition, Policy policy) {
 
         String bucketName = resourceDefinition.getBucketName();
         if (!s3Api.bucketExists(bucketName)) {
@@ -98,8 +98,7 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
     }
 
     @Override
-    public CompletableFuture<StatusResult<DeprovisionedResource>> deprovision(
-            IonosS3ProvisionedResource provisionedResource, org.eclipse.edc.policy.model.Policy policy) {
+    public CompletableFuture<StatusResult<DeprovisionedResource>> deprovision(IonosS3ProvisionedResource provisionedResource, Policy policy) {
         return with(retryPolicy).runAsync(() -> s3Api.deleteAccessKey(provisionedResource.getAccessKeyID()))
                 .thenApply(empty ->
                         StatusResult.success(DeprovisionedResource.Builder.newInstance().provisionedResourceId(provisionedResource.getId()).build())

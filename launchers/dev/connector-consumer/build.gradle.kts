@@ -30,8 +30,3 @@ dependencies {
 application {
     mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
 }
-
-java {
-
-}
-

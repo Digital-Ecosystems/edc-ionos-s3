@@ -23,7 +23,7 @@ import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.edc.validator.spi.Validator;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.jetbrains.annotations.NotNull;
@@ -40,18 +40,18 @@ public class IonosDataSourceFactory implements DataSourceFactory {
     }
 
     @Override
-    public boolean canHandle(DataFlowRequest request) {
-        return IonosBucketSchema.TYPE.equals(request.getSourceDataAddress().getType());
+    public String supportedType() {
+        return IonosBucketSchema.TYPE;
     }
 
     @Override
-    public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
+    public @NotNull Result<Void> validateRequest(DataFlowStartMessage request) {
         var source = request.getSourceDataAddress();
         return validator.validate(source).flatMap(ValidationResult::toResult);
     }
 
     @Override
-    public DataSource createSource(DataFlowRequest request) {
+    public DataSource createSource(DataFlowStartMessage request) {
 
         var validationResult = validateRequest(request);
         if (validationResult.failed()) {
