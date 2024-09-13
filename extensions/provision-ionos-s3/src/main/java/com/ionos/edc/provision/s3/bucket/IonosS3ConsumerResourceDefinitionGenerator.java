@@ -35,6 +35,7 @@ public class IonosS3ConsumerResourceDefinitionGenerator implements ConsumerResou
         Objects.requireNonNull(policy, "policy must always be provided");
 
         var destination = transferProcess.getDataDestination();
+        Objects.requireNonNull(destination, "dataDestination must always be provided");
 
         var path = destination.getStringProperty(IonosBucketSchema.PATH);
         if ((path != null) && !path.endsWith("/")) {
@@ -64,7 +65,7 @@ public class IonosS3ConsumerResourceDefinitionGenerator implements ConsumerResou
         Objects.requireNonNull(transferProcess, "transferProcess must always be provided");
         Objects.requireNonNull(policy, "policy must always be provided");
 
-        return IonosBucketSchema.TYPE.equals(transferProcess.getDestinationType());
+        return IonosBucketSchema.PUSH_TRANSFER_TYPE.equals(transferProcess.getTransferType());
     }
 
 }

@@ -25,6 +25,10 @@ val postgresVersion: String by project
 dependencies {
 	implementation(project(":launchers:base:connector"))
 
+    implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
+    implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
+    implementation("${edcGroup}:iam-mock:${edcVersion}")
+
 	implementation("org.postgresql:postgresql:$postgresVersion")
 	implementation("${edcGroup}:sql-pool-apache-commons:$edcVersion")
 	implementation("${edcGroup}:transaction-local:$edcVersion")
@@ -35,8 +39,6 @@ dependencies {
     implementation("${edcGroup}:contract-definition-store-sql:$edcVersion")
     implementation("${edcGroup}:contract-negotiation-store-sql:$edcVersion")
     implementation("${edcGroup}:transfer-process-store-sql:$edcVersion")
-
-    implementation("${edcGroup}:iam-mock:${edcVersion}")
 }
 
 application {

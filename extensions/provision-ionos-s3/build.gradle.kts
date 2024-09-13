@@ -22,6 +22,7 @@ dependencies {
 
     implementation(project(":extensions:core-ionos-s3"))
 
+    testImplementation("${edcGroup}:junit:${edcVersion}")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }

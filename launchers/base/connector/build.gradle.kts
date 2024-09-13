@@ -16,35 +16,18 @@ plugins {
     `java-library`
 }
 
-repositories {
-    maven {// while runtime-metamodel dependency is still a snapshot
-		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-    }
-	mavenCentral()
-	mavenLocal()
-}
-
 val edcGroup: String by project
 val edcVersion: String by project
 
 dependencies {
 	// Core
-	implementation("${edcGroup}:boot:${edcVersion}")
 	implementation("${edcGroup}:connector-core:${edcVersion}")
 	implementation("${edcGroup}:http:${edcVersion}")
 	implementation("${edcGroup}:dsp:${edcVersion}")
-	implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
-
-	// Management API
 	implementation("${edcGroup}:management-api:${edcVersion}")
-
-	// EDR API
-	implementation("${edcGroup}:edr-cache-api:${edcVersion}")
-	implementation("${edcGroup}:edr-store-core:${edcVersion}")
-	implementation("${edcGroup}:edr-store-receiver:${edcVersion}")
+	implementation("${edcGroup}:control-api-configuration:${edcVersion}")
 
 	// Control Plane
-	implementation("${edcGroup}:control-api-configuration:${edcVersion}")
 	implementation("${edcGroup}:control-plane-api-client:${edcVersion}")
 	implementation("${edcGroup}:control-plane-api:${edcVersion}")
 	implementation("${edcGroup}:control-plane-core:${edcVersion}")
@@ -59,8 +42,10 @@ dependencies {
 	implementation("${edcGroup}:data-plane-http:${edcVersion}")
 	implementation("${edcGroup}:transfer-data-plane-signaling:${edcVersion}")
 
-	// Vault
-	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
+	// EDR Cache
+	implementation("${edcGroup}:edr-cache-api:${edcVersion}")
+	implementation("${edcGroup}:edr-store-core:${edcVersion}")
+	implementation("${edcGroup}:edr-store-receiver:${edcVersion}")
 
 	// Validators
 	implementation("${edcGroup}:validator-data-address-http-data:${edcVersion}")

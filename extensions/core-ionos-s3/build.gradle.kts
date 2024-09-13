@@ -22,6 +22,7 @@ dependencies {
 	implementation("${edcGroup}:transfer-spi:${edcVersion}")
 	implementation("io.minio:minio:${minIOVersion}")
 
+	testImplementation("${edcGroup}:junit:${edcVersion}")
 	testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
 	testImplementation("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }

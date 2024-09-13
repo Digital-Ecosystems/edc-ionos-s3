@@ -10,13 +10,14 @@
 
 dependencyResolutionManagement {
     repositories {
-        
         mavenCentral()
         mavenLocal()
     }
     versionCatalogs {
+        val group = providers.gradleProperty("edcGroup")
+        val version = providers.gradleProperty("edcVersion")
         create("libs") {
-            from("org.eclipse.edc:edc-versions:0.1.2")
+            from(group.get() + ":edc-versions:" + version.get())
         }
     }
 }
