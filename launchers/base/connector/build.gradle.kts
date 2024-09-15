@@ -25,12 +25,13 @@ dependencies {
 	implementation("${edcGroup}:http:${edcVersion}")
 	implementation("${edcGroup}:dsp:${edcVersion}")
 	implementation("${edcGroup}:management-api:${edcVersion}")
-	implementation("${edcGroup}:control-api-configuration:${edcVersion}")
+	implementation("${edcGroup}:api-observability:${edcVersion}")
 
 	// Control Plane
 	implementation("${edcGroup}:control-plane-api-client:${edcVersion}")
 	implementation("${edcGroup}:control-plane-api:${edcVersion}")
 	implementation("${edcGroup}:control-plane-core:${edcVersion}")
+	implementation("${edcGroup}:control-api-configuration:${edcVersion}")
 
 	// Data Plane
 	implementation("${edcGroup}:data-plane-selector-api:${edcVersion}")
