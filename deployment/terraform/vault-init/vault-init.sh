@@ -44,5 +44,5 @@ kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR
 kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault kv put secret/edc.ionos.endpoint content=$TF_VAR_s3_endpoint
 kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault kv put secret/edc.ionos.token content=$TF_VAR_ionos_token
 
-kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault kv put secret/edc.connector.private.key k="$(cat ./certs/private.pem)"
-kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault kv put secret/edc.connector.public.key k="$(cat ./certs/public.pem)"
+kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault kv put secret/edc.connector.private.key content="$(cat ./certs/private.pem)"
+kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault kv put secret/edc.connector.public.key content="$(cat ./certs/public.pem)"

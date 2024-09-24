@@ -99,6 +99,6 @@ vault kv put secret/edc.connector.public.key content=@./certs/public.pem
 
 ### Using kubectl
 ```bash
-kubectl exec -it "vault-0" -- vault kv put secret/edc.connector.private.key k="$(cat ./certs/private.pem)"
-kubectl exec -it "vault-0" -- vault kv put secret/edc.connector.public.key k="$(cat ./certs/public.pem)"
+kubectl exec -it "vault-0" -- vault kv put secret/edc.connector.private.key content="$(cat ./certs/private.pem)"
+kubectl exec -it "vault-0" -- vault kv put secret/edc.connector.public.key content="$(cat ./certs/public.pem)"
 ```
