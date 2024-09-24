@@ -110,21 +110,19 @@ This will allocate a public IP address to the Connector. You can then access it 
 
 All commands paths are relative to the current directory where this readme is located.
 
-### 1. Install the EDC Ionos S3 services
+### 1. Deploy the services
 
-To install the services run the script ```deploy-services.sh``` in ```terraform``` directory.
+To deploy the services run the script ```deploy-services.sh``` in ```terraform``` directory.
 
 ```sh
 cd terraform
 ./deploy-services.sh
 ```
+### 2. Undeploy the services
 
-### 2. Vault keys
-After the services are installed you will have ```vault-keys.json``` file containing the vault keys in ```terraform``` directory.
-
-### 3. Destroy the services
+To undeploy the services run the script ```undeploy-services.sh``` in ```terraform``` directory.
 
 ```sh
 cd terraform
-./destroy-services.sh
+./undeploy-services.sh
 ```
