@@ -55,5 +55,6 @@ rm -f ./ionos-postgresqlaas/.terraform.lock.hcl
 rm -f ./ionos-postgresqlaas/terraform.tfstate.backup
 
 rm -f vault-init/vault-keys.json
+rm -f vault-init/vault-tokens.json
 helm uninstall postgres -n $TF_VAR_namespace
 kubectl --kubeconfig $TF_VAR_kubeconfig delete namespace $TF_VAR_namespace

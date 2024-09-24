@@ -66,7 +66,7 @@ variable "vaultname" {
 }
 
 locals {
-  root_token = fileexists("../vault-init/vault-keys.json") ? "${jsondecode(file("../vault-init/vault-keys.json")).root_token}" : ""
+  vault_token = fileexists("../vault-init/vault-tokens.json") ? "${jsondecode(file("../vault-init/vault-tokens.json")).auth.client_token}" : ""
 }
 
 resource "helm_release" "edc-ionos-s3" {
@@ -80,7 +80,7 @@ resource "helm_release" "edc-ionos-s3" {
 
   set {
     name  = "edc.vault.hashicorp.token"
-    value = "${jsondecode(file("../vault-init/vault-keys.json")).root_token}"
+    value = local.vault_token
   }
 
   values = [
@@ -90,11 +90,6 @@ resource "helm_release" "edc-ionos-s3" {
   set {
     name  = "edc.vault.hashicorp.url"
     value = "http://${var.vaultname}:8200"
-  }
-
-  set {
-    name  = "edc.vault.hashicorp.token"
-    value = local.root_token
   }
 
   set {
