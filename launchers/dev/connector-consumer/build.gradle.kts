@@ -24,14 +24,11 @@ val edcVersion: String by project
 dependencies {
 	implementation(project(":launchers:base:connector"))
 
+    implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
+    implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
 	implementation("${edcGroup}:iam-mock:${edcVersion}")
 }
 
 application {
     mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
 }
-
-java {
-
-}
-

@@ -51,6 +51,7 @@ launchers/demo-e2e/edc-config.properties
 *.hprof
 
 **/vault-keys.json
+**/vault-tokens.json
 runtime_settings.properties
 generated_backend.tf
 

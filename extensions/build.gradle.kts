@@ -3,12 +3,6 @@ plugins {
   `maven-publish`
 }
 
-repositories {
-  mavenLocal()
-  mavenCentral()
- 
-}
-
 configure<PublishingExtension> {
   publications {
     withType(MavenPublication::class.java) {
@@ -21,6 +15,11 @@ configure<PublishingExtension> {
           }
         }
         developers {
+          developer {
+            id.set("jannotti-glaucio")
+            name.set("Glaucio Jannotti")
+            email.set("glaucio.jannotti@ionos.com")
+          }
           developer {
             id.set("paulolory-ionos")
             name.set("Paulo Lory")

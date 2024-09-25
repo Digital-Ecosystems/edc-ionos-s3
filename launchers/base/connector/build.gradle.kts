@@ -16,41 +16,40 @@ plugins {
     `java-library`
 }
 
-repositories {
-    maven {// while runtime-metamodel dependency is still a snapshot
-		url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-    }
-	mavenCentral()
-	mavenLocal()
-}
-
 val edcGroup: String by project
 val edcVersion: String by project
 
 dependencies {
-	implementation("${edcGroup}:boot:${edcVersion}")
-
-	// Control Plane
-    implementation("${edcGroup}:control-plane-core:${edcVersion}")
-	implementation("${edcGroup}:control-plane-api:${edcVersion}")
-	implementation("${edcGroup}:control-plane-api-client:${edcVersion}")
-
+	// Core
+	implementation("${edcGroup}:connector-core:${edcVersion}")
 	implementation("${edcGroup}:http:${edcVersion}")
 	implementation("${edcGroup}:dsp:${edcVersion}")
-	implementation("${edcGroup}:auth-tokenbased:${edcVersion}")
-	implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
-
-    implementation("$edcGroup:management-api:$edcVersion")
+	implementation("${edcGroup}:management-api:${edcVersion}")
 	implementation("${edcGroup}:api-observability:${edcVersion}")
 
-	implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
-	
+	// Control Plane
+	implementation("${edcGroup}:control-plane-api-client:${edcVersion}")
+	implementation("${edcGroup}:control-plane-api:${edcVersion}")
+	implementation("${edcGroup}:control-plane-core:${edcVersion}")
+	implementation("${edcGroup}:control-api-configuration:${edcVersion}")
+
 	// Data Plane
-	implementation("${edcGroup}:data-plane-selector-client:${edcVersion}")
+	implementation("${edcGroup}:data-plane-selector-api:${edcVersion}")
 	implementation("${edcGroup}:data-plane-selector-core:${edcVersion}")
+	implementation("${edcGroup}:data-plane-self-registration:${edcVersion}")
+	implementation("${edcGroup}:data-plane-control-api:${edcVersion}")
+	implementation("${edcGroup}:data-plane-public-api-v2:${edcVersion}")
 	implementation("${edcGroup}:data-plane-core:${edcVersion}")
-	implementation("${edcGroup}:data-plane-client:${edcVersion}")
-	implementation("${edcGroup}:transfer-data-plane:${edcVersion}")
+	implementation("${edcGroup}:data-plane-http:${edcVersion}")
+	implementation("${edcGroup}:transfer-data-plane-signaling:${edcVersion}")
+
+	// EDR Cache
+	implementation("${edcGroup}:edr-cache-api:${edcVersion}")
+	implementation("${edcGroup}:edr-store-core:${edcVersion}")
+	implementation("${edcGroup}:edr-store-receiver:${edcVersion}")
+
+	// Validators
+	implementation("${edcGroup}:validator-data-address-http-data:${edcVersion}")
 
 	// Ionos Extensions
 	implementation(project(":extensions:provision-ionos-s3"))

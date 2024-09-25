@@ -3,7 +3,6 @@ plugins {
     `maven-publish`
 }
 
-val javaVersion: String by project
 val edcGroup: String by project
 val edcVersion: String by project
 val metaModelVersion: String by project
@@ -19,13 +18,22 @@ val gitHubToken: String? by project
 dependencies {
     api("${edcGroup}:runtime-metamodel:${metaModelVersion}")
 
-    implementation(project(":extensions:core-ionos-s3"))
     implementation("${edcGroup}:transfer-spi:${edcVersion}")
+
+    implementation(project(":extensions:core-ionos-s3"))
+
+    testImplementation("${edcGroup}:junit:${edcVersion}")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }
 
 java {
     withJavadocJar()
     withSourcesJar()
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 publishing {

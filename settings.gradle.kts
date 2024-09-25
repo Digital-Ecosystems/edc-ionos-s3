@@ -10,13 +10,14 @@
 
 dependencyResolutionManagement {
     repositories {
-        
         mavenCentral()
         mavenLocal()
     }
     versionCatalogs {
+        val group = providers.gradleProperty("edcGroup")
+        val version = providers.gradleProperty("edcVersion")
         create("libs") {
-            from("org.eclipse.edc:edc-versions:0.1.2")
+            from(group.get() + ":edc-versions:" + version.get())
         }
     }
 }
@@ -24,7 +25,6 @@ dependencyResolutionManagement {
 include(":extensions:data-plane-ionos-s3")
 include(":extensions:provision-ionos-s3")
 include(":extensions:core-ionos-s3")
-include(":extensions:vault-hashicorp")
 
 include(":launchers:base:connector")
 include(":launchers:dev:connector-consumer")

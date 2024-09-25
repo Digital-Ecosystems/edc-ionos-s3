@@ -18,22 +18,24 @@ import static java.util.UUID.randomUUID;
 
 import java.util.Objects;
 
-import org.eclipse.edc.connector.transfer.spi.provision.ConsumerResourceDefinitionGenerator;
-import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
-import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
+import org.eclipse.edc.connector.controlplane.transfer.spi.provision.ConsumerResourceDefinitionGenerator;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ResourceDefinition;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.policy.model.Policy;
 
 import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
 import org.eclipse.edc.spi.EdcException;
+import org.jetbrains.annotations.Nullable;
 
 public class IonosS3ConsumerResourceDefinitionGenerator implements ConsumerResourceDefinitionGenerator {
 
     @Override
-    public ResourceDefinition generate(DataRequest dataRequest, Policy policy) {
-        Objects.requireNonNull(dataRequest, "dataRequest must always be provided");
+    public @Nullable ResourceDefinition generate(TransferProcess transferProcess, Policy policy) {
+        Objects.requireNonNull(transferProcess, "transferProcess must always be provided");
         Objects.requireNonNull(policy, "policy must always be provided");
 
-        var destination = dataRequest.getDataDestination();
+        var destination = transferProcess.getDataDestination();
+        Objects.requireNonNull(destination, "dataDestination must always be provided");
 
         var path = destination.getStringProperty(IonosBucketSchema.PATH);
         if ((path != null) && !path.endsWith("/")) {
@@ -59,11 +61,11 @@ public class IonosS3ConsumerResourceDefinitionGenerator implements ConsumerResou
     }
 
     @Override
-    public boolean canGenerate(DataRequest dataRequest, Policy policy) {
-        Objects.requireNonNull(dataRequest, "dataRequest must always be provided");
+    public boolean canGenerate(TransferProcess transferProcess, Policy policy) {
+        Objects.requireNonNull(transferProcess, "transferProcess must always be provided");
         Objects.requireNonNull(policy, "policy must always be provided");
 
-        return IonosBucketSchema.TYPE.equals(dataRequest.getDestinationType());
+        return IonosBucketSchema.PUSH_TRANSFER_TYPE.equals(transferProcess.getTransferType());
     }
 
 }
