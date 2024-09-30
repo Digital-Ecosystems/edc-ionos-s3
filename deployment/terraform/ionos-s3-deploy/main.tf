@@ -16,11 +16,6 @@ variable "ids_webhook_address" {
   default = "http://localhost:8282"
 }
 
-variable "persistence_type" {
-  type = string
-  default = "None"
-}
-
 variable "image_repository" {
   type = string
   default = "ghcr.io/digital-ecosystems/connector"
@@ -56,8 +51,6 @@ variable "pg_password" {
   default = "postgres"
 }
 
-variable "s3_access_key" {}
-variable "s3_secret_key" {}
 variable "s3_endpoint" {}
 variable "ionos_token" {}
 

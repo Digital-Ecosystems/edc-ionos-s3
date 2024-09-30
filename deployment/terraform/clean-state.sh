@@ -26,5 +26,17 @@ rm -f ./ionos-postgresqlaas/terraform.tfstate
 rm -f ./ionos-postgresqlaas/.terraform.lock.hcl
 rm -f ./ionos-postgresqlaas/terraform.tfstate.backup
 
+rm -rf ./postgresql-deploy/.terraform
+rm -f ./postgresql-deploy/terraform.tfstate
+rm -f ./postgresql-deploy/.terraform.lock.hcl
+rm -f ./postgresql-deploy/terraform.tfstate.backup
+
+rm -rf ./db-scripts/.terraform
+rm -f ./db-scripts/terraform.tfstate
+rm -f ./db-scripts/.terraform.lock.hcl
+rm -f ./db-scripts/terraform.tfstate.backup
+
 rm -f vault-init/vault-keys.json
 rm -f vault-init/vault-tokens.json
+
+echo "Terraform state cleanup complete"

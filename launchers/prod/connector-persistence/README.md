@@ -25,9 +25,17 @@ Just check the `Configuration` section of the example [readme](../example/README
 
 Open the `resources/config.properties` file and insert the key and the secret of your IONOS S3 storage and the token.
 
-### Import the initial database
+### Create the initial database schemas
 ```
-psql -h <YOUR POSTGRES HOST> -p <YOUR POSTGRES PORT> -U <YOUR POSTGRES DATABASE> < ../deployment/terraform/db-scripts/init.sql
+psql -h <YOUR POSTGRES HOST> -p <YOUR POSTGRES PORT> -U <YOUR POSTGRES DATABASE> < ../deployment/terraform/db-scripts/accesstokendata-store/schema.sql
+psql -h <YOUR POSTGRES HOST> -p <YOUR POSTGRES PORT> -U <YOUR POSTGRES DATABASE> < ../deployment/terraform/db-scripts/asset-index/schema.sql
+psql -h <YOUR POSTGRES HOST> -p <YOUR POSTGRES PORT> -U <YOUR POSTGRES DATABASE> < ../deployment/terraform/db-scripts/contract-definition-store/schema.sql
+psql -h <YOUR POSTGRES HOST> -p <YOUR POSTGRES PORT> -U <YOUR POSTGRES DATABASE> < ../deployment/terraform/db-scripts/contract-negotiation-store/schema.sql
+psql -h <YOUR POSTGRES HOST> -p <YOUR POSTGRES PORT> -U <YOUR POSTGRES DATABASE> < ../deployment/terraform/db-scripts/data-plane-instance-store/schema.sql
+psql -h <YOUR POSTGRES HOST> -p <YOUR POSTGRES PORT> -U <YOUR POSTGRES DATABASE> < ../deployment/terraform/db-scripts/data-plane-store/schema.sql
+psql -h <YOUR POSTGRES HOST> -p <YOUR POSTGRES PORT> -U <YOUR POSTGRES DATABASE> < ../deployment/terraform/db-scripts/edr-index/schema.sql
+psql -h <YOUR POSTGRES HOST> -p <YOUR POSTGRES PORT> -U <YOUR POSTGRES DATABASE> < ../deployment/terraform/db-scripts/policy-definition-store/schema.sql
+psql -h <YOUR POSTGRES HOST> -p <YOUR POSTGRES PORT> -U <YOUR POSTGRES DATABASE> < ../deployment/terraform/db-scripts/transfer-process-store/schema.sql
 ```
 
 ## Building and running the docker

@@ -21,8 +21,18 @@ cd ../ionos-s3-deploy
 terraform init
 terraform destroy -auto-approve
 
-# Destroy Ionos Postgres Cluister
+# Destroy ionos postgresql cluster
 cd ../ionos-postgresqlaas
+terraform init
+terraform destroy -auto-approve
+
+# Destroy postgresql
+cd ../postgresql-deploy
+terraform init
+terraform destroy -auto-approve
+
+# Destroy db-scripts
+cd ../db-scripts
 terraform init
 terraform destroy -auto-approve
 
@@ -54,7 +64,18 @@ rm -f ./ionos-postgresqlaas/terraform.tfstate
 rm -f ./ionos-postgresqlaas/.terraform.lock.hcl
 rm -f ./ionos-postgresqlaas/terraform.tfstate.backup
 
+rm -rf ./postgresql-deploy/.terraform
+rm -f ./postgresql-deploy/terraform.tfstate
+rm -f ./postgresql-deploy/.terraform.lock.hcl
+rm -f ./postgresql-deploy/terraform.tfstate.backup
+
+rm -rf ./db-scripts/.terraform
+rm -f ./db-scripts/terraform.tfstate
+rm -f ./db-scripts/.terraform.lock.hcl
+rm -f ./db-scripts/terraform.tfstate.backup
+
 rm -f vault-init/vault-keys.json
 rm -f vault-init/vault-tokens.json
-helm uninstall postgres -n $TF_VAR_namespace
 kubectl --kubeconfig $TF_VAR_kubeconfig delete namespace $TF_VAR_namespace
+
+echo "Undeployment complete"
