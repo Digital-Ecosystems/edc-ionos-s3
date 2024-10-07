@@ -80,8 +80,8 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
                 .accessKeyID(temporaryKey.getId())
                 .transferProcessId(resourceDefinition.getTransferProcessId())
                 .hasToken(true);
-        if (resourceDefinition.getStorage() != null) {
-            resourceBuilder = resourceBuilder.storage(resourceDefinition.getStorage());
+        if (resourceDefinition.getRegionId() != null) {
+            resourceBuilder = resourceBuilder.regionId(resourceDefinition.getRegionId());
         }
         if (resourceDefinition.getPath() != null) {
             resourceBuilder = resourceBuilder.path(resourceDefinition.getPath());

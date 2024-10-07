@@ -39,5 +39,5 @@ fi
 # Add secrets to Vault
 kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault kv put secret/edc.ionos.access.key content=$TF_VAR_s3_access_key
 kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault kv put secret/edc.ionos.secret.key content=$TF_VAR_s3_secret_key
-kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault kv put secret/edc.ionos.endpoint content=$TF_VAR_s3_endpoint
+kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault kv put secret/edc.ionos.endpoint.region content=$TF_VAR_s3_endpoint_region
 kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault kv put secret/edc.ionos.token content=$TF_VAR_ionos_token
