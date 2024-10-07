@@ -9,13 +9,13 @@ The asset registration aims to specify which file/folder we want to share. We ca
 ### Requirements
 
 
-| Parameter        | Description                                                                                                                                                                                                                                                                                                                                                                         | Mandatory |
-|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
-| `storage`        | IONOS S3 endpoint address. Refer to  [docs](https://docs.ionos.com/cloud/managed-services/s3-object-storage/s3-endpoints)  for further information.                                                                                                                                                                                                                                 | yes       |
-| `bucketName`     | IONOS S3 bucket name.   Refer to  [docs](https://docs.ionos.com/cloud/managed-services/s3-object-storage/concepts/buckets) for further information.                                                                                                                                                                                                                                 | yes       |
-| `blobName`       | File name or path to folder                                                                                                                                                                                                                                                                                                                                                         | yes       |
-| `filterIncludes` | `filterIncludes` use regular expression that will be used to select the file name pattern from the asset's blobName that will be copied during the transfer <br/> * do not consider the blobName in the expression, but the path from it. example: blobName = folder1, filterIncludes=file1.csv, the file foloder1/file1.csv will be copied                                         | no        |
-| `filterExcludes` | `filterExcludes` use regular expression that will be used to select the file name pattern from the asset's blobName that will NOT be copied during the transfer <br/> | no        |
+| Parameter        | Description                                                                                                                                                                                                                                                                                                                                 | Mandatory |
+|------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `region`         | IONOS S3 endpoint region. Refer to  [docs](https://docs.ionos.com/cloud/managed-services/s3-object-storage/s3-endpoints)  for further information.                                                                                                                                                                                          | no        |
+| `bucketName`     | IONOS S3 bucket name.   Refer to  [docs](https://docs.ionos.com/cloud/managed-services/s3-object-storage/concepts/buckets) for further information.                                                                                                                                                                                         | yes       |
+| `blobName`       | File name or path to folder                                                                                                                                                                                                                                                                                                                 | yes       |
+| `filterIncludes` | `filterIncludes` use regular expression that will be used to select the file name pattern from the asset's blobName that will be copied during the transfer <br/> * do not consider the blobName in the expression, but the path from it. example: blobName = folder1, filterIncludes=file1.csv, the file foloder1/file1.csv will be copied | no        |
+| `filterExcludes` | `filterExcludes` use regular expression that will be used to select the file name pattern from the asset's blobName that will NOT be copied during the transfer <br/>                                                                                                                                                                       | no        |
 
 Note:  if `filterIncludes` and  `filterExcludes` parameters are satisfied, the files to be copied will be selected using the `filterIncludes` and after that selected list, the files that have the pattern defined in the `filterExcludes` will be ignored.
 
@@ -25,7 +25,7 @@ Note:  if `filterIncludes` and  `filterExcludes` parameters are satisfied, the f
 ```json
 "dataAddress":{
   "type": "IonosS3", //from EDC
-  "storage": "s3-eu-central-1.ionoscloud.com",
+  "region": "de",
   "bucketName": "mybucket",
   "blobName": "folder1/",
   "filterIncludes": "file1.csv",
@@ -40,11 +40,11 @@ The transfer of assets aims to transfer the files/folders from one connector to 
 ### Requirements
 
 
-| Parameter    | Description                                                                                                                                         | Mandatory |
-|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
-| `storage`    | IONOS S3 endpoint address. Refer to  [docs](https://docs.ionos.com/cloud/managed-services/s3-object-storage/s3-endpoints)  for further information. | yes       |
-| `bucketName` | IONOS S3 bucket name.   Refer to  [docs](https://docs.ionos.com/cloud/managed-services/s3-object-storage/concepts/buckets) for further information. | yes       |
-| `path`       | Path of destination where the file/folder will be placed. </br>  *if the path not filled, the file will be placed in the root of the bucket.        | no        |
+| Parameter     | Description                                                                                                                                        | Mandatory |
+|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `region`      | IONOS S3 endpoint region. Refer to  [docs](https://docs.ionos.com/cloud/managed-services/s3-object-storage/s3-endpoints)  for further information. | no        |
+| `bucketName`  | IONOS S3 bucket name.   Refer to  [docs](https://docs.ionos.com/cloud/managed-services/s3-object-storage/concepts/buckets) for further information                                                                              | yes       |                                                                                 
+| `path`        | Path of destination where the file/folder will be placed. </br>  *if the path not filled, the file will be placed in the root of the bucket.       | no        |
 
 
 ## Example
@@ -52,7 +52,7 @@ The transfer of assets aims to transfer the files/folders from one connector to 
 ```json
 "dataDestination":{
   "type": "IonosS3", //from EDC
-  "storage": "s3-eu-central-1.ionoscloud.com",
+  "region": "de",
   "bucketName": "mybucket",
   "path": "folder2/",
   "keyName": "mykey" //from EDC

@@ -12,7 +12,7 @@
  *
  */
 
-package com.ionos.edc.extension.s3.configuration;
+package com.ionos.edc.extension.s3.types;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;

@@ -124,7 +124,7 @@ edc:
       timeout:
         seconds: 30
   ionos:
-    endpoint: s3-eu-central-1.ionoscloud.com
+    region: de
     accessKey: notnull
     secretKey: notnull
     token: notnull

@@ -17,7 +17,7 @@ package com.ionos.edc.extension.s3.schema;
 public interface IonosSettingsSchema {
     String IONOS_ACCESS_KEY = "edc.ionos.access.key";
     String IONOS_SECRET_KEY = "edc.ionos.secret.key";
-    String IONOS_ENDPOINT = "edc.ionos.endpoint";
+    String IONOS_REGION = "edc.ionos.endpoint.region";
     String IONOS_TOKEN = "edc.ionos.token";
     String IONOS_KEY_VALIDATION_ATTEMPTS = "edc.ionos.key.validation.attempts";
     String IONOS_KEY_VALIDATION_DELAY = "edc.ionos.key.validation.delay";

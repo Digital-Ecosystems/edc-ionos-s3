@@ -19,8 +19,8 @@ if [[ -z `printenv TF_VAR_s3_secret_key` ]]; then
     exit 1
 fi
 
-if [[ -z `printenv TF_VAR_s3_endpoint` ]]; then
-    echo "Stopping because TF_VAR_s3_endpoint is undefined"
+if [[ -z `printenv TF_VAR_s3_endpoint_region` ]]; then
+    echo "Stopping because TF_VAR_s3_endpoint_region is undefined"
     exit 1
 fi
 

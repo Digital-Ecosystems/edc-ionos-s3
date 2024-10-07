@@ -26,7 +26,7 @@ data:
     edc.vault.hashicorp.timeout.seconds={{ .Values.edc.vault.hashicorp.timeout.seconds }}
     edc.ionos.access.key={{ .Values.edc.ionos.accessKey }}
     edc.ionos.secret.key={{ .Values.edc.ionos.secretKey }}
-    edc.ionos.endpoint={{ .Values.edc.ionos.endpoint }}
+    edc.ionos.endpoint.region={{ .Values.edc.ionos.region }}
     edc.ionos.token={{ .Values.edc.ionos.token }}
 
     {{- if eq .Values.edc.persistenceType "PostgreSQLaaS" }}

@@ -34,8 +34,8 @@ if [ -z `printenv S3_SECRET_KEY` ]; then
     echo "Stopping because S3_SECRET_KEY is undefined"
     exit 1
 fi 
-if [ -z `printenv S3_ENDPOINT` ]; then
-    echo "Stopping because S3_ENDPOINT is undefined"
+if [ -z `printenv S3_ENDPOINT_REGION` ]; then
+    echo "Stopping because S3_ENDPOINT_REGION is undefined"
     exit 1
 fi
 if [ -z `printenv IONOS_TOKEN` ]; then
@@ -72,7 +72,7 @@ helm install -n edc-ionos-s3 --wait vault hashicorp/vault \
 export TF_VAR_kubeconfig=$KUBECONFIG
 export TF_VAR_s3_access_key=$S3_ACCESS_KEY
 export TF_VAR_s3_secret_key=$S3_SECRET_KEY
-export TF_VAR_s3_endpoint=$S3_ENDPOINT
+export TF_VAR_s3_endpoint_region=$S3_ENDPOINT_REGION
 export TF_VAR_ionos_token=$IONOS_TOKEN
 ../terraform/vault-init/vault-init.sh
 

@@ -14,7 +14,7 @@
 
 package com.ionos.edc.dataplane.ionos.s3;
 
-import com.ionos.edc.extension.s3.api.S3ConnectorApi;
+import com.ionos.edc.extension.s3.connector.S3Connector;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.util.sink.ParallelSink;
@@ -30,7 +30,7 @@ import static java.lang.String.format;
 
 public class IonosDataSink extends ParallelSink {
 
-    private S3ConnectorApi s3Api;
+    private S3Connector s3Connector;
     private String bucketName;
     private String path;
 
@@ -81,7 +81,7 @@ public class IonosDataSink extends ParallelSink {
 
                 var byteArray = streamsOutput.toByteArray();
                 try (var streamsInput = new ByteArrayInputStream(byteArray)) {
-                    s3Api.uploadObject(bucketName, blobName, streamsInput);
+                    s3Connector.uploadObject(bucketName, blobName, streamsInput);
                     streamsOutput.close();
 
                 } catch (Exception e) {
@@ -122,8 +122,8 @@ public class IonosDataSink extends ParallelSink {
             return new Builder();
         }
 
-        public Builder s3Api(S3ConnectorApi s3Api) {
-            sink.s3Api = s3Api;
+        public Builder s3Connector(S3Connector s3Connector) {
+            sink.s3Connector = s3Connector;
             return this;
         }
 

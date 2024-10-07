@@ -14,8 +14,8 @@
 
 package com.ionos.edc.provision.s3;
 
-import com.ionos.edc.extension.s3.api.S3ConnectorApi;
-import com.ionos.edc.extension.s3.configuration.IonosToken;
+import com.ionos.edc.extension.s3.connector.S3Connector;
+import com.ionos.edc.extension.s3.types.IonosToken;
 import com.ionos.edc.provision.s3.bucket.IonosS3ConsumerResourceDefinitionGenerator;
 import com.ionos.edc.provision.s3.bucket.IonosS3ProvisionedResource;
 import com.ionos.edc.provision.s3.bucket.IonosS3Provisioner;
@@ -45,7 +45,7 @@ public class IonosProvisionExtension implements ServiceExtension {
     @Inject
     private TypeManager typeManager;
     @Inject
-    private S3ConnectorApi clientApi;
+    private S3Connector clientApi;
 
     @Override
     public String name() {

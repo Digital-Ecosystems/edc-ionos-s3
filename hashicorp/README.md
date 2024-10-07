@@ -64,7 +64,7 @@ vault login token=<YOUR VAULT TOKEN>
 vault kv put secret/edc.ionos.access.key content=<IONOS-ACCESS>
 vault kv put secret/edc.ionos.secret.key content=<IONOS-SECRET>
 vault kv put secret/edc.ionos.token content=<IONOS-TOKEN>
-vault kv put secret/edc.ionos.endpoint content=<IONOS-S3-REGION>
+vault kv put secret/edc.ionos.endpoint.region content=<IONOS-S3-ENDPOINT-REGION>
 ```
 
 Note:
@@ -76,7 +76,7 @@ Note:
 ```console
 kubectl exec -it vault-0 -- vault kv put secret/edc.ionos.access.key content=<IONOS-ACCESS>
 kubectl exec -it vault-0 -- vault kv put secret/edc.ionos.secret.key content=<IONOS-SECRET>
-kubectl exec -it vault-0 -- vault kv put secret/edc.ionos.endpoint content=<IONOS-S3-REGION>
+kubectl exec -it vault-0 -- vault kv put secret/edc.ionos.endpoint.region content=<IONOS-S3-ENDPOINT-REGION>
 kubectl exec -it vault-0 -- vault kv put secret/edc.ionos.token content=<IONOS-TOKEN>
 ```
 

@@ -51,7 +51,7 @@ variable "pg_password" {
   default = "postgres"
 }
 
-variable "s3_endpoint" {}
+variable "s3_endpoint_region" {}
 variable "ionos_token" {}
 
 variable "vaultname" {
@@ -86,8 +86,8 @@ resource "helm_release" "edc-ionos-s3" {
   }
 
   set {
-    name  = "edc.ionos.endpoint"
-    value = var.s3_endpoint
+    name  = "edc.ionos.endpoint.region"
+    value = var.s3_endpoint_region
   }
 
   set {
