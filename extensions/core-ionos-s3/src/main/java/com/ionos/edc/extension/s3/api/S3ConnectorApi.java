@@ -41,4 +41,5 @@ public interface S3ConnectorApi {
 
     void deleteAccessKey(String keyID);
 
+    S3ConnectorApi clone(String region, String accessKey, String secretKey);
 }

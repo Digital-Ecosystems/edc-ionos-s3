@@ -16,7 +16,6 @@ package com.ionos.edc.dataplane.ionos.s3;
 
 import com.ionos.edc.dataplane.ionos.s3.validation.IonosSinkDataAddressValidationRule;
 import com.ionos.edc.extension.s3.api.S3ConnectorApi;
-import com.ionos.edc.extension.s3.api.S3ConnectorApiImpl;
 import com.ionos.edc.extension.s3.configuration.IonosToken;
 import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSink;
@@ -34,8 +33,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ExecutorService;
 
-import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.STORAGE_NAME_DEFAULT;
-
 public class IonosDataSinkFactory implements DataSinkFactory {
 
     private final ExecutorService executorService;
@@ -43,17 +40,15 @@ public class IonosDataSinkFactory implements DataSinkFactory {
     private final S3ConnectorApi s3Api;
     private final Vault vault;
     private final TypeManager typeManager;
-    private final int maxFiles;
 
     private final Validator<DataAddress> validator = new IonosSinkDataAddressValidationRule();
 
-    public IonosDataSinkFactory(S3ConnectorApi s3Api, ExecutorService executorService, Monitor monitor, Vault vault, TypeManager typeManager, int maxFiles) {
+    public IonosDataSinkFactory(S3ConnectorApi s3Api, ExecutorService executorService, Monitor monitor, Vault vault, TypeManager typeManager) {
         this.s3Api = s3Api;
         this.executorService = executorService;
         this.monitor = monitor;
         this.vault = vault;
         this.typeManager = typeManager;
-        this.maxFiles = maxFiles;
     }
 
     @Override
@@ -77,45 +72,23 @@ public class IonosDataSinkFactory implements DataSinkFactory {
 
         var destination = request.getDestinationDataAddress();
 
-        var secret = vault.resolveSecret(destination.getKeyName());
-        if (secret != null) {
-            var token = typeManager.readValue(secret, IonosToken.class);
-
-            if (destination.getStringProperty(IonosBucketSchema.STORAGE_NAME) != null) {
-                var s3ApiTemp = new S3ConnectorApiImpl(destination.getStringProperty(IonosBucketSchema.STORAGE_NAME),
-                        token.getAccessKey(),
-                        token.getSecretKey(),
-                        maxFiles);
-                return IonosDataSink.Builder.newInstance()
-                        .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
-                        .path(destination.getStringProperty(IonosBucketSchema.PATH))
-                        .requestId(request.getId())
-                        .executorService(executorService)
-                        .monitor(monitor)
-                        .s3Api(s3ApiTemp)
-                        .build();
-            } else {
-                var s3ApiTemp = new S3ConnectorApiImpl(STORAGE_NAME_DEFAULT,
-                        token.getAccessKey(),
-                        token.getSecretKey(),
-                        maxFiles);
-                return IonosDataSink.Builder.newInstance()
-                        .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
-                        .path(destination.getStringProperty(IonosBucketSchema.PATH))
-                        .requestId(request.getId())
-                        .executorService(executorService)
-                        .monitor(monitor)
-                        .s3Api(s3ApiTemp)
-                        .build();
-            }
+        var secret = vault.resolveSecret(request.getDestinationDataAddress().getKeyName());
+        if (secret == null) {
+            throw new EdcException("Missing destination temporary token");
         }
+        var token = typeManager.readValue(secret, IonosToken.class);
+
+        var region = destination.getStringProperty(IonosBucketSchema.REGION_ID);
+
+        var s3ApiTemp = s3Api.clone(region, token.getAccessKey(), token.getSecretKey());
 
         return IonosDataSink.Builder.newInstance()
                 .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
                 .path(destination.getStringProperty(IonosBucketSchema.PATH))
-                .requestId(request.getId()).executorService(executorService)
+                .requestId(request.getId())
+                .executorService(executorService)
                 .monitor(monitor)
-                .s3Api(s3Api)
+                .s3Api(s3ApiTemp)
                 .build();
     }
 }
