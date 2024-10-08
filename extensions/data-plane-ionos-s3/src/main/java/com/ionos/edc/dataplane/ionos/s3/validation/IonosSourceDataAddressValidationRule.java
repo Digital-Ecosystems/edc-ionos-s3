@@ -28,7 +28,7 @@ public class IonosSourceDataAddressValidationRule implements Validator<DataAddre
 
     @Override
     public ValidationResult validate(DataAddress dataAddress) {
-        var violations = Stream.of(STORAGE_NAME, BUCKET_NAME, BLOB_NAME)
+        var violations = Stream.of(BUCKET_NAME, BLOB_NAME)
                 .map(it -> {
                     var value = dataAddress.getStringProperty(it);
                     if (value == null || value.isBlank()) {

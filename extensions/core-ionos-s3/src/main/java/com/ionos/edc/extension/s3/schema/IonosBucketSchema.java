@@ -20,7 +20,7 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public interface IonosBucketSchema {
     String TYPE = "IonosS3";
-    String STORAGE_NAME = EDC_NAMESPACE + "storage";
+    String REGION_ID = EDC_NAMESPACE + "region";
     String BUCKET_NAME = EDC_NAMESPACE + "bucketName";
     String BLOB_NAME = EDC_NAMESPACE + "blobName";
     String PATH = EDC_NAMESPACE + "path";
@@ -31,5 +31,5 @@ public interface IonosBucketSchema {
 
     String PUSH_TRANSFER_TYPE = TYPE + "-" + FlowType.PUSH;
 
-    String STORAGE_NAME_DEFAULT = "https://s3-eu-central-1.ionoscloud.com";
+    String REGION_ID_DEFAULT = "de";
 }

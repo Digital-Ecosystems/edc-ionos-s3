@@ -12,12 +12,13 @@
  *
  */
 
-package com.ionos.edc.extension.s3.api;
+package com.ionos.edc.extension.s3.connector;
 
-import com.ionos.edc.extension.s3.connector.MinioConnector;
-import com.ionos.edc.extension.s3.connector.ionosapi.S3AccessKey;
-import com.ionos.edc.extension.s3.connector.ionosapi.S3ApiConnector;
+import com.ionos.edc.extension.s3.api.S3AccessKey;
+import com.ionos.edc.extension.s3.api.S3ApiClient;
 
+import com.ionos.edc.extension.s3.api.S3Region;
+import com.ionos.edc.extension.s3.types.S3Object;
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
 import io.minio.ListObjectsArgs;
@@ -25,32 +26,33 @@ import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import org.eclipse.edc.spi.EdcException;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class S3ConnectorApiImpl implements S3ConnectorApi {
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.REGION_ID_DEFAULT;
 
-    MinioConnector miniConnector = new MinioConnector();
-    S3ApiConnector ionoss3Api = new S3ApiConnector();
+public class S3ConnectorImpl implements S3Connector {
+
+    private final S3ApiClient S3ApiClient = new S3ApiClient();
 
     private final MinioClient minioClient;
-    private final String region;
-    private String token;
-    private final Integer maxFiles;
+    private final String regionId;
+    private final String token;
+    private final int maxFiles;
 
-    public S3ConnectorApiImpl(String endpoint, String accessKey, String secretKey, int maxFiles) {
-        this.minioClient = miniConnector.connect(endpoint, accessKey, secretKey);
-        this.region = getRegion(endpoint);
-        this.token = "";
-        this.maxFiles = maxFiles;
-    }
-
-    public S3ConnectorApiImpl(String endpoint, String accessKey, String secretKey, String token, int maxFiles) {
-        this(endpoint, accessKey, secretKey, maxFiles);
+    public S3ConnectorImpl(String regionId, @NotNull String accessKey, @NotNull String secretKey, @NotNull String token, int maxFiles) {
         this.token = token;
+        this.maxFiles = maxFiles;
+
+        this.regionId = Objects.requireNonNullElse(regionId, REGION_ID_DEFAULT);
+        var endpoint = getEndpoint( this.regionId , token);
+
+        this.minioClient = MinioClient.builder().endpoint(endpoint).credentials(accessKey, secretKey).build();
     }
 
     @Override
@@ -59,7 +61,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
             try {
                 minioClient.makeBucket(MakeBucketArgs.builder()
                         .bucket(bucketName.toLowerCase())
-                        .region(region)
+                        .region(regionId)
                         .build());
             } catch (Exception e) {
                 throw new EdcException("Creating bucket: " + e.getMessage());
@@ -72,7 +74,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
         try {
             return minioClient.bucketExists(BucketExistsArgs.builder()
                     .bucket(bucketName.toLowerCase())
-                    .region(region)
+                    .region(regionId)
                     .build());
         } catch (Exception e) {
             throw new EdcException("Verifying if bucket exists - " + e.getMessage());
@@ -88,7 +90,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
         try {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucketName.toLowerCase())
-                    .region(region)
+                    .region(regionId)
                     .object(objectName)
                     .stream(stream, stream.available(), -1)
                     .build());
@@ -105,7 +107,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
 
         var request = GetObjectArgs.builder()
                 .bucket(bucketName.toLowerCase())
-                .region(region)
+                .region(regionId)
                 .object(objectName)
                 .build();
 
@@ -124,7 +126,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
 
         var request = GetObjectArgs.builder()
                 .bucket(bucketName.toLowerCase())
-                .region(region)
+                .region(regionId)
                 .object(objectName)
                 .offset(offset)
                 .length(length)
@@ -142,7 +144,7 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
 
         var objects = minioClient.listObjects(ListObjectsArgs.builder()
                 .bucket(bucketName.toLowerCase())
-                .region(region)
+                .region(regionId)
                 .prefix(objectName)
                 .recursive(true)
                 .maxKeys(maxFiles)
@@ -163,48 +165,43 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
     @Override
     public S3AccessKey createAccessKey() {
 		try{
-            return ionoss3Api.createAccessKey(token);
+            return S3ApiClient.createAccessKey(token);
         } catch (Exception e) {
-            throw new EdcException("Creating temporary key - (Warning: max 5 keys on the storage) - " + e.getMessage());
+            throw new EdcException("Error creating access key", e);
         }
     }
 
     @Override
     public  S3AccessKey retrieveAccessKey(String keyID) {
         try{
-            return ionoss3Api.retrieveAccessKey(token, keyID);
+            return S3ApiClient.retrieveAccessKey(token, keyID);
         } catch (Exception e) {
-            throw new EdcException("Retrieving temporary key: " + e.getMessage());
+            throw new EdcException("Error retrieving access key", e);
         }
     }
  
 	@Override
 	public void deleteAccessKey(String keyID) {
         try{
-            ionoss3Api.deleteAccessKey(token, keyID);
+            S3ApiClient.deleteAccessKey(token, keyID);
         } catch (Exception e) {
-            throw new EdcException("Deleting temporary key: " + e.getMessage());
+            throw new EdcException("Error deleting access key", e);
         }
 	}
 
-    static String getRegion(String endpoint) {
+    private String getEndpoint(String regionId, String token) {
+        var regions = S3ApiClient.retrieveRegions(token);
 
-        switch (endpoint) {
-            case "https://s3-eu-central-1.ionoscloud.com":
-                return "de";
-            case "s3-eu-central-1.ionoscloud.com":
-                return "de";
-            case "https://s3-eu-central-2.ionoscloud.com":
-                return "eu-central-2";
-            case "s3-eu-central-2.ionoscloud.com":
-                return "eu-central-2";
-            case "https://s3-eu-south-2.ionoscloud.com":
-                return "eu-south-2";
-            case "s3-eu-south-2.ionoscloud.com":
-                return "eu-south-2";
-            default:
-                throw new EdcException("Invalid endpoint: " + endpoint);
+        for (S3Region region: regions) {
+            if (region.getId().equals(regionId)) {
+                return "https://" + region.getProperties().getEndpoint();
+            }
         }
+        throw new EdcException("Invalid region: " + regionId);
     }
 
+    @Override
+    public S3Connector clone(String region, String accessKey, String secretKey) {
+        return new S3ConnectorImpl(region, accessKey, secretKey, this.token, this.maxFiles);
+    }
 }

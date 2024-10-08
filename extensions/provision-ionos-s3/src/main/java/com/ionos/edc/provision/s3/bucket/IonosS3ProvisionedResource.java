@@ -50,8 +50,8 @@ public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResour
             return new Builder();
         }
 
-        public Builder storage(String storage) {
-            dataAddressBuilder.property(STORAGE_NAME, storage);
+        public Builder regionId(String regionId) {
+            dataAddressBuilder.property(REGION_ID, regionId);
             return this;
         }
 

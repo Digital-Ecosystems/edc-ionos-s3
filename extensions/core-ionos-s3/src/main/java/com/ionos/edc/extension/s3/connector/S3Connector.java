@@ -12,16 +12,17 @@
  *
  */
 
-package com.ionos.edc.extension.s3.api;
+package com.ionos.edc.extension.s3.connector;
 
-import com.ionos.edc.extension.s3.connector.ionosapi.S3AccessKey;
+import com.ionos.edc.extension.s3.api.S3AccessKey;
+import com.ionos.edc.extension.s3.types.S3Object;
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @ExtensionPoint
-public interface S3ConnectorApi {
+public interface S3Connector {
 
     void createBucket(String bucketName);
 
@@ -41,4 +42,5 @@ public interface S3ConnectorApi {
 
     void deleteAccessKey(String keyID);
 
+    S3Connector clone(String region, String accessKey, String secretKey);
 }

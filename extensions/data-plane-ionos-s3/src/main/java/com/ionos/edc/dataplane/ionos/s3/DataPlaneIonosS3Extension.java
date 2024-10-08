@@ -14,7 +14,7 @@
 
 package com.ionos.edc.dataplane.ionos.s3;
 
-import com.ionos.edc.extension.s3.api.S3ConnectorApi;
+import com.ionos.edc.extension.s3.connector.S3Connector;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataTransferExecutorServiceContainer;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
@@ -24,9 +24,6 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 
-import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_MAX_FILES;
-import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_MAX_FILES_DEFAULT;
-
 @Extension(value = DataPlaneIonosS3Extension.NAME)
 public class DataPlaneIonosS3Extension implements ServiceExtension {
 
@@ -35,7 +32,7 @@ public class DataPlaneIonosS3Extension implements ServiceExtension {
     private PipelineService pipelineService;
     
     @Inject
-    private S3ConnectorApi s3Api;
+    private S3Connector s3Connector;
 
     @Inject
     private DataTransferExecutorServiceContainer executorContainer;
@@ -55,12 +52,10 @@ public class DataPlaneIonosS3Extension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         var monitor = context.getMonitor();
 
-        var maxFiles =  context.getSetting(IONOS_MAX_FILES, IONOS_MAX_FILES_DEFAULT);
-
-        var sourceFactory = new IonosDataSourceFactory(s3Api, monitor);
+        var sourceFactory = new IonosDataSourceFactory(s3Connector, monitor);
         pipelineService.registerFactory(sourceFactory);
         
-        var sinkFactory = new IonosDataSinkFactory(s3Api, executorContainer.getExecutorService(), monitor, vault, typeManager, maxFiles);
+        var sinkFactory = new IonosDataSinkFactory(s3Connector, executorContainer.getExecutorService(), monitor, vault, typeManager);
         pipelineService.registerFactory(sinkFactory);
         context.getMonitor().info("File Transfer Extension initialized!");
     }

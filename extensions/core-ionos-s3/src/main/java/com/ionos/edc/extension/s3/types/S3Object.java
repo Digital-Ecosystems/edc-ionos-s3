@@ -12,7 +12,7 @@
  *
  */
 
-package com.ionos.edc.extension.s3.api;
+package com.ionos.edc.extension.s3.types;
 
 public record S3Object(String objectName, long size) {
 

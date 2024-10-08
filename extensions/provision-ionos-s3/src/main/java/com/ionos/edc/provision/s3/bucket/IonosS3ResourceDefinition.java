@@ -24,7 +24,7 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.types.ResourceDefinit
 public class IonosS3ResourceDefinition extends ResourceDefinition {
 
     private String keyName;
-    private String storage;
+    private String regionId;
     private String bucketName;
     private String path;
     private String accessKey;
@@ -36,8 +36,8 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
     public String getKeyName() {
         return keyName;
     }
-    public String getStorage() {
-        return storage;
+    public String getRegionId() {
+        return regionId;
     }
 	public String getBucketName() {
         return bucketName;
@@ -50,7 +50,7 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
     public Builder toBuilder() {
         return initializeBuilder(new Builder())
                 .keyName(keyName)
-                .storage(storage)
+                .regionId(regionId)
                 .bucketName(bucketName)
                 .path(path)
                 .accessKey(accessKey)
@@ -71,8 +71,8 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
             resourceDefinition.keyName = keyName;
             return this;
         }
-        public Builder storage(String storage) {
-            resourceDefinition.storage = storage;
+        public Builder regionId(String regionId) {
+            resourceDefinition.regionId = regionId;
             return this;
         }
         public Builder bucketName(String bucketName) {

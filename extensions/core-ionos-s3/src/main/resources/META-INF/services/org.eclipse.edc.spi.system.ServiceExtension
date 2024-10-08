@@ -12,5 +12,5 @@
 #
 #
 
-com.ionos.edc.extension.s3.configuration.S3CoreExtension
+com.ionos.edc.extension.s3.S3CoreExtension
 
