@@ -1,7 +1,6 @@
 package com.ionos.edc.extension.s3.connector.ionosapi;
 
 import java.io.IOException;
-import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -22,7 +21,7 @@ public class S3ApiConnector {
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    public List<S3Region> retrieveRegions(String token) {
+    public S3Regions retrieveRegions(String token) {
         String url = BASE_URL + "/regions";
 
         Request request = new Request.Builder().url(url)
@@ -36,7 +35,7 @@ public class S3ApiConnector {
             if (response.body() == null)
                 throw new IOException("Empty response body retrieving S3 regions");
             else
-                return objectMapper.readValue(response.body().string(), new TypeReference<List<S3Region>>() {});
+                return objectMapper.readValue(response.body().string(), new TypeReference<S3Regions>() {});
         } catch (IOException e) {
             throw new EdcException("Error retrieving S3 accesskey", e);
         }
