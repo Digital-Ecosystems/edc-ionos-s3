@@ -192,7 +192,7 @@ public class S3ConnectorImpl implements S3Connector {
     private String getEndpoint(String regionId, String token) {
         var regions = S3ApiClient.retrieveRegions(token);
 
-        for (S3Region region: regions) {
+        for (S3Region region: regions.getItems()) {
             if (region.getId().equals(regionId)) {
                 return "https://" + region.getProperties().getEndpoint();
             }
