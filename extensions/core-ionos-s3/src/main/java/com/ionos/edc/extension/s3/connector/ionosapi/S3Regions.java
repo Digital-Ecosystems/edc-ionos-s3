@@ -13,26 +13,17 @@
  */
 package com.ionos.edc.extension.s3.connector.ionosapi;
 
-public class S3Region {
+import java.util.List;
 
-    private String id;
+public class S3Regions {
 
-    private Properties properties;
+    private List<S3Region> items;
 
-    public String getId() {
-        return id;
+    public List<S3Region> getItems() {
+        return items;
     }
 
-    public Properties getProperties() {
-        return properties;
-    }
-
-    public static class Properties {
-
-        private String endpoint;
-
-        public String getEndpoint() {
-            return endpoint;
-        }
+    public void setItems(List<S3Region> items) {
+        this.items = items;
     }
 }

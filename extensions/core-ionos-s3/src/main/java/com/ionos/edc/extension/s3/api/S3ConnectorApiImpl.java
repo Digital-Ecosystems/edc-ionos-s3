@@ -192,7 +192,8 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
 
     private String getEndpoint(String regionId, String token) {
         var regions = ionoss3Api.retrieveRegions(token);
-        for (S3Region region: regions) {
+
+        for (S3Region region: regions.getItems()) {
             if (region.getId().equals(regionId)) {
                 return "https://" + region.getProperties().getEndpoint();
             }
