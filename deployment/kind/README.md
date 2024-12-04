@@ -26,7 +26,7 @@ Set environment variables
 export KUBECONFIG=path/to/kubeconfig
 export S3_ACCESS_KEY=''
 export S3_SECRET_KEY=''
-export S3_ENDPOINT=''
+export S3_ENDPOINT_REGION=''
 export IONOS_TOKEN=''
 ```
 

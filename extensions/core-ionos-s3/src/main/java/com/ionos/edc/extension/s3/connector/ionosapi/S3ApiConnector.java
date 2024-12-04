@@ -2,6 +2,7 @@ package com.ionos.edc.extension.s3.connector.ionosapi;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -18,6 +19,26 @@ public class S3ApiConnector {
         client = new OkHttpClient();
         objectMapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
+
+    public S3Regions retrieveRegions(String token) {
+        String url = BASE_URL + "/regions";
+
+        Request request = new Request.Builder().url(url)
+                .addHeader("Authorization", "Bearer " + token)
+                .get()
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new EdcException("Unexpected code [" + response.code() + "] retrieving S3 regions");
+            }
+            if (response.body() == null)
+                throw new IOException("Empty response body retrieving S3 regions");
+            else
+                return objectMapper.readValue(response.body().string(), new TypeReference<S3Regions>() {});
+        } catch (IOException e) {
+            throw new EdcException("Error retrieving S3 accesskey", e);
+        }
     }
 
     public S3AccessKey createAccessKey(String token) {

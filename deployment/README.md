@@ -48,7 +48,7 @@ export TF_VAR_persistence_type='PostgreSQLaaS' # 'PostgreSQLaaS', 'PostgreSQL' o
 export TF_VAR_vaultname='vault'  # optional if only 1 connector per cluster
 export TF_VAR_s3_access_key='' # S3 access key
 export TF_VAR_s3_secret_key='' # S3 secret key
-export TF_VAR_s3_endpoint='' # s3 endpoint (e.g. s3-eu-central-1.ionoscloud.com)
+export TF_VAR_s3_endpoint_region='' # s3 endpoint region (e.g. de)
 export TF_VAR_ionos_token='' # IONOS Cloud token, for further information: https://docs.ionos.com/cloud/managed-services/s3-object-storage/endpoints
 
 # Required only if persistence_type is PostgreSQLaaS
@@ -86,7 +86,7 @@ In case you want to configure this Connector without Hashicorp Vault, you need t
 
 ```yaml
   ionos:
-    endpoint: <YOUR-S3-ENDPOINT>
+    region: <IONOS-S3-ENDPOINT-REGION>
     accessKey: <YOUR-KEY>
     secretKey: <YOUR-SECRET-KEY>
     token: <IONOS-TOKEN>

@@ -26,7 +26,7 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_ACCESS_KEY;
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_SECRET_KEY;
-import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_ENDPOINT;
+import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_REGION;
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_TOKEN;
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_MAX_FILES;
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_MAX_FILES_DEFAULT;
@@ -53,20 +53,20 @@ public class S3CoreExtension implements ServiceExtension {
 
         var accessKey = vault.resolveSecret(IONOS_ACCESS_KEY);
         var secretKey = vault.resolveSecret(IONOS_SECRET_KEY);
-        var endPoint = vault.resolveSecret(IONOS_ENDPOINT);
+        var region = vault.resolveSecret(IONOS_REGION);
         var token =  vault.resolveSecret(IONOS_TOKEN);
 
-        if(accessKey == null || secretKey  == null || endPoint ==null) {
+        if(accessKey == null || secretKey  == null || region == null || token == null) {
               monitor.warning("Couldn't connect or the vault didn't return values, falling back to ConfigMap Configuration");
         	  accessKey = context.getSetting(IONOS_ACCESS_KEY, IONOS_ACCESS_KEY);
               secretKey = context.getSetting(IONOS_SECRET_KEY, IONOS_SECRET_KEY);
-              endPoint = context.getSetting(IONOS_ENDPOINT, IONOS_ENDPOINT);
+              region = context.getSetting(IONOS_REGION, IONOS_REGION);
               token = context.getSetting(IONOS_TOKEN, IONOS_TOKEN);
         }
 
         var maxFiles =  context.getSetting(IONOS_MAX_FILES, IONOS_MAX_FILES_DEFAULT);
 
-        var s3Api = new S3ConnectorApiImpl(endPoint, accessKey, secretKey, token, maxFiles);
+        var s3Api = new S3ConnectorApiImpl(region, accessKey, secretKey, token, maxFiles);
         context.registerService(S3ConnectorApi.class, s3Api);
     }
 }
