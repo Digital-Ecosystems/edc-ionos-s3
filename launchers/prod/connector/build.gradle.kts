@@ -24,7 +24,9 @@ val edcVersion: String by project
 dependencies {
 	implementation(project(":launchers:base:connector"))
 
-	implementation("${edcGroup}:iam-mock:${edcVersion}")
+    implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
+    implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
+    implementation("${edcGroup}:iam-mock:${edcVersion}")
 }
 
 application {

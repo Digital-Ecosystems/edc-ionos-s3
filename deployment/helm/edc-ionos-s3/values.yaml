@@ -113,34 +113,31 @@ edc:
     auth:
       key: password
   vault:
-    clientid: company1
-    tenantid: 1
-    certificate: /resources/
+    certificates:
+      publicKey:
+        alias: edc.connector.public.key
+      privateKey:
+        alias: edc.connector.private.key
     hashicorp:
       url: http://vault:8200
       token:
       timeout:
         seconds: 30
-  ids:
-    id: urn:connector:provider
   ionos:
-    endpoint: s3-eu-central-1.ionoscloud.com
+    region: de
     accessKey: notnull
     secretKey: notnull
     token: notnull
   dsp:
     callback:
-      address: http://localhost
-  receiver:
-    http:
-      endpoint: http://localhost:4000
-  public:
-    key:
-      alias: alias
+      address: http://localhost:8281/protocol
   dataplane:
+    api:
+      public:
+        baseurl: http://localhost:8282/public
     token:
       validation:
-        endpoint: http://localhost
+        endpoint: http://localhost:8283/control/token
   persistenceType: PostgreSQLaaS # 'PostgreSQLaaS', 'PostgreSQL' or 'None'
   postgresql: # Only used if persistenceType is 'PostgreSQLaaS' or 'PostgreSQL'
     host: postgresql

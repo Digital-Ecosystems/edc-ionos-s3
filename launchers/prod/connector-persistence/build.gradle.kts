@@ -25,18 +25,25 @@ val postgresVersion: String by project
 dependencies {
 	implementation(project(":launchers:base:connector"))
 
+    implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
+    implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
+    implementation("${edcGroup}:iam-mock:${edcVersion}")
+
 	implementation("org.postgresql:postgresql:$postgresVersion")
 	implementation("${edcGroup}:sql-pool-apache-commons:$edcVersion")
 	implementation("${edcGroup}:transaction-local:$edcVersion")
 	implementation("${edcGroup}:transaction-datasource-spi:$edcVersion")
 
+    implementation("${edcGroup}:accesstokendata-store-sql:$edcVersion")
     implementation("${edcGroup}:asset-index-sql:$edcVersion")
-    implementation("${edcGroup}:policy-definition-store-sql:$edcVersion")
     implementation("${edcGroup}:contract-definition-store-sql:$edcVersion")
     implementation("${edcGroup}:contract-negotiation-store-sql:$edcVersion")
+    implementation("${edcGroup}:control-plane-sql:$edcVersion")
+    implementation("${edcGroup}:data-plane-instance-store-sql:$edcVersion")
+    implementation("${edcGroup}:data-plane-store-sql:$edcVersion")
+    implementation("${edcGroup}:edr-index-sql:$edcVersion")
+    implementation("${edcGroup}:policy-definition-store-sql:$edcVersion")
     implementation("${edcGroup}:transfer-process-store-sql:$edcVersion")
-
-    implementation("${edcGroup}:iam-mock:${edcVersion}")
 }
 
 application {

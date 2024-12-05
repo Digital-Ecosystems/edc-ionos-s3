@@ -145,28 +145,22 @@ if [ "$TF_VAR_persistence_type" == "PostgreSQLaaS" ]; then
 fi
 
 if [ "$TF_VAR_persistence_type" == "PostgreSQL" ]; then
-    echo "Deploying postgres"
-    helm repo add bitnami https://charts.bitnami.com/bitnami
-    set +e
-    helm --kubeconfig=$TF_VAR_kubeconfig install postgres bitnami/postgresql -n $TF_VAR_namespace --set global.postgresql.auth.username=$TF_VAR_pg_username --set global.postgresql.auth.password=$TF_VAR_pg_password --set global.postgresql.auth.database=$TF_VAR_pg_database
-    set -e
+    echo "Deploying postgresql"
+    # Create PostgreSQL instance
+    cd ../postgresql-deploy
+    terraform init
+    terraform apply -auto-approve
 
-    kubectl --kubeconfig=$TF_VAR_kubeconfig wait --for=condition=Ready=True pod -l app.kubernetes.io/name=postgresql -n $TF_VAR_namespace --timeout=600s
-
-    export TF_VAR_pg_host="postgres-postgresql"
+    export TF_VAR_pg_host="postgresql."$TF_VAR_namespace
 fi
 
 # Create the database
 if [ "$TF_VAR_persistence_type" == "PostgreSQLaaS" ] || [ "$TF_VAR_persistence_type" == "PostgreSQL" ]; then
+    echo "Running database scripts"
+    # Run scripts to create database schemas
     cd ../db-scripts
-    echo "Creating database $TF_VAR_pg_database"
-    set +e
-    kubectl --kubeconfig=$TF_VAR_kubeconfig run -n $TF_VAR_namespace --timeout=120s -i postgres-create-database --rm --image=postgres:latest --env="PGUSER=$TF_VAR_pg_username" --env="PGPASSWORD=$TF_VAR_pg_password" --env="PGHOST=$TF_VAR_pg_host" -- psql --dbname="postgres" --command="CREATE DATABASE $TF_VAR_pg_database;"
-    set -e
-
-    kubectl --kubeconfig=$TF_VAR_kubeconfig run -n $TF_VAR_namespace --timeout=120s -i postgres-restore-database --rm --image=postgres:latest --env="PGUSER=$TF_VAR_pg_username" --env="PGPASSWORD=$TF_VAR_pg_password" --env="PGHOST=$TF_VAR_pg_host" -- psql --dbname="$TF_VAR_pg_database" < ../db-scripts/init.sql
-else
-    echo "WARNING: No persistence, the data will be lost if container pods are restarted"
+    terraform init
+    terraform apply -auto-approve
 fi
 
 echo "Deploying ionos s3"

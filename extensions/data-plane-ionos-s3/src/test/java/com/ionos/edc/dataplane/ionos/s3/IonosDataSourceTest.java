@@ -3,8 +3,8 @@
  */
 package com.ionos.edc.dataplane.ionos.s3;
 
-import com.ionos.edc.extension.s3.api.S3ConnectorApi;
-import com.ionos.edc.extension.s3.api.S3Object;
+import com.ionos.edc.extension.s3.connector.S3Connector;
+import com.ionos.edc.extension.s3.types.S3Object;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +37,7 @@ class IonosDataSourceTest {
     private static final String TEST_SUB_FOLDER_2_NAME = "device2/";
 
     @Mock
-    private S3ConnectorApi s3Api;
+    private S3Connector s3Connector;
     @Mock
     private Monitor monitor;
 
@@ -50,10 +50,10 @@ class IonosDataSourceTest {
     public void openPartStream_empty() {
 
         doReturn(List.of())
-                .when(s3Api).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
-                .client(s3Api)
+                .client(s3Connector)
                 .monitor(monitor)
                 .bucketName(TEST_BUCKET)
                 .blobName(TEST_FILE_1_NAME)
@@ -70,10 +70,10 @@ class IonosDataSourceTest {
 
         var s3Objects = List.of(new S3Object(TEST_FILE_1_NAME, TEST_FILE_1_SIZE));
         doReturn(s3Objects)
-                .when(s3Api).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
-                .client(s3Api)
+                .client(s3Connector)
                 .monitor(monitor)
                 .bucketName(TEST_BUCKET)
                 .blobName(TEST_FILE_1_NAME)
@@ -99,10 +99,10 @@ class IonosDataSourceTest {
                 new S3Object(TEST_FOLDER_NAME + TEST_FILE_3_NAME, TEST_FILE_3_SIZE)
         );
         doReturn(s3Objects)
-                .when(s3Api).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
-                .client(s3Api)
+                .client(s3Connector)
                 .monitor(monitor)
                 .bucketName(TEST_BUCKET)
                 .blobName(TEST_FOLDER_NAME)
@@ -140,10 +140,10 @@ class IonosDataSourceTest {
                 new S3Object(TEST_FOLDER_NAME + TEST_FILE_3_NAME, TEST_FILE_3_SIZE)
         );
         doReturn(s3Objects)
-                .when(s3Api).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
-                .client(s3Api)
+                .client(s3Connector)
                 .monitor(monitor)
                 .bucketName(TEST_BUCKET)
                 .blobName(TEST_FOLDER_NAME)
@@ -178,10 +178,10 @@ class IonosDataSourceTest {
                 new S3Object(TEST_FOLDER_NAME + TEST_FILE_3_NAME, TEST_FILE_3_SIZE)
         );
         doReturn(s3Objects)
-                .when(s3Api).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
-                .client(s3Api)
+                .client(s3Connector)
                 .monitor(monitor)
                 .bucketName(TEST_BUCKET)
                 .blobName(TEST_FOLDER_NAME)
@@ -213,10 +213,10 @@ class IonosDataSourceTest {
                 new S3Object(TEST_FOLDER_NAME + TEST_SUB_FOLDER_1_NAME + TEST_FILE_3_NAME, TEST_FILE_3_SIZE)
         );
         doReturn(s3Objects)
-                .when(s3Api).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
-                .client(s3Api)
+                .client(s3Connector)
                 .monitor(monitor)
                 .bucketName(TEST_BUCKET)
                 .blobName(TEST_FOLDER_NAME)
@@ -259,10 +259,10 @@ class IonosDataSourceTest {
                 new S3Object(TEST_FOLDER_NAME + TEST_SUB_FOLDER_1_NAME + TEST_FILE_3_NAME, TEST_FILE_3_SIZE)
         );
         doReturn(s3Objects)
-                .when(s3Api).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
-                .client(s3Api)
+                .client(s3Connector)
                 .monitor(monitor)
                 .bucketName(TEST_BUCKET)
                 .blobName(TEST_FOLDER_NAME)
@@ -298,10 +298,10 @@ class IonosDataSourceTest {
                 new S3Object(TEST_FOLDER_NAME + TEST_SUB_FOLDER_1_NAME + TEST_FILE_3_NAME, TEST_FILE_3_SIZE)
         );
         doReturn(s3Objects)
-                .when(s3Api).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
-                .client(s3Api)
+                .client(s3Connector)
                 .monitor(monitor)
                 .bucketName(TEST_BUCKET)
                 .blobName(TEST_FOLDER_NAME)
@@ -342,10 +342,10 @@ class IonosDataSourceTest {
                 new S3Object(TEST_FOLDER_NAME + TEST_SUB_FOLDER_1_NAME + TEST_FILE_4_NAME, TEST_FILE_4_SIZE)
         );
         doReturn(s3Objects)
-                .when(s3Api).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
-                .client(s3Api)
+                .client(s3Connector)
                 .monitor(monitor)
                 .bucketName(TEST_BUCKET)
                 .blobName(TEST_FOLDER_NAME)
@@ -381,10 +381,10 @@ class IonosDataSourceTest {
                 new S3Object(TEST_FOLDER_NAME + TEST_SUB_FOLDER_1_NAME + TEST_FILE_4_NAME, TEST_FILE_4_SIZE)
         );
         doReturn(s3Objects)
-                .when(s3Api).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
-                .client(s3Api)
+                .client(s3Connector)
                 .monitor(monitor)
                 .bucketName(TEST_BUCKET)
                 .blobName(TEST_FOLDER_NAME)

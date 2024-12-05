@@ -14,18 +14,17 @@
 
 package com.ionos.edc.provision.s3;
 
-import com.ionos.edc.extension.s3.api.S3ConnectorApi;
-import com.ionos.edc.extension.s3.configuration.IonosToken;
+import com.ionos.edc.extension.s3.connector.S3Connector;
+import com.ionos.edc.extension.s3.types.IonosToken;
 import com.ionos.edc.provision.s3.bucket.IonosS3ConsumerResourceDefinitionGenerator;
 import com.ionos.edc.provision.s3.bucket.IonosS3ProvisionedResource;
 import com.ionos.edc.provision.s3.bucket.IonosS3Provisioner;
 import com.ionos.edc.provision.s3.bucket.IonosS3ResourceDefinition;
 import dev.failsafe.RetryPolicy;
-import org.eclipse.edc.connector.transfer.spi.provision.ProvisionManager;
-import org.eclipse.edc.connector.transfer.spi.provision.ResourceManifestGenerator;
+import org.eclipse.edc.connector.controlplane.transfer.spi.provision.ProvisionManager;
+import org.eclipse.edc.connector.controlplane.transfer.spi.provision.ResourceManifestGenerator;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -44,12 +43,9 @@ public class IonosProvisionExtension implements ServiceExtension {
     @Inject
     private Vault vault;
     @Inject
-    private Monitor monitor;
-    @Inject
     private TypeManager typeManager;
-
     @Inject
-    S3ConnectorApi clientApi;
+    private S3Connector clientApi;
 
     @Override
     public String name() {
@@ -58,7 +54,7 @@ public class IonosProvisionExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        monitor = context.getMonitor();
+        var monitor = context.getMonitor();
 
         var keyValidationAttempts =  context.getSetting(IONOS_KEY_VALIDATION_ATTEMPTS, IONOS_KEY_VALIDATION_ATTEMPTS_DEFAULT);
         var keyValidationDelay =  context.getSetting(IONOS_KEY_VALIDATION_DELAY, IONOS_KEY_VALIDATION_DELAY_DEFAULT);
@@ -67,7 +63,7 @@ public class IonosProvisionExtension implements ServiceExtension {
         var provisionManager = context.getService(ProvisionManager.class);
 
         monitor.debug("IonosProvisionExtension" + "retryPolicy");
-        var retryPolicy = (RetryPolicy<Object>) context.getService(RetryPolicy.class);
+        var retryPolicy = context.getService(RetryPolicy.class);
 
         monitor.debug("IonosProvisionExtension" + "s3BucketProvisioner");
         var s3BucketProvisioner = new IonosS3Provisioner(monitor, retryPolicy, clientApi, keyValidationAttempts, keyValidationDelay);

@@ -14,7 +14,9 @@
 
 package com.ionos.edc.extension.s3.schema;
 
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import org.eclipse.edc.spi.types.domain.transfer.FlowType;
+
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public interface IonosBucketSchema {
     String TYPE = "IonosS3";
@@ -26,6 +28,8 @@ public interface IonosBucketSchema {
     String FILTER_EXCLUDES = EDC_NAMESPACE + "filter.excludes";
     String ACCESS_KEY_ID = EDC_NAMESPACE + "accessKey";
     String SECRET_ACCESS_KEY = EDC_NAMESPACE + "secretKey";
+
+    String PUSH_TRANSFER_TYPE = TYPE + "-" + FlowType.PUSH;
 
     String REGION_ID_DEFAULT = "de";
 }

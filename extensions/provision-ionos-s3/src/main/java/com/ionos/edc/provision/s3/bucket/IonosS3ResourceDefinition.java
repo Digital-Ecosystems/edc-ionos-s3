@@ -18,10 +18,11 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ResourceDefinition;
 
 @JsonDeserialize(as=IonosS3ResourceDefinition.class)
 public class IonosS3ResourceDefinition extends ResourceDefinition {
+
     private String keyName;
     private String regionId;
     private String bucketName;

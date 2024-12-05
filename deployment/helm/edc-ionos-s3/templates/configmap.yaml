@@ -4,6 +4,7 @@ metadata:
   name: {{ include "edc-ionos-s3.fullname" . }}-config
 data:
   config.properties: |
+    edc.participant.id={{ .Values.edc.participant.id }}
     web.http.port={{ .Values.web.http.port }}
     web.http.path={{ .Values.web.http.path }}
     web.http.management.port={{ .Values.web.http.management.port }}
@@ -14,20 +15,19 @@ data:
     web.http.public.path={{ .Values.web.http.public.path }}
     web.http.control.port={{ .Values.web.http.control.port }}
     web.http.control.path={{ .Values.web.http.control.path }}
+    edc.dsp.callback.address={{ .Values.edc.dsp.callback.address }}
+    edc.dataplane.token.validation.endpoint={{ .Values.edc.dataplane.token.validation.endpoint }}
+    edc.dataplane.api.public.baseurl={{ .Values.edc.dataplane.api.public.baseurl }}
     edc.api.auth.key={{ .Values.edc.api.auth.key }}
-    edc.participant.id={{ .Values.edc.participant.id }}
-    edc.ionos.access.key={{ .Values.edc.ionos.accessKey }}
-    edc.ionos.secret.key={{ .Values.edc.ionos.secretKey }}
-    edc.ionos.endpoint.region={{ .Values.edc.ionos.endpoint.region }}
-    edc.ionos.token={{ .Values.edc.ionos.token }}
+    edc.transfer.proxy.token.signer.privatekey.alias={{ .Values.edc.vault.certificates.privateKey.alias }}
+    edc.transfer.proxy.token.verifier.publickey.alias={{ .Values.edc.vault.certificates.publicKey.alias }}
     edc.vault.hashicorp.url={{ .Values.edc.vault.hashicorp.url }}
     edc.vault.hashicorp.token={{ .Values.edc.vault.hashicorp.token }}
     edc.vault.hashicorp.timeout.seconds={{ .Values.edc.vault.hashicorp.timeout.seconds }}
-    edc.ids.id={{ .Values.edc.ids.id }}
-    edc.dsp.callback.address={{ .Values.edc.dsp.callback.address }}:{{ .Values.web.http.protocol.port }}{{ .Values.web.http.protocol.path }}
-    edc.receiver.http.endpoint={{ .Values.edc.receiver.http.endpoint }}/receiver/{{ .Values.edc.ids.id }}/callback
-    edc.public.key.alias={{ .Values.edc.public.key.alias }}
-    edc.dataplane.token.validation.endpoint={{ .Values.edc.dataplane.token.validation.endpoint }}:{{ .Values.web.http.control.port }}{{ .Values.web.http.control.path }}/token
+    edc.ionos.access.key={{ .Values.edc.ionos.accessKey }}
+    edc.ionos.secret.key={{ .Values.edc.ionos.secretKey }}
+    edc.ionos.endpoint.region={{ .Values.edc.ionos.region }}
+    edc.ionos.token={{ .Values.edc.ionos.token }}
 
     {{- if eq .Values.edc.persistenceType "PostgreSQLaaS" }}
     edc.datasource.asset.name=asset

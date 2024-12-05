@@ -59,15 +59,15 @@ The credentials can be found/configured in one of the following:
 
 It is required to configure those parameters:
 
-| Parameter name                      | Description                                                                                                                                        | Mandatory                                            |
-|-------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
-| `edc.ionos.access.key`              | IONOS Access Key Id to access S3                                                                                                                   | Yes if the context is accessing file                 |
-| `edc.ionos.secret.access.key`       | IONOS Secret Access Key to access S3                                                                                                               | Yes if the context is accessing file                 |
-| `edc.ionos.token`                   | IONOS token to allow S3 provisioning                                                                                                               | Yes if the context is provisioning access for others |
-| `edc.ionos.endpoint.region`         | IONOS S3 endpoint region. Refer to [docs](https://docs.ionos.com/cloud/managed-services/s3-object-storage/endpoints) for further information.      | No, the default value is de                          |
-| `edc.ionos.max.files`               | Maximum number of files retrieved by list files function.                                                                                          | No, the default value is 5,000 files                 |
-| `edc.ionos.key.validation.attempts` | Maximum number of attemps to validate a temporary key after its creation.                                                                          | No, the default values is 10 attempts                |
-| `edc.ionos.key.validation.delay`    | Time to wait (in milisseconds) before each key validation attempt. In each new attempt the delay is multiplied by the attempt number.              | No, the default value is 3,000 (3 seconds)           |
+| Parameter name                      | Description                                                                                                                                   | Mandatory                                            |
+|-------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
+| `edc.ionos.access.key`              | IONOS Access Key Id to access S3                                                                                                              | Yes if the context is accessing file                 |
+| `edc.ionos.secret.access.key`       | IONOS Secret Access Key to access S3                                                                                                          | Yes if the context is accessing file                 |
+| `edc.ionos.token`                   | IONOS token to allow S3 provisioning                                                                                                          | Yes if the context is provisioning access for others |
+| `edc.ionos.endpoint.region`         | IONOS S3 endpoint region. Refer to [docs](https://docs.ionos.com/cloud/managed-services/s3-object-storage/endpoints) for further information. | No, the default value is "de"                        |
+| `edc.ionos.max.files`               | Maximum number of files retrieved by list files function.                                                                                     | No, the default value is 5,000 files                 |
+| `edc.ionos.key.validation.attempts` | Maximum number of attemps to validate a temporary key after its creation.                                                                     | No, the default values is 10 attempts                |
+| `edc.ionos.key.validation.delay`    | Time to wait (in milisseconds) before each key validation attempt. In each new attempt the delay is multiplied by the attempt number.         | No, the default value is 3,000 (3 seconds)           |
 
 To create the token please take a look at the following [documentation](./ionos_token.md).
 

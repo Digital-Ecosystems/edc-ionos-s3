@@ -86,13 +86,13 @@ In case you want to configure this Connector without Hashicorp Vault, you need t
 
 ```yaml
   ionos:
-    region: <IONOS-S3-ENDPOINT-REGION>
+    region: <YOUR-S3-ENDPOINT-REGION>
     accessKey: <YOUR-KEY>
     secretKey: <YOUR-SECRET-KEY>
     token: <IONOS-TOKEN>
 ```
 
-They should be the same as the ones set in the environment variables. The **ionos.endpoint** is set to the default S3 location, but it can be changed to any other location.
+They should be the same as the ones set in the environment variables. The **ionos.region** is set to the default S3 endpoint region, but it can be changed to any other location.
 
 
 If you don't want the Connector to be externally accessible, you need to set the following parameters in the helm [values.yaml](deployment/helm/edc-ionos-s3/values.yaml):
@@ -110,21 +110,19 @@ This will allocate a public IP address to the Connector. You can then access it 
 
 All commands paths are relative to the current directory where this readme is located.
 
-### 1. Install the EDC Ionos S3 services
+### 1. Deploy the services
 
-To install the services run the script ```deploy-services.sh``` in ```terraform``` directory.
+To deploy the services run the script ```deploy-services.sh``` in ```terraform``` directory.
 
 ```sh
 cd terraform
 ./deploy-services.sh
 ```
+### 2. Undeploy the services
 
-### 2. Vault keys
-After the services are installed you will have ```vault-keys.json``` file containing the vault keys in ```terraform``` directory.
-
-### 3. Destroy the services
+To undeploy the services run the script ```undeploy-services.sh``` in ```terraform``` directory.
 
 ```sh
 cd terraform
-./destroy-services.sh
+./undeploy-services.sh
 ```

@@ -30,14 +30,19 @@ kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR
 # Login to Vault
 kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault login $(jq -r ".root_token" vault-keys.json)
 
-
 if [[ "$INITIALIZED" == "false" ]]; then
    # Enable KV secrets engine
    kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault secrets enable -version=2 -path=secret kv
 fi
+
+## Create connector token
+kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault token create -policy=root -renewable=true -ttl=300s -format=json > vault-tokens.json
 
 # Add secrets to Vault
 kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault kv put secret/edc.ionos.access.key content=$TF_VAR_s3_access_key
 kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault kv put secret/edc.ionos.secret.key content=$TF_VAR_s3_secret_key
 kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault kv put secret/edc.ionos.endpoint.region content=$TF_VAR_s3_endpoint_region
 kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault kv put secret/edc.ionos.token content=$TF_VAR_ionos_token
+
+kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault kv put secret/edc.connector.private.key content="$(cat ./certs/private.pem)"
+kubectl --kubeconfig=$TF_VAR_kubeconfig exec --namespace $NAMESPACE -it "$TF_VAR_vaultname-0" -- vault kv put secret/edc.connector.public.key content="$(cat ./certs/public.pem)"

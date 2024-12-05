@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   connector:
     image: edc-ionos-s3

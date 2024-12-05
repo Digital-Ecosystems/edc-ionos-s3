@@ -64,7 +64,7 @@ vault login token=<YOUR VAULT TOKEN>
 vault kv put secret/edc.ionos.access.key content=<IONOS-ACCESS>
 vault kv put secret/edc.ionos.secret.key content=<IONOS-SECRET>
 vault kv put secret/edc.ionos.token content=<IONOS-TOKEN>
-vault kv put secret/edc.ionos.endpoint.region content=<IONOS-S3-REGION>
+vault kv put secret/edc.ionos.endpoint.region content=<IONOS-S3-ENDPOINT-REGION>
 ```
 
 Note:
@@ -76,10 +76,29 @@ Note:
 ```console
 kubectl exec -it vault-0 -- vault kv put secret/edc.ionos.access.key content=<IONOS-ACCESS>
 kubectl exec -it vault-0 -- vault kv put secret/edc.ionos.secret.key content=<IONOS-SECRET>
-kubectl exec -it vault-0 -- vault kv put secret/edc.ionos.endpoint.region content=<IONOS-S3-REGION>
+kubectl exec -it vault-0 -- vault kv put secret/edc.ionos.endpoint.region content=<IONOS-S3-ENDPOINT-REGION>
 kubectl exec -it vault-0 -- vault kv put secret/edc.ionos.token content=<IONOS-TOKEN>
 ```
 
 Note:
 - the `edc.ionos.token` field is only required when you want to do some provisiong tasks;
 - the `Root Token` of the Hashicorp vault instance is displayed when you start the service;
+
+## Pull Transfers Support
+
+If you need to perform pull transfers on your connector, you need to perform the following steps:
+
+### Using vault CLI
+```bash
+export VAULT_ADDR=<VAULT_HTTP_ADDRESS>
+vault login token=<VAULT_TOKEN>
+
+vault kv put secret/edc.connector.private.key content=@./certs/private.pem
+vault kv put secret/edc.connector.public.key content=@./certs/public.pem
+```
+
+### Using kubectl
+```bash
+kubectl exec -it "vault-0" -- vault kv put secret/edc.connector.private.key content="$(cat ./certs/private.pem)"
+kubectl exec -it "vault-0" -- vault kv put secret/edc.connector.public.key content="$(cat ./certs/public.pem)"
+```

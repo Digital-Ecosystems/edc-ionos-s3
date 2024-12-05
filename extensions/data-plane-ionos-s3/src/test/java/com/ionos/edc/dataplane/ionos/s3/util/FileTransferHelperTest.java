@@ -1,6 +1,5 @@
 package com.ionos.edc.dataplane.ionos.s3.util;
 
-import com.ionos.edc.dataplane.ionos.s3.util.FileTransferHelper;
 import org.eclipse.edc.spi.EdcException;
 import org.junit.jupiter.api.Test;
 

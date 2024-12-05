@@ -1,9 +1,7 @@
-version: "3.9"
-
 services:
   hashicorp-vault:
     container_name: hashicorp-vault
-    image: vault:1.9.7
+    image: hashicorp/vault:1.17.2
     ports:
       - "8200:8200"
     environment:

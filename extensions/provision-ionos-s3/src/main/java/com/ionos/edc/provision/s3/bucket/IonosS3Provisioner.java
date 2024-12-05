@@ -14,16 +14,17 @@
 
 package com.ionos.edc.provision.s3.bucket;
 
-import com.ionos.edc.extension.s3.api.S3ConnectorApi;
-import com.ionos.edc.extension.s3.configuration.IonosToken;
+import com.ionos.edc.extension.s3.connector.S3Connector;
+import com.ionos.edc.extension.s3.types.IonosToken;
 
-import com.ionos.edc.extension.s3.connector.ionosapi.S3AccessKey;
+import com.ionos.edc.extension.s3.api.S3AccessKey;
 import dev.failsafe.RetryPolicy;
-import org.eclipse.edc.connector.transfer.spi.provision.Provisioner;
-import org.eclipse.edc.connector.transfer.spi.types.DeprovisionedResource;
-import org.eclipse.edc.connector.transfer.spi.types.ProvisionResponse;
-import org.eclipse.edc.connector.transfer.spi.types.ProvisionedResource;
-import org.eclipse.edc.connector.transfer.spi.types.ResourceDefinition;
+import org.eclipse.edc.connector.controlplane.transfer.spi.provision.Provisioner;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.DeprovisionedResource;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionResponse;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionedResource;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ResourceDefinition;
+import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.response.StatusResult;
@@ -36,15 +37,15 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
 
     private final Monitor monitor;
     private final RetryPolicy<Object> retryPolicy;
-    private final S3ConnectorApi s3Api;
+    private final S3Connector s3Connector;
     private final Integer keyValidationAttempts;
     private final Long keyValidationDelay;
 
-    public IonosS3Provisioner(Monitor monitor, RetryPolicy<Object> retryPolicy, S3ConnectorApi s3Api, int keyValidationAttempts, long keyValidationDelay) {
+    public IonosS3Provisioner(Monitor monitor, RetryPolicy<Object> retryPolicy, S3Connector s3Connector, int keyValidationAttempts, long keyValidationDelay) {
 
         this.monitor = monitor;
         this.retryPolicy = retryPolicy;
-        this.s3Api = s3Api;
+        this.s3Connector = s3Connector;
         this.keyValidationAttempts = keyValidationAttempts;
         this.keyValidationDelay = keyValidationDelay;
     }
@@ -60,11 +61,10 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
     }
 
     @Override
-    public CompletableFuture<StatusResult<ProvisionResponse>> provision(IonosS3ResourceDefinition resourceDefinition,
-            org.eclipse.edc.policy.model.Policy policy) {
+    public CompletableFuture<StatusResult<ProvisionResponse>> provision(IonosS3ResourceDefinition resourceDefinition, Policy policy) {
 
         String bucketName = resourceDefinition.getBucketName();
-        if (!s3Api.bucketExists(bucketName)) {
+        if (!s3Connector.bucketExists(bucketName)) {
             createBucket(bucketName);
         }
 
@@ -98,16 +98,15 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
     }
 
     @Override
-    public CompletableFuture<StatusResult<DeprovisionedResource>> deprovision(
-            IonosS3ProvisionedResource provisionedResource, org.eclipse.edc.policy.model.Policy policy) {
-        return with(retryPolicy).runAsync(() -> s3Api.deleteAccessKey(provisionedResource.getAccessKeyID()))
+    public CompletableFuture<StatusResult<DeprovisionedResource>> deprovision(IonosS3ProvisionedResource provisionedResource, Policy policy) {
+        return with(retryPolicy).runAsync(() -> s3Connector.deleteAccessKey(provisionedResource.getAccessKeyID()))
                 .thenApply(empty ->
                         StatusResult.success(DeprovisionedResource.Builder.newInstance().provisionedResourceId(provisionedResource.getId()).build())
                 );
     }
 
     private S3AccessKey createTemporaryKey() {
-        var accessKey = s3Api.createAccessKey();
+        var accessKey = s3Connector.createAccessKey();
 
         // Validate the temporary key
         var validated = false;
@@ -125,7 +124,7 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
             return accessKey;
         } else {
             // Delete the not validated temporary key
-            s3Api.deleteAccessKey(accessKey.getId());
+            s3Connector.deleteAccessKey(accessKey.getId());
             throw new EdcException("Temporary key not validated after " + attempts + " attempts of " + keyValidationDelay + " ms");
         }
     }
@@ -139,12 +138,12 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
         }
 
         // Validate the key status
-        var retrievedAccessKey = s3Api.retrieveAccessKey(accessKey.getId());
+        var retrievedAccessKey = s3Connector.retrieveAccessKey(accessKey.getId());
         return (retrievedAccessKey.getMetadata().getStatus().equals(S3AccessKey.AVAILABLE_STATUS));
     }
 
     private void createBucket(String bucketName) {
-        s3Api.createBucket(bucketName);
+        s3Connector.createBucket(bucketName);
     }
 
 }
