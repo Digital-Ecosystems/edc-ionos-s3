@@ -67,6 +67,9 @@ public class S3ApiClient {
         }
     }
     public boolean verifyToken(String token) {
+        if(token == null || token.isEmpty())
+            return false;
+
         String url = "https://api.ionos.com/cloudapi/v6/locations";
 
         Request request = new Request.Builder().url(url)
