@@ -66,7 +66,23 @@ public class S3ApiClient {
             throw new EdcException("Error retrieving S3 accesskey", e);
         }
     }
+    public boolean verifyToken(String token) {
+        String url = "https://api.ionos.com/cloudapi/v6/locations";
 
+        Request request = new Request.Builder().url(url)
+                .addHeader("Authorization", "Bearer " + token)
+                .get()
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                return false;
+
+            } else return response.body() != null;
+        } catch (IOException e) {
+            throw new EdcException("Error access Ionos Cloud", e);
+
+        }
+    }
     public S3AccessKey createAccessKey(String token) {
 
         Request request = new Request.Builder().url(ACCESS_KEYS_ENDPOINT_URL)

@@ -50,9 +50,12 @@ public class S3ConnectorImpl implements S3Connector {
         this.maxFiles = maxFiles;
 
         this.regionId = Objects.requireNonNullElse(regionId, REGION_ID_DEFAULT);
-        var endpoint = getEndpoint( this.regionId , token);
-
-        this.minioClient = MinioClient.builder().endpoint(endpoint).credentials(accessKey, secretKey).build();
+        if(S3ApiClient.verifyToken(token)) {
+            var endpoint = getEndpoint(this.regionId, token);
+            this.minioClient = MinioClient.builder().endpoint(endpoint).credentials(accessKey, secretKey).build();
+        } else {
+            this.minioClient = null;
+        }
     }
 
     @Override
