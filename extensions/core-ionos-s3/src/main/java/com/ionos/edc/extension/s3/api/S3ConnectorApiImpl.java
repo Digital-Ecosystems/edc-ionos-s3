@@ -46,16 +46,22 @@ public class S3ConnectorApiImpl implements S3ConnectorApi {
     private final String token;
     private final Integer maxFiles;
 
+
+
     public S3ConnectorApiImpl(String regionId, @NotNull String accessKey, @NotNull String secretKey, @NotNull String token, int maxFiles) {
         this.token = token;
         this.maxFiles = maxFiles;
 
         this.regionId = Objects.requireNonNullElse(regionId, REGION_ID_DEFAULT);
-        var endpoint = getEndpoint( this.regionId , token);
 
-        this.minioClient = miniConnector.connect(endpoint, accessKey, secretKey);
+        if(ionoss3Api.verifyToken(token)){
+            var endpoint = getEndpoint(this.regionId, token);
+            this.minioClient = miniConnector.connect(endpoint, accessKey, secretKey);
+        }else{
+            this.minioClient = null;
+
+        }
     }
-
     @Override
     public void createBucket(String bucketName) {
         if (!bucketExists(bucketName.toLowerCase())) {
