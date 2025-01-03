@@ -8,7 +8,7 @@ Please refer to the official [site](https://github.com/ionos-cloud/edc-ionos-s3)
 
 ## Based on the following
 
-- [https://github.com/eclipse-dataspaceconnector/DataSpaceConnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector) - v0.4.1;
+- [https://github.com/eclipse-dataspaceconnector/DataSpaceConnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector) - v0.7.2;
 - [International Data Spaces](https://www.internationaldataspaces.org);
 - [GAIA-X](https://gaia-x.eu) project;
 
