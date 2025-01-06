@@ -50,9 +50,12 @@ public class S3ConnectorImpl implements S3Connector {
         this.maxFiles = maxFiles;
 
         this.regionId = Objects.requireNonNullElse(regionId, REGION_ID_DEFAULT);
-        var endpoint = getEndpoint( this.regionId , token);
-
-        this.minioClient = MinioClient.builder().endpoint(endpoint).credentials(accessKey, secretKey).build();
+        if(S3ApiClient.verifyToken(token)) {
+            var endpoint = getEndpoint(this.regionId, token);
+            this.minioClient = MinioClient.builder().endpoint(endpoint).credentials(accessKey, secretKey).build();
+        } else {
+            this.minioClient = null;
+        }
     }
 
     @Override
@@ -86,7 +89,7 @@ public class S3ConnectorImpl implements S3Connector {
         if (!bucketExists(bucketName.toLowerCase())) {
             createBucket(bucketName.toLowerCase());
         }
-       
+
         try {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucketName.toLowerCase())
@@ -161,10 +164,10 @@ public class S3ConnectorImpl implements S3Connector {
                 .map(item -> new S3Object(item.objectName(), item.size()))
                 .collect(Collectors.toList());
     }
-    
+
     @Override
     public S3AccessKey createAccessKey() {
-		try{
+        try{
             return S3ApiClient.createAccessKey(token);
         } catch (Exception e) {
             throw new EdcException("Error creating access key", e);
@@ -179,15 +182,15 @@ public class S3ConnectorImpl implements S3Connector {
             throw new EdcException("Error retrieving access key", e);
         }
     }
- 
-	@Override
-	public void deleteAccessKey(String keyID) {
+
+    @Override
+    public void deleteAccessKey(String keyID) {
         try{
             S3ApiClient.deleteAccessKey(token, keyID);
         } catch (Exception e) {
             throw new EdcException("Error deleting access key", e);
         }
-	}
+    }
 
     private String getEndpoint(String regionId, String token) {
         var regions = S3ApiClient.retrieveRegions(token);
