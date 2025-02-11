@@ -12,8 +12,9 @@
  *
  */
 
-package com.ionos.edc.dataplane.ionos.s3;
+package com.ionos.edc.dataplane.ionos.s3.datasink;
 
+import com.ionos.edc.dataplane.ionos.s3.datasource.IonosDataSource;
 import com.ionos.edc.extension.s3.connector.S3Connector;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;

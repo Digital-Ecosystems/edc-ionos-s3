@@ -12,7 +12,7 @@
  *
  */
 
-package com.ionos.edc.dataplane.ionos.s3;
+package com.ionos.edc.dataplane.ionos.s3.datasource;
 
 import com.ionos.edc.dataplane.ionos.s3.util.FileTransferHelper;
 import com.ionos.edc.extension.s3.connector.S3Connector;
@@ -22,7 +22,6 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.util.string.StringUtils;
-import org.eclipse.edc.spi.monitor.Monitor;
 
 import java.io.InputStream;
 import java.util.List;
@@ -34,10 +33,9 @@ import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure.Rea
 import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult.success;
 import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult.failure;
 
-class IonosDataSource implements DataSource {
+public class IonosDataSource implements DataSource {
 
     private S3Connector s3Connector;
-    private Monitor monitor;
     private String bucketName;
     private String blobName;
     private Pattern filterIncludes;
@@ -59,13 +57,13 @@ class IonosDataSource implements DataSource {
 
         if (this.filterIncludes != null) {
             objects = objects.stream()
-                    .filter(object -> applyFilterIncludes(object))
+                    .filter(this::applyFilterIncludes)
                     .collect(Collectors.toList());
         }
 
         if (this.filterExcludes != null) {
             objects = objects.stream()
-                    .filter(object -> applyFilterExcludes(object))
+                    .filter(this::applyFilterExcludes)
                     .collect(Collectors.toList());
         }
 
@@ -76,7 +74,7 @@ class IonosDataSource implements DataSource {
         }
 
         List<Part> parts = objects.stream()
-                .map(object -> new S3Part(s3Connector, monitor, bucketName, object.objectName(), object.isDirectory(), object.size()))
+                .map(object -> new S3Part(s3Connector, bucketName, object.objectName(), object.isDirectory(), object.size()))
                 .collect(Collectors.toList());
         return success(parts.stream());
     }
@@ -101,7 +99,6 @@ class IonosDataSource implements DataSource {
     public static class S3Part implements Part {
 
         private final S3Connector s3Connector;
-        private final Monitor monitor;
         private final String bucketName;
         private final String blobName;
         private final boolean isDirectory;
@@ -110,10 +107,9 @@ class IonosDataSource implements DataSource {
         private boolean isOpened = true;
         private long currentOffset = 0;
 
-        S3Part(S3Connector s3Connector, Monitor monitor, String bucketName, String blobName, boolean isDirectory, long fileSize) {
+        S3Part(S3Connector s3Connector, String bucketName, String blobName, boolean isDirectory, long fileSize) {
             super();
             this.s3Connector = s3Connector;
-            this.monitor = monitor;
             this.bucketName = bucketName;
             this.blobName = blobName;
             this.isDirectory = isDirectory;
@@ -177,11 +173,6 @@ class IonosDataSource implements DataSource {
 
         public Builder client(S3Connector s3Connector) {
             source.s3Connector = s3Connector;
-            return this;
-        }
-
-        public Builder monitor(Monitor monitor) {
-            source.monitor = monitor;
             return this;
         }
 

@@ -12,7 +12,7 @@
  *
  */
 
-package com.ionos.edc.dataplane.ionos.s3;
+package com.ionos.edc.dataplane.ionos.s3.datasink;
 
 import com.ionos.edc.dataplane.ionos.s3.validation.IonosSinkDataAddressValidationRule;
 import com.ionos.edc.extension.s3.connector.S3Connector;

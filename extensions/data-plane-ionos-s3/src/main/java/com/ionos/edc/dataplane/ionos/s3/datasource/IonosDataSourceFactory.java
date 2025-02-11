@@ -12,7 +12,7 @@
  *
  */
 
-package com.ionos.edc.dataplane.ionos.s3;
+package com.ionos.edc.dataplane.ionos.s3.datasource;
 
 import com.ionos.edc.dataplane.ionos.s3.validation.IonosSourceDataAddressValidationRule;
 import com.ionos.edc.extension.s3.connector.S3Connector;
@@ -20,7 +20,6 @@ import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSourceFactory;
 import org.eclipse.edc.spi.EdcException;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
@@ -30,13 +29,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class IonosDataSourceFactory implements DataSourceFactory {
     private final S3Connector s3Connector;
-    private final Monitor monitor;
     
     private final Validator<DataAddress> validator = new IonosSourceDataAddressValidationRule();
     
-    public IonosDataSourceFactory(S3Connector s3Connector, Monitor monitor) {
+    public IonosDataSourceFactory(S3Connector s3Connector) {
         this.s3Connector = s3Connector;
-        this.monitor = monitor;
     }
 
     @Override
@@ -62,7 +59,6 @@ public class IonosDataSourceFactory implements DataSourceFactory {
 
         return IonosDataSource.Builder.newInstance()
                 .client(s3Connector)
-                .monitor(monitor)
                 .bucketName(source.getStringProperty(IonosBucketSchema.BUCKET_NAME))
                 .blobName(source.getStringProperty(IonosBucketSchema.BLOB_NAME))
                 .filterIncludes(source.getStringProperty(IonosBucketSchema.FILTER_INCLUDES))

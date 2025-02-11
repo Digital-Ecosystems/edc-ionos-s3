@@ -14,6 +14,8 @@
 
 package com.ionos.edc.dataplane.ionos.s3;
 
+import com.ionos.edc.dataplane.ionos.s3.datasink.IonosDataSinkFactory;
+import com.ionos.edc.dataplane.ionos.s3.datasource.IonosDataSourceFactory;
 import com.ionos.edc.extension.s3.connector.S3Connector;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataTransferExecutorServiceContainer;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
@@ -52,7 +54,7 @@ public class DataPlaneIonosS3Extension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         var monitor = context.getMonitor();
 
-        var sourceFactory = new IonosDataSourceFactory(s3Connector, monitor);
+        var sourceFactory = new IonosDataSourceFactory(s3Connector);
         pipelineService.registerFactory(sourceFactory);
         
         var sinkFactory = new IonosDataSinkFactory(s3Connector, executorContainer.getExecutorService(), monitor, vault, typeManager);
