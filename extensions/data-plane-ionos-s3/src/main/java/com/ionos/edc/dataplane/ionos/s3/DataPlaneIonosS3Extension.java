@@ -57,7 +57,7 @@ public class DataPlaneIonosS3Extension implements ServiceExtension {
         var sourceFactory = new IonosDataSourceFactory(s3Connector);
         pipelineService.registerFactory(sourceFactory);
         
-        var sinkFactory = new IonosDataSinkFactory(s3Connector, executorContainer.getExecutorService(), monitor, vault, typeManager);
+        var sinkFactory = new IonosDataSinkFactory(executorContainer.getExecutorService(), monitor, vault, typeManager);
         pipelineService.registerFactory(sinkFactory);
         context.getMonitor().info("File Transfer Extension initialized!");
     }

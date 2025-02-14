@@ -60,6 +60,7 @@ public class IonosDataSourceFactory implements DataSourceFactory {
         return IonosDataSource.Builder.newInstance()
                 .client(s3Connector)
                 .bucketName(source.getStringProperty(IonosBucketSchema.BUCKET_NAME))
+                .regionId(source.getStringProperty(IonosBucketSchema.REGION_ID))
                 .blobName(source.getStringProperty(IonosBucketSchema.BLOB_NAME))
                 .filterIncludes(source.getStringProperty(IonosBucketSchema.FILTER_INCLUDES))
                 .filterExcludes(source.getStringProperty(IonosBucketSchema.FILTER_EXCLUDES))

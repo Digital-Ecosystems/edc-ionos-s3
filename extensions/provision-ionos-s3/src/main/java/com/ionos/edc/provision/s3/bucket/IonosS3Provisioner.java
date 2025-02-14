@@ -30,6 +30,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.response.StatusResult;
 
 import java.time.OffsetDateTime;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import static dev.failsafe.Failsafe.with;
 
@@ -63,26 +64,28 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
     @Override
     public CompletableFuture<StatusResult<ProvisionResponse>> provision(IonosS3ResourceDefinition resourceDefinition, Policy policy) {
 
-        String bucketName = resourceDefinition.getBucketName();
-        if (!s3Connector.bucketExists(bucketName)) {
-            createBucket(bucketName);
+        var bucketName = resourceDefinition.getBucketName();
+        var regionId = Objects.requireNonNullElse(resourceDefinition.getRegionId(), s3Connector.getDefaultRegionId());
+
+        if (!s3Connector.bucketExists(bucketName, regionId)) {
+            s3Connector.createBucket(bucketName, regionId);
         }
+
+        var endpoint = s3Connector.getEndpoint(regionId);
 
         var temporaryKey = createTemporaryKey();
 
         String resourceName = resourceDefinition.getKeyName();
-
         var resourceBuilder = IonosS3ProvisionedResource.Builder.newInstance()
                 .id(resourceDefinition.getId())
                 .resourceName(resourceName)
-                .bucketName(resourceDefinition.getBucketName())
+                .endpoint(endpoint)
+                .bucketName(bucketName)
+                .maxFiles(String.valueOf(s3Connector.getMaxFiles()))
                 .resourceDefinitionId(resourceDefinition.getId())
                 .accessKeyID(temporaryKey.getId())
                 .transferProcessId(resourceDefinition.getTransferProcessId())
                 .hasToken(true);
-        if (resourceDefinition.getRegionId() != null) {
-            resourceBuilder = resourceBuilder.regionId(resourceDefinition.getRegionId());
-        }
         if (resourceDefinition.getPath() != null) {
             resourceBuilder = resourceBuilder.path(resourceDefinition.getPath());
         }
@@ -141,9 +144,4 @@ public class IonosS3Provisioner implements Provisioner<IonosS3ResourceDefinition
         var retrievedAccessKey = s3Connector.retrieveAccessKey(accessKey.getId());
         return (retrievedAccessKey.getMetadata().getStatus().equals(S3AccessKey.AVAILABLE_STATUS));
     }
-
-    private void createBucket(String bucketName) {
-        s3Connector.createBucket(bucketName);
-    }
-
 }

@@ -14,21 +14,23 @@
 
 package com.ionos.edc.dataplane.ionos.s3.validation;
 
+import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
-import org.eclipse.edc.spi.types.domain.DataAddress;
 
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.*;
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.BUCKET_NAME;
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.ENDPOINT;
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.MAX_FILES;
 import static org.eclipse.edc.validator.spi.Violation.violation;
 
 public class IonosSinkDataAddressValidationRule implements Validator<DataAddress> {
 
     @Override
     public ValidationResult validate(DataAddress dataAddress) {
-        var violations = Stream.of(BUCKET_NAME)
+        var violations = Stream.of(BUCKET_NAME, ENDPOINT, MAX_FILES)
                 .map(it -> {
                     var value = dataAddress.getStringProperty(it);
                     if (value == null || value.isBlank()) {

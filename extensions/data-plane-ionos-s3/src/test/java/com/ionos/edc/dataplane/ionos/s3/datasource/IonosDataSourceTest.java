@@ -14,13 +14,16 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
 class IonosDataSourceTest {
 
     private static final String TEST_BUCKET = "bucket1";
+    private static final String TEST_REGION = "de";
 
     private static final String TEST_FILE_1_NAME = "device1-data.csv";
     private static final int TEST_FILE_1_SIZE = 1024;
@@ -46,7 +49,7 @@ class IonosDataSourceTest {
     public void openPartStream_empty() {
 
         doReturn(List.of())
-                .when(s3Connector).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
                 .client(s3Connector)
@@ -65,11 +68,12 @@ class IonosDataSourceTest {
 
         var s3Objects = List.of(new S3Object(TEST_FILE_1_NAME, TEST_FILE_1_SIZE));
         doReturn(s3Objects)
-                .when(s3Connector).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
                 .client(s3Connector)
                 .bucketName(TEST_BUCKET)
+                .regionId(TEST_REGION)
                 .blobName(TEST_FILE_1_NAME)
                 .build();
 
@@ -93,11 +97,12 @@ class IonosDataSourceTest {
                 new S3Object(TEST_FOLDER_NAME + TEST_FILE_3_NAME, TEST_FILE_3_SIZE)
         );
         doReturn(s3Objects)
-                .when(s3Connector).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
                 .client(s3Connector)
                 .bucketName(TEST_BUCKET)
+                .regionId(TEST_REGION)
                 .blobName(TEST_FOLDER_NAME)
                 .build();
 
@@ -133,11 +138,12 @@ class IonosDataSourceTest {
                 new S3Object(TEST_FOLDER_NAME + TEST_FILE_3_NAME, TEST_FILE_3_SIZE)
         );
         doReturn(s3Objects)
-                .when(s3Connector).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
                 .client(s3Connector)
                 .bucketName(TEST_BUCKET)
+                .regionId(TEST_REGION)
                 .blobName(TEST_FOLDER_NAME)
                 .filterIncludes("device[1-2]-data.csv")
                 .build();
@@ -170,11 +176,12 @@ class IonosDataSourceTest {
                 new S3Object(TEST_FOLDER_NAME + TEST_FILE_3_NAME, TEST_FILE_3_SIZE)
         );
         doReturn(s3Objects)
-                .when(s3Connector).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
                 .client(s3Connector)
                 .bucketName(TEST_BUCKET)
+                .regionId(TEST_REGION)
                 .blobName(TEST_FOLDER_NAME)
                 .filterExcludes("device[1-2]-data.csv")
                 .build();
@@ -204,11 +211,12 @@ class IonosDataSourceTest {
                 new S3Object(TEST_FOLDER_NAME + TEST_SUB_FOLDER_1_NAME + TEST_FILE_3_NAME, TEST_FILE_3_SIZE)
         );
         doReturn(s3Objects)
-                .when(s3Connector).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
                 .client(s3Connector)
                 .bucketName(TEST_BUCKET)
+                .regionId(TEST_REGION)
                 .blobName(TEST_FOLDER_NAME)
                 .build();
 
@@ -249,11 +257,12 @@ class IonosDataSourceTest {
                 new S3Object(TEST_FOLDER_NAME + TEST_SUB_FOLDER_1_NAME + TEST_FILE_3_NAME, TEST_FILE_3_SIZE)
         );
         doReturn(s3Objects)
-                .when(s3Connector).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
                 .client(s3Connector)
                 .bucketName(TEST_BUCKET)
+                .regionId(TEST_REGION)
                 .blobName(TEST_FOLDER_NAME)
                 .filterIncludes("device[1-2]-data.csv")
                 .build();
@@ -287,11 +296,12 @@ class IonosDataSourceTest {
                 new S3Object(TEST_FOLDER_NAME + TEST_SUB_FOLDER_1_NAME + TEST_FILE_3_NAME, TEST_FILE_3_SIZE)
         );
         doReturn(s3Objects)
-                .when(s3Connector).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
                 .client(s3Connector)
                 .bucketName(TEST_BUCKET)
+                .regionId(TEST_REGION)
                 .blobName(TEST_FOLDER_NAME)
                 .filterExcludes("device1-data.csv")
                 .build();
@@ -330,11 +340,12 @@ class IonosDataSourceTest {
                 new S3Object(TEST_FOLDER_NAME + TEST_SUB_FOLDER_1_NAME + TEST_FILE_4_NAME, TEST_FILE_4_SIZE)
         );
         doReturn(s3Objects)
-                .when(s3Connector).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
                 .client(s3Connector)
                 .bucketName(TEST_BUCKET)
+                .regionId(TEST_REGION)
                 .blobName(TEST_FOLDER_NAME)
                 .filterIncludes("device1/device[3-4]-data.csv")
                 .build();
@@ -368,11 +379,12 @@ class IonosDataSourceTest {
                 new S3Object(TEST_FOLDER_NAME + TEST_SUB_FOLDER_1_NAME + TEST_FILE_4_NAME, TEST_FILE_4_SIZE)
         );
         doReturn(s3Objects)
-                .when(s3Connector).listObjects(any(String.class), any(String.class));
+                .when(s3Connector).listObjects(any(String.class), any(String.class), any(String.class));
 
         var dataSource = IonosDataSource.Builder.newInstance()
                 .client(s3Connector)
                 .bucketName(TEST_BUCKET)
+                .regionId(TEST_REGION)
                 .blobName(TEST_FOLDER_NAME)
                 .filterExcludes("device1/device4-data.csv")
                 .build();

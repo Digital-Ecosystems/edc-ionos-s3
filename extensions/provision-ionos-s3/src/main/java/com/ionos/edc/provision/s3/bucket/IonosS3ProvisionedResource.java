@@ -21,7 +21,11 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionedDataDestinationResource;
 
-import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.*;
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.BUCKET_NAME;
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.ENDPOINT;
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.MAX_FILES;
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.PATH;
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.REGION_ID;
 
 @JsonDeserialize(builder = IonosS3ProvisionedResource.Builder.class)
 @JsonTypeName("dataspaceconnector:ionoss3provisionedresource")
@@ -50,8 +54,8 @@ public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResour
             return new Builder();
         }
 
-        public Builder regionId(String regionId) {
-            dataAddressBuilder.property(REGION_ID, regionId);
+        public Builder endpoint(String endpoint) {
+            dataAddressBuilder.property(ENDPOINT, endpoint);
             return this;
         }
 
@@ -67,6 +71,11 @@ public class IonosS3ProvisionedResource extends ProvisionedDataDestinationResour
 
         public Builder accessKeyID(String accessKeyID) {
             provisionedResource.accessKeyID = accessKeyID;
+            return this;
+        }
+
+        public Builder maxFiles(String maxFiles) {
+            dataAddressBuilder.property(MAX_FILES, maxFiles);
             return this;
         }
     }

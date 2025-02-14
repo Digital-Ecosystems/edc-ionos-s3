@@ -25,6 +25,7 @@ import org.eclipse.edc.util.string.StringUtils;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,6 +38,7 @@ public class IonosDataSource implements DataSource {
 
     private S3Connector s3Connector;
     private String bucketName;
+    private String regionId;
     private String blobName;
     private Pattern filterIncludes;
     private Pattern filterExcludes;
@@ -47,7 +49,7 @@ public class IonosDataSource implements DataSource {
     @Override
     public StreamResult<Stream<Part>> openPartStream() {
 
-        var objects = s3Connector.listObjects(this.bucketName, this.blobName);
+        var objects = s3Connector.listObjects(bucketName, regionId, blobName);
 
         if (objects.isEmpty()) {
             return failure(new StreamFailure(
@@ -74,7 +76,7 @@ public class IonosDataSource implements DataSource {
         }
 
         List<Part> parts = objects.stream()
-                .map(object -> new S3Part(s3Connector, bucketName, object.objectName(), object.isDirectory(), object.size()))
+                .map(object -> new S3Part(s3Connector, bucketName, regionId, object.objectName(), object.isDirectory(), object.size()))
                 .collect(Collectors.toList());
         return success(parts.stream());
     }
@@ -100,6 +102,7 @@ public class IonosDataSource implements DataSource {
 
         private final S3Connector s3Connector;
         private final String bucketName;
+        private final String regionId;
         private final String blobName;
         private final boolean isDirectory;
         private final long fileSize;
@@ -107,10 +110,11 @@ public class IonosDataSource implements DataSource {
         private boolean isOpened = true;
         private long currentOffset = 0;
 
-        S3Part(S3Connector s3Connector, String bucketName, String blobName, boolean isDirectory, long fileSize) {
+        S3Part(S3Connector s3Connector, String bucketName, String regionId, String blobName, boolean isDirectory, long fileSize) {
             super();
             this.s3Connector = s3Connector;
             this.bucketName = bucketName;
+            this.regionId = regionId;
             this.blobName = blobName;
             this.isDirectory = isDirectory;
             this.fileSize = fileSize;
@@ -138,9 +142,9 @@ public class IonosDataSource implements DataSource {
 
             InputStream stream;
             if (isDirectory || (fileSize <= chunkSize())) {
-                stream = s3Connector.getObject(bucketName, blobName);
+                stream = s3Connector.getObject(bucketName, regionId, blobName);
             } else {
-                stream = s3Connector.getObject(bucketName, blobName, currentOffset, chunkSize());
+                stream = s3Connector.getObject(bucketName, regionId, blobName, currentOffset, chunkSize());
             }
 
             if (!isDirectory) {
@@ -178,6 +182,11 @@ public class IonosDataSource implements DataSource {
 
         public Builder bucketName(String bucketName) {
             source.bucketName = bucketName;
+            return this;
+        }
+
+        public Builder regionId(String regionId) {
+            source.regionId = regionId;
             return this;
         }
 

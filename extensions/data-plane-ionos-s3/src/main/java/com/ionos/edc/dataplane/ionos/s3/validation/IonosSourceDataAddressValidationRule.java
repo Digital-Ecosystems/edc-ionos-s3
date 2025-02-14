@@ -21,7 +21,8 @@ import org.eclipse.edc.validator.spi.Validator;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.*;
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.BLOB_NAME;
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.BUCKET_NAME;
 import static org.eclipse.edc.validator.spi.Violation.violation;
 
 public class IonosSourceDataAddressValidationRule implements Validator<DataAddress> {

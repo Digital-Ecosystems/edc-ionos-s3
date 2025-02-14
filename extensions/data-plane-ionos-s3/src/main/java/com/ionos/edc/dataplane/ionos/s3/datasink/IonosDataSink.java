@@ -32,6 +32,7 @@ import static java.lang.String.format;
 public class IonosDataSink extends ParallelSink {
 
     private S3Connector s3Connector;
+    private String endpoint;
     private String bucketName;
     private String path;
 
@@ -82,7 +83,7 @@ public class IonosDataSink extends ParallelSink {
 
                 var byteArray = streamsOutput.toByteArray();
                 try (var streamsInput = new ByteArrayInputStream(byteArray)) {
-                    s3Connector.uploadObject(bucketName, blobName, streamsInput);
+                    s3Connector.uploadObject(bucketName, endpoint, blobName, streamsInput);
                     streamsOutput.close();
 
                 } catch (Exception e) {
@@ -128,6 +129,11 @@ public class IonosDataSink extends ParallelSink {
             return this;
         }
 
+        public Builder endpoint(String endpoint) {
+            sink.endpoint = endpoint;
+            return this;
+        }
+
         public Builder bucketName(String bucketName) {
             sink.bucketName = bucketName;
             return this;
@@ -141,6 +147,7 @@ public class IonosDataSink extends ParallelSink {
         @Override
         protected void validate() {
             Objects.requireNonNull(sink.bucketName, "Bucket Name is required");
+            Objects.requireNonNull(sink.bucketName, "Endpoint is required");
         }
     }
 }
