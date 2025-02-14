@@ -60,7 +60,7 @@ public class S3ApiClient {
             if (response.body() == null)
                 throw new IOException("Empty response body retrieving S3 regions");
             else
-                return objectMapper.readValue(response.body().string(), new TypeReference<S3Regions>() {});
+                return objectMapper.readValue(response.body().string(), new TypeReference<>() {});
 
         } catch (IOException e) {
             throw new EdcException("Error retrieving S3 accesskey", e);

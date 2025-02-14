@@ -47,7 +47,7 @@ public class S3ConnectorImpl implements S3Connector {
     private String token;
     private final int maxFiles;
 
-    private final PassiveExpiringMap<String, String> endpointsCache = new PassiveExpiringMap<String, String>(ENDPOINTS_CACHE_TTL);
+    private final PassiveExpiringMap<String, String> endpointsCache = new PassiveExpiringMap<>(ENDPOINTS_CACHE_TTL);
 
     public S3ConnectorImpl(String defaultRegionId, String accessKey, String secretKey, String token, int maxFiles) {
         this.defaultRegionId = defaultRegionId;

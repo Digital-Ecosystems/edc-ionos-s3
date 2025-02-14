@@ -25,7 +25,6 @@ import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.BUCKET_NAME;
 import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.ENDPOINT;
 import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.MAX_FILES;
 import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.PATH;
-import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.REGION_ID;
 
 @JsonDeserialize(builder = IonosS3ProvisionedResource.Builder.class)
 @JsonTypeName("dataspaceconnector:ionoss3provisionedresource")
