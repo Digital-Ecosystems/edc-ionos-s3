@@ -12,7 +12,7 @@
  *
  */
 
-package com.ionos.edc.provision.s3.bucket;
+package com.ionos.edc.provision.s3.resource;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;

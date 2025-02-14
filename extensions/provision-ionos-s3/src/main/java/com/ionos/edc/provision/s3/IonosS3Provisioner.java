@@ -12,12 +12,14 @@
  *
  */
 
-package com.ionos.edc.provision.s3.bucket;
+package com.ionos.edc.provision.s3;
 
 import com.ionos.edc.extension.s3.connector.S3Connector;
 import com.ionos.edc.extension.s3.types.IonosToken;
 
 import com.ionos.edc.extension.s3.api.S3AccessKey;
+import com.ionos.edc.provision.s3.resource.IonosS3ProvisionedResource;
+import com.ionos.edc.provision.s3.resource.IonosS3ResourceDefinition;
 import dev.failsafe.RetryPolicy;
 import org.eclipse.edc.connector.controlplane.transfer.spi.provision.Provisioner;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.DeprovisionedResource;

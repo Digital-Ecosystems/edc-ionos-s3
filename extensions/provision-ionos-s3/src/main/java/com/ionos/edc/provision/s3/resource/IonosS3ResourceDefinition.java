@@ -12,7 +12,7 @@
  *
  */
 
-package com.ionos.edc.provision.s3.bucket;
+package com.ionos.edc.provision.s3.resource;
 
 import java.util.Objects;
 
@@ -31,8 +31,8 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
     private String secretKey;
 
     public IonosS3ResourceDefinition() {
-
     }
+
     public String getKeyName() {
         return keyName;
     }
