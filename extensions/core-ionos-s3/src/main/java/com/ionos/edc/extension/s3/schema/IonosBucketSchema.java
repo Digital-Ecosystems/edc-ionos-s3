@@ -20,7 +20,7 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public interface IonosBucketSchema {
     String TYPE = "IonosS3";
-    String ENDPOINT = EDC_NAMESPACE + "endpoint";
+
     String REGION_ID = EDC_NAMESPACE + "region";
     String BUCKET_NAME = EDC_NAMESPACE + "bucketName";
     String BLOB_NAME = EDC_NAMESPACE + "blobName";
@@ -29,6 +29,8 @@ public interface IonosBucketSchema {
     String FILTER_EXCLUDES = EDC_NAMESPACE + "filter.excludes";
     String ACCESS_KEY_ID = EDC_NAMESPACE + "accessKey";
     String SECRET_ACCESS_KEY = EDC_NAMESPACE + "secretKey";
+
+    String ENDPOINT = EDC_NAMESPACE + "endpoint";
     String MAX_FILES = EDC_NAMESPACE + "maxFiles";
 
     String PUSH_TRANSFER_TYPE = TYPE + "-" + FlowType.PUSH;

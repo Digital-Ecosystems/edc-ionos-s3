@@ -45,7 +45,7 @@ public class IonosProvisionExtension implements ServiceExtension {
     @Inject
     private TypeManager typeManager;
     @Inject
-    private S3Connector clientApi;
+    private S3Connector s3Connector;
 
     @Override
     public String name() {
@@ -66,7 +66,7 @@ public class IonosProvisionExtension implements ServiceExtension {
         var retryPolicy = context.getService(RetryPolicy.class);
 
         monitor.debug("IonosProvisionExtension" + "s3BucketProvisioner");
-        var s3BucketProvisioner = new IonosS3Provisioner(monitor, retryPolicy, clientApi, keyValidationAttempts, keyValidationDelay);
+        var s3BucketProvisioner = new IonosS3Provisioner(monitor, retryPolicy, s3Connector, keyValidationAttempts, keyValidationDelay);
         provisionManager.register(s3BucketProvisioner);
 
         monitor.debug("IonosProvisionExtension" + "manifestGenerator");

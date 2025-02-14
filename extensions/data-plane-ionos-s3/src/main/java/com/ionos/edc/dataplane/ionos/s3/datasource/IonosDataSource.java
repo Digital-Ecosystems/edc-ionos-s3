@@ -75,7 +75,7 @@ public class IonosDataSource implements DataSource {
         }
 
         List<Part> parts = objects.stream()
-                .map(object -> new S3Part(s3Connector, bucketName, regionId, object.objectName(), object.isDirectory(), object.size()))
+                .map(object -> new S3Part(s3Connector, regionId, bucketName, object.objectName(), object.isDirectory(), object.size()))
                 .collect(Collectors.toList());
         return success(parts.stream());
     }
@@ -100,8 +100,8 @@ public class IonosDataSource implements DataSource {
     public static class S3Part implements Part {
 
         private final S3Connector s3Connector;
-        private final String bucketName;
         private final String regionId;
+        private final String bucketName;
         private final String blobName;
         private final boolean isDirectory;
         private final long fileSize;
@@ -109,11 +109,11 @@ public class IonosDataSource implements DataSource {
         private boolean isOpened = true;
         private long currentOffset = 0;
 
-        S3Part(S3Connector s3Connector, String bucketName, String regionId, String blobName, boolean isDirectory, long fileSize) {
+        S3Part(S3Connector s3Connector, String regionId, String bucketName, String blobName, boolean isDirectory, long fileSize) {
             super();
             this.s3Connector = s3Connector;
-            this.bucketName = bucketName;
             this.regionId = regionId;
+            this.bucketName = bucketName;
             this.blobName = blobName;
             this.isDirectory = isDirectory;
             this.fileSize = fileSize;
@@ -179,13 +179,13 @@ public class IonosDataSource implements DataSource {
             return this;
         }
 
-        public Builder bucketName(String bucketName) {
-            source.bucketName = bucketName;
+        public Builder regionId(String regionId) {
+            source.regionId = regionId;
             return this;
         }
 
-        public Builder regionId(String regionId) {
-            source.regionId = regionId;
+        public Builder bucketName(String bucketName) {
+            source.bucketName = bucketName;
             return this;
         }
 
