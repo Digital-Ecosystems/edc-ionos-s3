@@ -19,6 +19,8 @@ import com.ionos.edc.extension.s3.connector.S3Connector;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.util.sink.ParallelSink;
+import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.util.string.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
@@ -42,19 +44,17 @@ public class IonosDataSink extends ParallelSink {
     protected StreamResult<Object> transferParts(List<DataSource.Part> parts) {
 
         for (DataSource.Part part : parts) {
-            String blobName;
-            if (this.path != null) {
-                blobName = this.path + part.name();
-            } else {
-                blobName = part.name();
+            if (StringUtils.isNullOrBlank(part.name())) {
+                throw new EdcException(format("Transfer dataSource [%s] is not returning a name and it is required to transfer to a S3 bucket!", part.getClass().getName()));
             }
+
+            String blobName = (this.path != null) ? this.path + part.name() : part.name();
 
             ByteArrayOutputStream streamsOutput = null;
             InputStream stream = null;
             try {
                 streamsOutput = new ByteArrayOutputStream();
                 stream = part.openStream();
-
 
                 // TODO Make this more configurable
                 if (part instanceof IonosDataSource.S3Part) {
