@@ -26,14 +26,14 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 
-@Extension(value = DataPlaneIonosS3Extension.NAME)
-public class DataPlaneIonosS3Extension implements ServiceExtension {
+@Extension(value = IonosS3DataPlaneExtension.NAME)
+public class IonosS3DataPlaneExtension implements ServiceExtension {
 
     public static final String NAME = "Data Plane Ionos S3 Storage";
     @Inject
     private PipelineService pipelineService;
     
-    @Inject
+    @Inject(required = false)
     private S3Connector s3Connector;
 
     @Inject
@@ -53,12 +53,21 @@ public class DataPlaneIonosS3Extension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         var monitor = context.getMonitor();
+        var contextMonitor = monitor.withPrefix("IonosS3DataPlaneExtension");
 
-        var sourceFactory = new IonosDataSourceFactory(s3Connector);
-        pipelineService.registerFactory(sourceFactory);
-        
-        var sinkFactory = new IonosDataSinkFactory(executorContainer.getExecutorService(), monitor, vault, typeManager);
-        pipelineService.registerFactory(sinkFactory);
-        context.getMonitor().info("File Transfer Extension initialized!");
+        if (s3Connector == null) {
+            contextMonitor.warning("IONOS S3 Connector not loaded, disabling dataSource factory");
+        } else {
+            contextMonitor.debug("Initializing dataSource factory");
+
+            var dataSourceFactory = new IonosDataSourceFactory(s3Connector);
+            pipelineService.registerFactory(dataSourceFactory);
+        }
+
+        contextMonitor.debug("Initializing dataSink factory");
+        var dataSinkFactory = new IonosDataSinkFactory(executorContainer.getExecutorService(), monitor, vault, typeManager);
+        pipelineService.registerFactory(dataSinkFactory);
+
+        contextMonitor.info("DataPlane extension initialized !");
     }
 }

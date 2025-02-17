@@ -34,16 +34,20 @@ import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_KEY_VA
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_KEY_VALIDATION_DELAY;
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_KEY_VALIDATION_DELAY_DEFAULT;
 
-@Extension(value = IonosProvisionExtension.NAME)
-public class IonosProvisionExtension implements ServiceExtension {
+@Extension(value = IonosS3ProvisionExtension.NAME)
+public class IonosS3ProvisionExtension implements ServiceExtension {
 
     public static final String NAME = "Ionos Provision";
 
+    private static final String LOG_CONTEXT = "IonosProvisionExtension";
+
     @Inject
     private Vault vault;
+
     @Inject
     private TypeManager typeManager;
-    @Inject
+
+    @Inject(required = false)
     private S3Connector s3Connector;
 
     @Override
@@ -54,31 +58,32 @@ public class IonosProvisionExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         var monitor = context.getMonitor();
+        var contextMonitor = monitor.withPrefix("IonosS3ProvisionExtension");
 
+        if (s3Connector == null) {
+            contextMonitor.warning("IONOS S3 Connector not loaded, disabling provision extension");
+            return;
+        }
+
+        contextMonitor.debug("Loading configurations");
         var keyValidationAttempts =  context.getSetting(IONOS_KEY_VALIDATION_ATTEMPTS, IONOS_KEY_VALIDATION_ATTEMPTS_DEFAULT);
         var keyValidationDelay =  context.getSetting(IONOS_KEY_VALIDATION_DELAY, IONOS_KEY_VALIDATION_DELAY_DEFAULT);
 
-        monitor.debug("IonosProvisionExtension" + "provisionManager");
+        contextMonitor.debug("Initializing provisioner");
         var provisionManager = context.getService(ProvisionManager.class);
-
-        monitor.debug("IonosProvisionExtension" + "retryPolicy");
         var retryPolicy = context.getService(RetryPolicy.class);
 
-        monitor.debug("IonosProvisionExtension" + "s3BucketProvisioner");
         var s3BucketProvisioner = new IonosS3Provisioner(monitor, retryPolicy, s3Connector, keyValidationAttempts, keyValidationDelay);
         provisionManager.register(s3BucketProvisioner);
 
-        monitor.debug("IonosProvisionExtension" + "manifestGenerator");
+        contextMonitor.debug("Registering manifest generators");
         var manifestGenerator = context.getService(ResourceManifestGenerator.class);
         manifestGenerator.registerGenerator(new IonosS3ConsumerResourceDefinitionGenerator());
 
-        monitor.debug("IonosProvisionExtension" + "registerTypes");
+        contextMonitor.debug("Registering types");
         registerTypes(typeManager);
-    }
 
-    @Override
-    public void shutdown() {
-        ServiceExtension.super.shutdown();
+        contextMonitor.info("Provision extension initialized !");
     }
 
     private void registerTypes(TypeManager typeManager) {
