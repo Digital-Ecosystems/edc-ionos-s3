@@ -29,6 +29,7 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.TYPE;
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_KEY_VALIDATION_ATTEMPTS;
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_KEY_VALIDATION_ATTEMPTS_DEFAULT;
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_KEY_VALIDATION_DELAY;
@@ -62,6 +63,7 @@ public class IonosS3ProvisionExtension implements ServiceExtension {
 
         if (s3Connector == null) {
             contextMonitor.warning("IONOS S3 Connector not loaded, disabling provision extension");
+            contextMonitor.warning("You cannot start a push transfer with dataDestination of type " + TYPE);
             return;
         }
 

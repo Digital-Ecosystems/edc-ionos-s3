@@ -26,6 +26,8 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.TYPE;
+
 @Extension(value = IonosS3DataPlaneExtension.NAME)
 public class IonosS3DataPlaneExtension implements ServiceExtension {
 
@@ -57,6 +59,7 @@ public class IonosS3DataPlaneExtension implements ServiceExtension {
 
         if (s3Connector == null) {
             contextMonitor.warning("IONOS S3 Connector not loaded, disabling dataSource factory");
+            contextMonitor.warning("You cannot provide Assets with dataAddress of type " + TYPE);
         } else {
             contextMonitor.debug("Initializing dataSource factory");
 

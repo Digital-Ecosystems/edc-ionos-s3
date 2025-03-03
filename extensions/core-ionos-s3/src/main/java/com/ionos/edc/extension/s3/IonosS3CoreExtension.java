@@ -24,6 +24,7 @@ import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.TYPE;
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_ACCESS_KEY;
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_MAX_FILES;
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_MAX_FILES_DEFAULT;
@@ -71,8 +72,9 @@ public class IonosS3CoreExtension implements ServiceExtension {
 
         var maxFiles =  Integer.valueOf(context.getSetting(IONOS_MAX_FILES, IONOS_MAX_FILES_DEFAULT));
 
-        if (token == null) {
-            contextMonitor.warning(IONOS_TOKEN + " is not set, disabling IONOS S3 Connector");
+        if (accessKey == null || secretKey == null || token == null) {
+            contextMonitor.warning("IONOS token and S3 key are not set, disabling IONOS S3 Connector");
+            contextMonitor.warning("You cannot start a push transfer with dataDestination of type " + TYPE);
         } else {
             contextMonitor.debug("Initializing S3 Connector");
             var s3Connector = new S3ConnectorImpl(region, accessKey, secretKey, token, maxFiles);
