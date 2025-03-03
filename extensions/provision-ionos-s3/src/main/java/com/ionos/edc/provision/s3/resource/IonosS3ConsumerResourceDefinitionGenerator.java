@@ -50,8 +50,6 @@ public class IonosS3ConsumerResourceDefinitionGenerator implements ConsumerResou
                 .regionId(destination.getStringProperty(IonosBucketSchema.REGION_ID))
                 .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
                 .path(path)
-                .accessKey(destination.getStringProperty(IonosBucketSchema.ACCESS_KEY_ID))
-                .secretKey(destination.getStringProperty(IonosBucketSchema.SECRET_ACCESS_KEY))
                 .build();
     }
 

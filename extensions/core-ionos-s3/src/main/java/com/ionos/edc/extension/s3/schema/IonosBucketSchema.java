@@ -27,8 +27,6 @@ public interface IonosBucketSchema {
     String PATH = EDC_NAMESPACE + "path";
     String FILTER_INCLUDES = EDC_NAMESPACE + "filter.includes";
     String FILTER_EXCLUDES = EDC_NAMESPACE + "filter.excludes";
-    String ACCESS_KEY_ID = EDC_NAMESPACE + "accessKey";
-    String SECRET_ACCESS_KEY = EDC_NAMESPACE + "secretKey";
 
     String ENDPOINT = EDC_NAMESPACE + "endpoint";
     String MAX_FILES = EDC_NAMESPACE + "maxFiles";
