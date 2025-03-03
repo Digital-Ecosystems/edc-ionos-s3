@@ -14,7 +14,7 @@
 
 package com.ionos.edc.dataplane.ionos.s3.datasink;
 
-import com.ionos.edc.dataplane.ionos.s3.validation.IonosSinkDataAddressValidationRule;
+import com.ionos.edc.dataplane.ionos.s3.validators.IonosDataSinkDestinationValidator;
 import com.ionos.edc.extension.s3.connector.S3ConnectorImpl;
 import com.ionos.edc.extension.s3.types.IonosToken;
 import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
@@ -42,7 +42,7 @@ public class IonosDataSinkFactory implements DataSinkFactory {
     private final Vault vault;
     private final TypeManager typeManager;
 
-    private final Validator<DataAddress> validator = new IonosSinkDataAddressValidationRule();
+    private final Validator<DataAddress> destinationValidator = new IonosDataSinkDestinationValidator();
 
     public IonosDataSinkFactory(ExecutorService executorService, Monitor monitor, Vault vault, TypeManager typeManager) {
         this.executorService = executorService;
@@ -59,17 +59,11 @@ public class IonosDataSinkFactory implements DataSinkFactory {
     @Override
     public @NotNull Result<Void> validateRequest(DataFlowStartMessage request) {
         var destination = request.getDestinationDataAddress();
-        return validator.validate(destination).flatMap(ValidationResult::toResult);
+        return destinationValidator.validate(destination).flatMap(ValidationResult::toResult);
     }
 
     @Override
     public DataSink createSink(DataFlowStartMessage request) {
-
-        var validationResult = validateRequest(request);
-        if (validationResult.failed()) {
-            throw new EdcException(String.join(", ", validationResult.getFailureMessages()));
-        }
-
         var destination = request.getDestinationDataAddress();
 
         var secret = vault.resolveSecret(request.getDestinationDataAddress().getKeyName());

@@ -20,6 +20,8 @@ dependencies {
 	api("${edcGroup}:runtime-metamodel:${metaModelVersion}")
 
 	implementation("${edcGroup}:transfer-spi:${edcVersion}")
+	implementation("${edcGroup}:validator-spi:${edcVersion}")
+
 	implementation("io.minio:minio:${minIOVersion}")
 	implementation("org.apache.commons:commons-collections4:${commonsCollectionsVersion}")
 }

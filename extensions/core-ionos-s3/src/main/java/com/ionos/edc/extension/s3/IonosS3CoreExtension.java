@@ -16,13 +16,16 @@ package com.ionos.edc.extension.s3;
 
 import com.ionos.edc.extension.s3.connector.S3Connector;
 import com.ionos.edc.extension.s3.connector.S3ConnectorImpl;
+import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
+import com.ionos.edc.extension.s3.validators.IonosDataAddressValidator;
+import com.ionos.edc.extension.s3.validators.IonosDataDestinationValidator;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provides;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.validator.spi.DataAddressValidatorRegistry;
 
 import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.TYPE;
 import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_ACCESS_KEY;
@@ -38,12 +41,12 @@ import static com.ionos.edc.extension.s3.schema.IonosSettingsSchema.IONOS_TOKEN;
 public class IonosS3CoreExtension implements ServiceExtension {
 
     public static final String NAME = "IonosS3";
-    
+
     @Inject
     private Vault vault;
 
     @Inject
-    private Monitor monitor;
+    private DataAddressValidatorRegistry dataAddressValidatorRegistry;
 
     @Override
     public String name() {
@@ -80,6 +83,10 @@ public class IonosS3CoreExtension implements ServiceExtension {
             var s3Connector = new S3ConnectorImpl(region, accessKey, secretKey, token, maxFiles);
             context.registerService(S3Connector.class, s3Connector);
         }
+
+        contextMonitor.debug("Registering validators");
+        dataAddressValidatorRegistry.registerSourceValidator(IonosBucketSchema.TYPE, new IonosDataAddressValidator());
+        dataAddressValidatorRegistry.registerDestinationValidator(IonosBucketSchema.TYPE, new IonosDataDestinationValidator());
 
         contextMonitor.debug("Core extension initialized !");
     }
