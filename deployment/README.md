@@ -15,6 +15,7 @@ To deploy the EDC Ionos S3 connector to external kubernetes cluster on IONOS clo
 - [Helm](https://helm.sh/docs/intro/install/)
 - [Terraform](https://developer.hashicorp.com/terraform/downloads)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+- [jq](https://jqlang.org/) 
 - [Kubernetes cluster](https://kubernetes.io/docs/setup/) - **Note:** follow instructions of this [link
 ](https://github.com/Digital-Ecosystems/ionos-kubernetes-cluster) to deploy a IONOS kubernetes cluster
 - S3 account
@@ -35,7 +36,7 @@ Set environment variables
 **Some notes:**  
 - You will need docker image of the EDC Ionos S3 connector pushed to a repository. If you don't have one, you can build it following the instructions in the [readme](/connector/README.md);
 - To create the IONOS token please take a look at the following [documentation](/ionos_token.md);
-- If you are deploying multiple EDC Connectors on the same Kubernetes cluster, make sure **TF_VAR_namespace** and **TF_VAR_vaultname** parameters are unique for each Connector.
+- If you are deploying multiple EDC Connectors on the same Kubernetes cluster, make sure **TF_VAR_namespace** and **TF_VAR_vault_name** parameters are unique for each Connector.
 - The *TF_VAR_ionos_token*, *TF_VAR_s3_access_key* and *TF_VAR_s3_secret_key* parameters must be connected to the same IONOS DCD user and account.
 - The IONOS_S3 connector automatically creates S3 access keys for each file transfer. The limit in DCD is usually 5, so make sure there are less than 5 keys before initiating a file transfer.
 - **WARNING**: For **TF_VAR_persistence_type** if you choose **None** the data will be lost if the container pods are restarted.
@@ -45,7 +46,8 @@ Set environment variables
 export TF_VAR_namespace='edc-ionos-s3'
 export TF_VAR_kubeconfig='path to kubeconfig'
 export TF_VAR_persistence_type='PostgreSQLaaS' # 'PostgreSQLaaS', 'PostgreSQL' or 'None'
-export TF_VAR_vaultname='vault'  # optional if only 1 connector per cluster
+export TF_VAR_vault_name='vault'  # optional if only 1 connector per cluster
+export TF_VAR_vault_token_ttl='30m' # vault token time to live
 export TF_VAR_s3_access_key='' # S3 access key
 export TF_VAR_s3_secret_key='' # S3 secret key
 export TF_VAR_s3_endpoint_region='' # s3 endpoint region (e.g. de)
@@ -68,18 +70,18 @@ export TF_VAR_pg_display_name="EDC Ionos Postgres"
 export TF_VAR_pg_username="edc-ionos"
 export TF_VAR_pg_password="edc-ionos-pass"
 export TF_VAR_image_repository="ghcr.io/digital-ecosystems/connector"
-export TF_VAR_image_tag="persistence-latest"
+export TF_VAR_image_tag="v3.1.2-persistence"
 
 # Required if persistence_type is Postgres
 export TF_VAR_pg_username="edc-ionos"
 export TF_VAR_pg_database="edcionos"
 export TF_VAR_pg_password="edc-ionos-pass"
 export TF_VAR_image_repository="ghcr.io/digital-ecosystems/connector"
-export TF_VAR_image_tag="persistence-latest"
+export TF_VAR_image_tag="v3.1.2-persistence"
 
 # Required if persistence_type is None
 export TF_VAR_image_repository="ghcr.io/digital-ecosystems/connector"
-export TF_VAR_image_tag="latest"
+export TF_VAR_image_tag="v3.1.2"
 ```
 
 In case you want to configure this Connector without Hashicorp Vault, you need to also set the parameters below in the helm [values.yaml](deployment/helm/edc-ionos-s3/values.yaml):

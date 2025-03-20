@@ -29,6 +29,11 @@ if [[ -z `printenv TF_VAR_ionos_token` ]]; then
     exit 1
 fi
 
+if [[ -z `printenv TF_VAR_vault_token_ttl` ]]; then
+    echo "Stopping because TF_VAR_vault_token_ttl is undefined"
+    exit 1
+fi
+
 if [[ -z `printenv TF_VAR_persistence_type` ]]; then
     echo "Stopping because TF_VAR_persistence_type is undefined"
     exit 1
