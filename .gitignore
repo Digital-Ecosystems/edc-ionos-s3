@@ -46,6 +46,7 @@ distributions/azure/azure.properties
 
 **/terraform.tfvars
 **/.terraform*
+**/*.env
 launchers/demo-e2e/edc-config.properties
 **/out
 *.hprof
