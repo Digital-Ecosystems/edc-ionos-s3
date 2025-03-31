@@ -76,6 +76,5 @@ rm -f ./db-scripts/terraform.tfstate.backup
 
 rm -f vault-init/vault-keys.json
 rm -f vault-init/vault-tokens.json
-kubectl --kubeconfig $TF_VAR_kubeconfig delete namespace $TF_VAR_namespace
 
 echo "Undeployment complete"
