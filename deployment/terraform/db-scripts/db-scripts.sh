@@ -2,11 +2,6 @@
 
 set -e
 
-echo "Creating database $TF_VAR_pg_database"
-set +e
-kubectl --kubeconfig=$TF_VAR_kubeconfig run -n $TF_VAR_namespace --timeout=120s -i postgres-create-database --rm --image=postgres:latest --env="PGUSER=$TF_VAR_pg_username" --env="PGPASSWORD=$TF_VAR_pg_password" --env="PGHOST=$TF_VAR_pg_host" -- psql --dbname="postgres" --command="CREATE DATABASE $TF_VAR_pg_database;"
-set -e
-
 echo "Creating accesstokendata-store tables"
 kubectl --kubeconfig=$TF_VAR_kubeconfig run -n $TF_VAR_namespace --timeout=120s -i postgres-create-accesstokendata --rm --image=postgres:latest --env="PGUSER=$TF_VAR_pg_username" --env="PGPASSWORD=$TF_VAR_pg_password" --env="PGHOST=$TF_VAR_pg_host" -- psql --dbname="$TF_VAR_pg_database" < ./accesstokendata-store/schema.sql
 

@@ -54,9 +54,10 @@ variable "pg_password" {
 variable "s3_endpoint_region" {}
 variable "ionos_token" {}
 
-variable "vaultname" {
+variable "vault_name" {
   default = "vault"
 }
+
 
 locals {
   vault_token = fileexists("../vault-init/vault-tokens.json") ? "${jsondecode(file("../vault-init/vault-tokens.json")).auth.client_token}" : ""
@@ -82,7 +83,7 @@ resource "helm_release" "edc-ionos-s3" {
 
   set {
     name  = "edc.vault.hashicorp.url"
-    value = "http://${var.vaultname}:8200"
+    value = "http://${var.vault_name}:8200"
   }
 
   set {
