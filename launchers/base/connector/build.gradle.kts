@@ -37,7 +37,6 @@ dependencies {
 	implementation("${edcGroup}:data-plane-selector-api:${edcVersion}")
 	implementation("${edcGroup}:data-plane-selector-core:${edcVersion}")
 	implementation("${edcGroup}:data-plane-self-registration:${edcVersion}")
-	implementation("${edcGroup}:data-plane-control-api:${edcVersion}")
 	implementation("${edcGroup}:data-plane-public-api-v2:${edcVersion}")
 	implementation("${edcGroup}:data-plane-core:${edcVersion}")
 	implementation("${edcGroup}:data-plane-http:${edcVersion}")
