@@ -12,7 +12,7 @@
  *
  */
 
-package com.ionos.edc.provision.s3.bucket;
+package com.ionos.edc.provision.s3.resource;
 
 import java.util.Objects;
 
@@ -27,12 +27,10 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
     private String regionId;
     private String bucketName;
     private String path;
-    private String accessKey;
-    private String secretKey;
 
     public IonosS3ResourceDefinition() {
-
     }
+
     public String getKeyName() {
         return keyName;
     }
@@ -52,9 +50,7 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
                 .keyName(keyName)
                 .regionId(regionId)
                 .bucketName(bucketName)
-                .path(path)
-                .accessKey(accessKey)
-                .secretKey(secretKey);
+                .path(path);
     }
 
     public static class Builder extends ResourceDefinition.Builder<IonosS3ResourceDefinition, Builder> {
@@ -81,14 +77,6 @@ public class IonosS3ResourceDefinition extends ResourceDefinition {
         }
         public Builder path(String path) {
             resourceDefinition.path = path;
-            return this;
-        }
-        public Builder accessKey(String accessKey) {
-            resourceDefinition.accessKey = accessKey;
-            return this;
-        }
-        public Builder secretKey(String secretKey) {
-            resourceDefinition.secretKey = secretKey;
             return this;
         }
 

@@ -12,12 +12,15 @@
  *
  */
 
-package com.ionos.edc.dataplane.ionos.s3;
+package com.ionos.edc.dataplane.ionos.s3.datasink;
 
+import com.ionos.edc.dataplane.ionos.s3.datasource.IonosDataSource;
 import com.ionos.edc.extension.s3.connector.S3Connector;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.util.sink.ParallelSink;
+import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.util.string.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
@@ -31,6 +34,7 @@ import static java.lang.String.format;
 public class IonosDataSink extends ParallelSink {
 
     private S3Connector s3Connector;
+    private String endpoint;
     private String bucketName;
     private String path;
 
@@ -40,19 +44,17 @@ public class IonosDataSink extends ParallelSink {
     protected StreamResult<Object> transferParts(List<DataSource.Part> parts) {
 
         for (DataSource.Part part : parts) {
-            String blobName;
-            if (this.path != null) {
-                blobName = this.path + part.name();
-            } else {
-                blobName = part.name();
+            if (StringUtils.isNullOrBlank(part.name())) {
+                throw new EdcException(format("Transfer dataSource [%s] is not returning a name and it is required to transfer to a S3 bucket!", part.getClass().getName()));
             }
+
+            String blobName = (this.path != null) ? this.path + part.name() : part.name();
 
             ByteArrayOutputStream streamsOutput = null;
             InputStream stream = null;
             try {
                 streamsOutput = new ByteArrayOutputStream();
                 stream = part.openStream();
-
 
                 // TODO Make this more configurable
                 if (part instanceof IonosDataSource.S3Part) {
@@ -81,7 +83,7 @@ public class IonosDataSink extends ParallelSink {
 
                 var byteArray = streamsOutput.toByteArray();
                 try (var streamsInput = new ByteArrayInputStream(byteArray)) {
-                    s3Connector.uploadObject(bucketName, blobName, streamsInput);
+                    s3Connector.uploadObject(bucketName, endpoint, blobName, streamsInput);
                     streamsOutput.close();
 
                 } catch (Exception e) {
@@ -127,6 +129,11 @@ public class IonosDataSink extends ParallelSink {
             return this;
         }
 
+        public Builder endpoint(String endpoint) {
+            sink.endpoint = endpoint;
+            return this;
+        }
+
         public Builder bucketName(String bucketName) {
             sink.bucketName = bucketName;
             return this;
@@ -140,6 +147,7 @@ public class IonosDataSink extends ParallelSink {
         @Override
         protected void validate() {
             Objects.requireNonNull(sink.bucketName, "Bucket Name is required");
+            Objects.requireNonNull(sink.bucketName, "Endpoint is required");
         }
     }
 }

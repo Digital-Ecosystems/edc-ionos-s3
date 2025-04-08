@@ -12,27 +12,29 @@
  *
  */
 
-package com.ionos.edc.dataplane.ionos.s3.validation;
+package com.ionos.edc.extension.s3.validators;
 
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
+import org.eclipse.edc.validator.spi.Violation;
 
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.*;
-import static org.eclipse.edc.validator.spi.Violation.violation;
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.BUCKET_NAME;
+import static org.eclipse.edc.spi.types.domain.DataAddress.EDC_DATA_ADDRESS_KEY_NAME;
+import static org.eclipse.edc.spi.types.domain.DataAddress.EDC_DATA_ADDRESS_TYPE_PROPERTY;
 
-public class IonosSourceDataAddressValidationRule implements Validator<DataAddress> {
+public class IonosDataDestinationValidator implements Validator<DataAddress> {
 
     @Override
     public ValidationResult validate(DataAddress dataAddress) {
-        var violations = Stream.of(BUCKET_NAME, BLOB_NAME)
+        var violations = Stream.of(EDC_DATA_ADDRESS_TYPE_PROPERTY, EDC_DATA_ADDRESS_KEY_NAME, BUCKET_NAME)
                 .map(it -> {
                     var value = dataAddress.getStringProperty(it);
                     if (value == null || value.isBlank()) {
-                        return violation("'%s' is a mandatory attribute".formatted(it), it, value);
+                        return Violation.violation("'%s' is a mandatory attribute".formatted(it), it, value);
                     }
                     return null;
                 })

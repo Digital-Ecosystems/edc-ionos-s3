@@ -12,10 +12,10 @@
  *
  */
 
-package com.ionos.edc.dataplane.ionos.s3;
+package com.ionos.edc.dataplane.ionos.s3.datasink;
 
-import com.ionos.edc.dataplane.ionos.s3.validation.IonosSinkDataAddressValidationRule;
-import com.ionos.edc.extension.s3.connector.S3Connector;
+import com.ionos.edc.dataplane.ionos.s3.validators.IonosDataSinkDestinationValidator;
+import com.ionos.edc.extension.s3.connector.S3ConnectorImpl;
 import com.ionos.edc.extension.s3.types.IonosToken;
 import com.ionos.edc.extension.s3.schema.IonosBucketSchema;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSink;
@@ -33,18 +33,18 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ExecutorService;
 
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.MAX_FILES;
+
 public class IonosDataSinkFactory implements DataSinkFactory {
 
     private final ExecutorService executorService;
     private final Monitor monitor;
-    private final S3Connector s3Connector;
     private final Vault vault;
     private final TypeManager typeManager;
 
-    private final Validator<DataAddress> validator = new IonosSinkDataAddressValidationRule();
+    private final Validator<DataAddress> destinationValidator = new IonosDataSinkDestinationValidator();
 
-    public IonosDataSinkFactory(S3Connector s3Connector, ExecutorService executorService, Monitor monitor, Vault vault, TypeManager typeManager) {
-        this.s3Connector = s3Connector;
+    public IonosDataSinkFactory(ExecutorService executorService, Monitor monitor, Vault vault, TypeManager typeManager) {
         this.executorService = executorService;
         this.monitor = monitor;
         this.vault = vault;
@@ -59,17 +59,11 @@ public class IonosDataSinkFactory implements DataSinkFactory {
     @Override
     public @NotNull Result<Void> validateRequest(DataFlowStartMessage request) {
         var destination = request.getDestinationDataAddress();
-        return validator.validate(destination).flatMap(ValidationResult::toResult);
+        return destinationValidator.validate(destination).flatMap(ValidationResult::toResult);
     }
 
     @Override
     public DataSink createSink(DataFlowStartMessage request) {
-
-        var validationResult = validateRequest(request);
-        if (validationResult.failed()) {
-            throw new EdcException(String.join(", ", validationResult.getFailureMessages()));
-        }
-
         var destination = request.getDestinationDataAddress();
 
         var secret = vault.resolveSecret(request.getDestinationDataAddress().getKeyName());
@@ -78,17 +72,19 @@ public class IonosDataSinkFactory implements DataSinkFactory {
         }
         var token = typeManager.readValue(secret, IonosToken.class);
 
-        var region = destination.getStringProperty(IonosBucketSchema.REGION_ID);
+        var endpoint = destination.getStringProperty(IonosBucketSchema.ENDPOINT);
+        var maxFiles = Integer.parseInt(destination.getStringProperty(MAX_FILES));
 
-        var s3ConnectorTemp = s3Connector.clone(region, token.getAccessKey(), token.getSecretKey());
+        var s3Connector = new S3ConnectorImpl(token.getAccessKey(), token.getSecretKey(), maxFiles);
 
         return IonosDataSink.Builder.newInstance()
+                .endpoint(endpoint)
                 .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
                 .path(destination.getStringProperty(IonosBucketSchema.PATH))
                 .requestId(request.getId())
                 .executorService(executorService)
                 .monitor(monitor)
-                .s3Connector(s3ConnectorTemp)
+                .s3Connector(s3Connector)
                 .build();
     }
 }

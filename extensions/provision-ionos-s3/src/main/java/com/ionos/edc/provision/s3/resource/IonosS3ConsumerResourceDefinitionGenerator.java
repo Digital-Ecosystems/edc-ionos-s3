@@ -12,7 +12,7 @@
  *
  */
 
-package com.ionos.edc.provision.s3.bucket;
+package com.ionos.edc.provision.s3.resource;
 
 import static java.util.UUID.randomUUID;
 
@@ -43,20 +43,13 @@ public class IonosS3ConsumerResourceDefinitionGenerator implements ConsumerResou
         }
 
         var id = randomUUID().toString();
-        var keyName = destination.getKeyName();
-        var regionId = destination.getStringProperty(IonosBucketSchema.REGION_ID);
-        var bucketName = destination.getStringProperty(IonosBucketSchema.BUCKET_NAME);
-        var accessKey = destination.getStringProperty(IonosBucketSchema.ACCESS_KEY_ID);
-        var secretKey = destination.getStringProperty(IonosBucketSchema.SECRET_ACCESS_KEY);
 
         return IonosS3ResourceDefinition.Builder.newInstance()
                 .id(id)
-                .keyName(keyName)
-                .regionId(regionId)
-                .bucketName(bucketName)
+                .keyName(destination.getKeyName())
+                .regionId(destination.getStringProperty(IonosBucketSchema.REGION_ID))
+                .bucketName(destination.getStringProperty(IonosBucketSchema.BUCKET_NAME))
                 .path(path)
-                .accessKey(accessKey)
-                .secretKey(secretKey)
                 .build();
     }
 

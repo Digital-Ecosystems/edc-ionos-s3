@@ -60,37 +60,18 @@ public class S3ApiClient {
             if (response.body() == null)
                 throw new IOException("Empty response body retrieving S3 regions");
             else
-                return objectMapper.readValue(response.body().string(), new TypeReference<S3Regions>() {});
+                return objectMapper.readValue(response.body().string(), new TypeReference<>() {});
 
         } catch (IOException e) {
             throw new EdcException("Error retrieving S3 accesskey", e);
         }
     }
-    public boolean verifyToken(String token) {
-        if(token == null || token.isEmpty())
-            return false;
 
-        String url = "https://api.ionos.com/cloudapi/v6/locations";
-
-        Request request = new Request.Builder().url(url)
-                .addHeader("Authorization", "Bearer " + token)
-                .get()
-                .build();
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                return false;
-
-            } else return response.body() != null;
-        } catch (IOException e) {
-            throw new EdcException("Error access Ionos Cloud", e);
-
-        }
-    }
     public S3AccessKey createAccessKey(String token) {
 
         Request request = new Request.Builder().url(ACCESS_KEYS_ENDPOINT_URL)
                 .addHeader(AUTHORIZATION_HEADER, BEARER_TOKEN_PREFIX + token)
-                .post(RequestBody.create(MediaType.get(JSON_MEDIA_TYPE), new byte[0]))
+                .post(RequestBody.create(new byte[0], MediaType.get(JSON_MEDIA_TYPE)))
                 .build();
 
         try (Response response = client.newCall(request).execute()) {

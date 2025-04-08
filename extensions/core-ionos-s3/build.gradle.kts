@@ -7,6 +7,7 @@ val edcGroup: String by project
 val edcVersion: String by project
 val metaModelVersion: String by project
 val minIOVersion: String by project
+val commonsCollectionsVersion: String by project
 val extensionsGroup: String by project
 val extensionsVersion: String by project
 
@@ -19,7 +20,10 @@ dependencies {
 	api("${edcGroup}:runtime-metamodel:${metaModelVersion}")
 
 	implementation("${edcGroup}:transfer-spi:${edcVersion}")
+	implementation("${edcGroup}:validator-spi:${edcVersion}")
+
 	implementation("io.minio:minio:${minIOVersion}")
+	implementation("org.apache.commons:commons-collections4:${commonsCollectionsVersion}")
 }
 
 java {
