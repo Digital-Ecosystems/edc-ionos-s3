@@ -49,7 +49,7 @@ The extension has the following dependencies:
 | `org.eclipse.edc:data-plane-selector-core`   | Main features of the data plane selector |
 
 ### Configurations
-It is required to configure an `Access key` and a `Secret Access Key` from the IONOS S3 storage service.
+It is required to configure an `Authentication Token` [docs](https://docs.ionos.com/cloud/set-up-ionos-cloud/management/token-management) and a `S3 Access key` [docs](https://docs.ionos.com/cloud/storage-and-backup/ionos-object-storage/concepts/key-management) to use the extension.
 
 The credentials can be found/configured in one of the following:
 - Vault;
@@ -59,17 +59,15 @@ The credentials can be found/configured in one of the following:
 
 It is required to configure those parameters:
 
-| Parameter name                      | Description                                                                                                                                   | Mandatory                                            |
-|-------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
-| `edc.ionos.access.key`              | IONOS Access Key Id to access S3                                                                                                              | Yes if the context is accessing file                 |
-| `edc.ionos.secret.access.key`       | IONOS Secret Access Key to access S3                                                                                                          | Yes if the context is accessing file                 |
-| `edc.ionos.token`                   | IONOS token to allow S3 provisioning                                                                                                          | Yes if the context is provisioning access for others |
-| `edc.ionos.endpoint.region`         | IONOS S3 endpoint region. Refer to [docs](https://docs.ionos.com/cloud/managed-services/s3-object-storage/endpoints) for further information. | No, the default value is "de"                        |
-| `edc.ionos.max.files`               | Maximum number of files retrieved by list files function.                                                                                     | No, the default value is 5,000 files                 |
-| `edc.ionos.key.validation.attempts` | Maximum number of attemps to validate a temporary key after its creation.                                                                     | No, the default values is 10 attempts                |
-| `edc.ionos.key.validation.delay`    | Time to wait (in milisseconds) before each key validation attempt. In each new attempt the delay is multiplied by the attempt number.         | No, the default value is 3,000 (3 seconds)           |
-
-To create the token please take a look at the following [documentation](./ionos_token.md).
+| Parameter name                      | Description                                                                                                                                                       | Mandatory                                            |
+|-------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
+| `edc.ionos.access.key`              | IONOS Access Key Id to access S3                                                                                                                                  | Yes if the context is accessing file                 |
+| `edc.ionos.secret.access.key`       | IONOS Secret Access Key to access S3                                                                                                                              | Yes if the context is accessing file                 |
+| `edc.ionos.token`                   | IONOS Token to allow S3 provisioning                                                                                                                              | Yes if the context is provisioning access for others |
+| `edc.ionos.endpoint.region`         | IONOS S3 endpoint default region. It will be used if a region is not defined in the dataAddress or dataDestination. Refer to [docs](https://docs.ionos.com/cloud/managed-services/s3-object-storage/endpoints) for further information. | No, the default value is "de"                        |
+| `edc.ionos.max.files`               | Maximum number of files copied by S3 bucket folder.                                                                                                               | No, the default value is 5,000 files                 |
+| `edc.ionos.key.validation.attempts` | Maximum number of attemps to validate a temporary key after its creation.                                                                                         | No, the default values is 10 attempts                |
+| `edc.ionos.key.validation.delay`    | Time to wait (in milisseconds) before each key validation attempt. In each new attempt the delay is multiplied by the attempt number.                             | No, the default value is 3,000 (3 seconds)           |
 
 ## Building and Running
 
@@ -93,9 +91,115 @@ cd launchers/prod/connector-persistence
 java -Dedc.fs.config=resources/config.properties -jar build/libs/dataspace-connector.jar
 ```
 
-## Examples
-In order to see working examples go to [edc-ionos-samples](https://github.com/Digital-Ecosystems/edc-ionos-samples).
-
-## Deploying to IONOS Kubernetes
+## Deploying
 Check the [deployment readme](https://github.com/ionos-cloud/edc-ionos-s3/tree/main/deployment/README.md) to see how to deploy the Connector locally or to an external Kubernetes cluster.
 
+## Usage
+
+### DataAddress
+To create an asset using an IONOS S3 Bucket as its data address, use the following format:
+
+To share a file:
+```
+{
+    "@context": {
+        "@vocab": "https://w3id.org/edc/v0.0.1/ns/")
+    },
+    "@id": "asset-671",
+    "properties": {
+        "name": "Test Asset"
+    },
+    "dataAddress": {
+        "type": "IonosS3",
+        "region": "de",
+        "bucketName": "providerBucket",
+        "blobName": "device1-data.csv"
+    }
+}
+```
+
+To share a folder:
+```
+{
+    "@context": {
+        "@vocab": "https://w3id.org/edc/v0.0.1/ns/")
+    },
+    "@id": "asset-671",
+    "properties": {
+        "name": "Test Asset"
+    },
+    "dataAddress": {
+        "type": "IonosS3",
+        "region": "de",
+        "bucketName": "providerBucket",
+        "blobName": "folder/",
+        filter.includes: "*.csv"
+    }
+}
+```
+
+| Tag name               | Description                                                                                                                                              | Mandatory                                                                   |
+|------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| dataAddress.type       | This extension uses the `IonosS3` designation                                                                                                            | Yes                                                                         |
+| dataAddress.region     | S3 Bucket region used to retrieve the S3 API endpoint. [Possible values](https://docs.ionos.com/cloud/storage-and-backup/ionos-object-storage/endpoints) | No.  If not send the configuration `edc.ionos.endpoint.region` will be used |
+| dataAddress.bucketName | Name of the S3 Bucket used to store the asset data                                                                                                       | Yes                                                                         |
+| dataAddress.blobName   | Path to a file or folder on the source S3 Bucket                                                                                                         | Yes                                                                         |
+| filter.includes        | Regular expression to filter the files or folders to be copied from the blobName                                                                         | No                                                                          | 
+| filter.excludes        | Regular expression to filter the files or folders to be NOT be copied from the blobName                                                                  | No                                                                          |
+
+### DataDestination
+To start a transfer using an IONOS S3 Bucket as its data destination, use the following formats:
+
+To transfer to the root folder:
+```
+{
+    "@context":{
+        "edc":"https://w3id.org/edc/v0.0.1/ns/"
+    },
+    "connectorId":"provider",
+    "counterPartyAddress":"http://localhost:8282/protocol",
+    "contractId":"3186afb5-7b10-4665-b07b-233f5665eb98",
+    "protocol":"dataspace-protocol-http",
+    "transferType": "IonosS3-PUSH",
+    "dataDestination":{
+        "type":"IonosS3",
+        "keyName":"4fc5ecaf-6630-4ce5-aacb-f42778a6a65b",
+        "region": "de",
+        "bucketName":"consumerBucket"
+    }
+}
+```
+
+To transfer to a folder:
+```
+{
+    "@context":{
+        "edc":"https://w3id.org/edc/v0.0.1/ns/"
+    },
+    "connectorId":"provider",
+    "counterPartyAddress":"http://localhost:8282/protocol",
+    "contractId":"3186afb5-7b10-4665-b07b-233f5665eb98",
+    "protocol":"dataspace-protocol-http",
+    "transferType": "IonosS3-PUSH",
+    "dataDestination":{
+        "type":"IonosS3",
+        "keyName":"4fc5ecaf-6630-4ce5-aacb-f42778a6a65b",
+        "region": "de",
+        "bucketName":"consumerBucket",
+        "path": "subFolder/"
+    }
+}
+```
+
+Note: Only the PUSH transfer type is supported.
+
+| Tag name               | Description                                                                                                                                              | Mandatory                                                                   |
+|------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| transferType           | This extension uses the `IonosS3-PUSH` designation                                                                                                       | Yes                                                                         |
+| dataAddress.type       | This extension uses the `IonosS3` designation                                                                                                            | Yes                                                                         |
+| dataAddress.keyName    | Key name used to store the temporary S3 Keys during the transfer. Need to be an unique value.                                                            | Yes                                                                         |
+| dataAddress.region     | S3 Bucket region used to retrieve the S3 API endpoint. [Possible values](https://docs.ionos.com/cloud/storage-and-backup/ionos-object-storage/endpoints) | No. If not send, the configuration `edc.ionos.endpoint.region` will be used |
+| dataAddress.bucketName | Name of the destination S3 Bucket, to receive the transferred data                                                                                       | Yes                                                                         |
+| dataAddress.path       | Path of a folder, on the destination S3 Bucket, to receive the transferred data                                                                          | No                                                                          | 
+
+Note: the scope of this repo is NOT to explain the complete flows (and payloads) of the EDC Connector. If you want to know more please take a look at the [Eclipse EDC Samples](https://github.com/eclipse-edc/Samples).
