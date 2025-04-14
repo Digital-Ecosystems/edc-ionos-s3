@@ -58,8 +58,7 @@ public class IonosS3DataPlaneExtension implements ServiceExtension {
         var contextMonitor = monitor.withPrefix("IonosS3DataPlaneExtension");
 
         if (s3Connector == null) {
-            contextMonitor.warning("IONOS S3 Connector not loaded, disabling dataSource factory");
-            contextMonitor.warning("You cannot provide Assets with dataAddress of type " + TYPE);
+            contextMonitor.warning("IONOS S3 Connector not loaded, disabling dataSource factory. You cannot receive push transfers to Assets with dataAddress of type " + TYPE);
         } else {
             contextMonitor.debug("Initializing dataSource factory");
 

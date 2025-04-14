@@ -62,8 +62,7 @@ public class IonosS3ProvisionExtension implements ServiceExtension {
         var contextMonitor = monitor.withPrefix("IonosS3ProvisionExtension");
 
         if (s3Connector == null) {
-            contextMonitor.warning("IONOS S3 Connector not loaded, disabling provision extension");
-            contextMonitor.warning("You cannot start a push transfer with dataDestination of type " + TYPE);
+            contextMonitor.warning("IONOS S3 Connector not loaded, disabling provision extension. You cannot initiate push transfers with dataDestination of type " + TYPE);
             return;
         }
 
