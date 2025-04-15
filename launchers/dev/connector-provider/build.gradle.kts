@@ -24,6 +24,10 @@ val edcVersion: String by project
 dependencies {
     implementation(project(":launchers:base:connector"))
 
+    // Ionos Extensions
+    implementation(project(":extensions:provision-ionos-s3"))
+    implementation(project(":extensions:data-plane-ionos-s3"))
+
     implementation("${edcGroup}:configuration-filesystem:${edcVersion}")
     implementation("${edcGroup}:vault-hashicorp:${edcVersion}")
     implementation("${edcGroup}:iam-mock:${edcVersion}")

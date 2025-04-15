@@ -14,6 +14,8 @@
 
 package com.ionos.edc.dataplane.ionos.s3;
 
+import com.ionos.edc.dataplane.ionos.s3.datasink.IonosDataSinkFactory;
+import com.ionos.edc.dataplane.ionos.s3.datasource.IonosDataSourceFactory;
 import com.ionos.edc.extension.s3.connector.S3Connector;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataTransferExecutorServiceContainer;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
@@ -24,14 +26,16 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 
-@Extension(value = DataPlaneIonosS3Extension.NAME)
-public class DataPlaneIonosS3Extension implements ServiceExtension {
+import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.TYPE;
+
+@Extension(value = IonosS3DataPlaneExtension.NAME)
+public class IonosS3DataPlaneExtension implements ServiceExtension {
 
     public static final String NAME = "Data Plane Ionos S3 Storage";
     @Inject
     private PipelineService pipelineService;
     
-    @Inject
+    @Inject(required = false)
     private S3Connector s3Connector;
 
     @Inject
@@ -51,12 +55,21 @@ public class DataPlaneIonosS3Extension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         var monitor = context.getMonitor();
+        var contextMonitor = monitor.withPrefix("IonosS3DataPlaneExtension");
 
-        var sourceFactory = new IonosDataSourceFactory(s3Connector, monitor);
-        pipelineService.registerFactory(sourceFactory);
-        
-        var sinkFactory = new IonosDataSinkFactory(s3Connector, executorContainer.getExecutorService(), monitor, vault, typeManager);
-        pipelineService.registerFactory(sinkFactory);
-        context.getMonitor().info("File Transfer Extension initialized!");
+        if (s3Connector == null) {
+            contextMonitor.warning("IONOS S3 Connector not loaded, disabling dataSource factory. You cannot receive push transfers to Assets with dataAddress of type " + TYPE);
+        } else {
+            contextMonitor.debug("Initializing dataSource factory");
+
+            var dataSourceFactory = new IonosDataSourceFactory(s3Connector);
+            pipelineService.registerFactory(dataSourceFactory);
+        }
+
+        contextMonitor.debug("Initializing dataSink factory");
+        var dataSinkFactory = new IonosDataSinkFactory(executorContainer.getExecutorService(), monitor, vault, typeManager);
+        pipelineService.registerFactory(dataSinkFactory);
+
+        contextMonitor.info("DataPlane extension initialized !");
     }
 }

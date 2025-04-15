@@ -49,10 +49,6 @@ dependencies {
 
 	// Validators
 	implementation("${edcGroup}:validator-data-address-http-data:${edcVersion}")
-
-	// Ionos Extensions
-	implementation(project(":extensions:provision-ionos-s3"))
-	implementation(project(":extensions:data-plane-ionos-s3"))
 }
 
 tasks.jar {

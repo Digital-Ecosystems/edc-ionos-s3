@@ -24,23 +24,27 @@ import java.util.List;
 @ExtensionPoint
 public interface S3Connector {
 
-    void createBucket(String bucketName);
+    String getDefaultRegionId();
 
-    boolean bucketExists(String bucketName);
+    int getMaxFiles();
+
+    String getEndpoint(String regionId);
+
+    boolean bucketExists(String bucketName, String regionId);
+
+    void createBucket(String bucketName, String regionId);
     
-    void uploadObject(String bucketName, String objectName, ByteArrayInputStream stream);
+    void uploadObject(String bucketName, String endpoint, String objectName, ByteArrayInputStream stream);
 
-    ByteArrayInputStream getObject(String bucketName, String objectName);
+    ByteArrayInputStream getObject(String bucketName, String regionId, String objectName);
 
-    ByteArrayInputStream getObject(String bucketName, String objectName, long offset, long length);
+    ByteArrayInputStream getObject(String bucketName, String regionId, String objectName, long offset, long length);
 
-    List<S3Object> listObjects(String bucketName, String objectName);
+    List<S3Object> listObjects(String bucketName, String regionId, String objectName);
 
     S3AccessKey createAccessKey();
 
     S3AccessKey retrieveAccessKey(String keyID);
 
     void deleteAccessKey(String keyID);
-
-    S3Connector clone(String region, String accessKey, String secretKey);
 }

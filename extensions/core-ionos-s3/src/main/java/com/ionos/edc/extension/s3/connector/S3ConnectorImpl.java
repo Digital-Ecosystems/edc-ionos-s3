@@ -25,144 +25,189 @@ import io.minio.ListObjectsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.eclipse.edc.spi.EdcException;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static com.ionos.edc.extension.s3.schema.IonosBucketSchema.REGION_ID_DEFAULT;
+import static java.lang.String.format;
 
 public class S3ConnectorImpl implements S3Connector {
 
+    private static final long ENDPOINTS_CACHE_TTL = 3600000; // 1 Hour
+
     private final S3ApiClient S3ApiClient = new S3ApiClient();
 
-    private final MinioClient minioClient;
-    private final String regionId;
-    private final String token;
+    private String defaultRegionId;
+    private final String accessKey;
+    private final String secretKey;
+    private String token;
     private final int maxFiles;
 
-    public S3ConnectorImpl(String regionId, @NotNull String accessKey, @NotNull String secretKey, @NotNull String token, int maxFiles) {
+    private final PassiveExpiringMap<String, String> endpointsCache = new PassiveExpiringMap<>(ENDPOINTS_CACHE_TTL);
+
+    public S3ConnectorImpl(String defaultRegionId, String accessKey, String secretKey, String token, int maxFiles) {
+        this.defaultRegionId = defaultRegionId;
+        this.accessKey = accessKey;
+        this.secretKey = secretKey;
         this.token = token;
         this.maxFiles = maxFiles;
+    }
 
-        this.regionId = Objects.requireNonNullElse(regionId, REGION_ID_DEFAULT);
-        if(S3ApiClient.verifyToken(token)) {
-            var endpoint = getEndpoint(this.regionId, token);
-            this.minioClient = MinioClient.builder().endpoint(endpoint).credentials(accessKey, secretKey).build();
+    public S3ConnectorImpl(String accessKey, String secretKey, int maxFiles) {
+        this.accessKey = accessKey;
+        this.secretKey = secretKey;
+        this.maxFiles = maxFiles;
+    }
+
+    private MinioClient buildClientByRegion(String regionId) {
+
+        String endpoint;
+        if (regionId != null) {
+            endpoint = getEndpoint(regionId);
         } else {
-            this.minioClient = null;
+            endpoint = getEndpoint(defaultRegionId);
         }
+
+        return MinioClient.builder().
+                endpoint(endpoint).
+                credentials(accessKey, secretKey).
+                build();
+    }
+
+    private MinioClient buildClientByEndpoint(String endpoint) {
+
+        return MinioClient.builder().
+                endpoint(endpoint).
+                credentials(accessKey, secretKey).
+                build();
     }
 
     @Override
-    public void createBucket(String bucketName) {
-        if (!bucketExists(bucketName.toLowerCase())) {
-            try {
-                minioClient.makeBucket(MakeBucketArgs.builder()
-                        .bucket(bucketName.toLowerCase())
-                        .region(regionId)
-                        .build());
-            } catch (Exception e) {
-                throw new EdcException("Creating bucket: " + e.getMessage());
+    public String getDefaultRegionId() {
+        return defaultRegionId;
+    }
+
+    @Override
+    public int getMaxFiles() {
+        return maxFiles;
+    }
+
+    @Override
+    public String getEndpoint(String regionId) {
+
+        if (endpointsCache.containsKey(regionId))
+            return endpointsCache.get(regionId);
+
+        var regions = S3ApiClient.retrieveRegions(token);
+
+        for (S3Region region: regions.getItems()) {
+            if (region.getId().equals(regionId)) {
+                var endpoint = "https://" + region.getProperties().getEndpoint();
+                endpointsCache.put(regionId, endpoint);
+                return endpoint;
             }
         }
+        throw new EdcException("Invalid region: " + regionId);
     }
 
     @Override
-    public boolean bucketExists(String bucketName) {
-        try {
+    public boolean bucketExists(String bucketName, String regionId) {
+
+        try (var minioClient = buildClientByRegion(regionId)) {
             return minioClient.bucketExists(BucketExistsArgs.builder()
                     .bucket(bucketName.toLowerCase())
-                    .region(regionId)
                     .build());
+
         } catch (Exception e) {
-            throw new EdcException("Verifying if bucket exists - " + e.getMessage());
+            throw new EdcException(format("Error verifying if bucket %s exists in region %s", bucketName, regionId), e);
         }
     }
 
     @Override
-    public void uploadObject(String bucketName, String objectName, ByteArrayInputStream stream) {
-        if (!bucketExists(bucketName.toLowerCase())) {
-            createBucket(bucketName.toLowerCase());
+    public void createBucket(String bucketName, String regionId) {
+
+        try (var minioClient = buildClientByRegion(regionId)) {
+            minioClient.makeBucket(MakeBucketArgs.builder()
+                    .bucket(bucketName.toLowerCase())
+                    .build());
+        } catch (Exception e) {
+            throw new EdcException(format("Error creating bucket %s in region %s", bucketName, regionId), e);
         }
-       
-        try {
+    }
+
+    @Override
+    public void uploadObject(String bucketName, String endpoint, String objectName, ByteArrayInputStream stream) {
+
+        try (var minioClient = buildClientByEndpoint(endpoint)) {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucketName.toLowerCase())
-                    .region(regionId)
                     .object(objectName)
                     .stream(stream, stream.available(), -1)
                     .build());
         } catch (Exception e) {
-            throw new EdcException("Uploading parts: " + e.getMessage());
+            throw new EdcException(format("Error uploading object %s in bucket %s, endpoint %s", objectName, bucketName, endpoint), e);
         }
     }
 
     @Override
-    public ByteArrayInputStream getObject(String bucketName, String objectName) {
-        if (!bucketExists(bucketName.toLowerCase())) {
-            throw new EdcException("Bucket not found - " + bucketName);
-        }
-
+    public ByteArrayInputStream getObject(String bucketName, String regionId, String objectName) {
         var request = GetObjectArgs.builder()
                 .bucket(bucketName.toLowerCase())
-                .region(regionId)
                 .object(objectName)
                 .build();
 
-        try (var response = minioClient.getObject(request)) {
+        try (var minioClient = buildClientByRegion(regionId); var response = minioClient.getObject(request)) {
             return new ByteArrayInputStream(response.readAllBytes());
         } catch (Exception e) {
-            throw new EdcException("Getting file - " + e.getMessage());
+            throw new EdcException(format("Error getting object %s in bucket %s, region %s", objectName, bucketName, regionId), e);
         }
     }
 
     @Override
-    public ByteArrayInputStream getObject(String bucketName, String objectName, long offset, long length) {
-        if (!bucketExists(bucketName.toLowerCase())) {
-            throw new EdcException("Bucket not found - " + bucketName);
-        }
-
+    public ByteArrayInputStream getObject(String bucketName, String regionId, String objectName, long offset, long length) {
         var request = GetObjectArgs.builder()
                 .bucket(bucketName.toLowerCase())
-                .region(regionId)
                 .object(objectName)
                 .offset(offset)
                 .length(length)
                 .build();
 
-        try (var response = minioClient.getObject(request)) {
+        try (var minioClient = buildClientByRegion(regionId); var response = minioClient.getObject(request)) {
             return new ByteArrayInputStream(response.readAllBytes());
         } catch (Exception e) {
-            throw new EdcException("Getting file - " + e.getMessage());
+            throw new EdcException(format("Error getting object %s in bucket %s, region %s", objectName, bucketName, regionId), e);
         }
     }
 
     @Override
-    public List<S3Object> listObjects(String bucketName, String objectName) {
+    public List<S3Object> listObjects(String bucketName, String regionId, String objectName) {
 
-        var objects = minioClient.listObjects(ListObjectsArgs.builder()
-                .bucket(bucketName.toLowerCase())
-                .region(regionId)
-                .prefix(objectName)
-                .recursive(true)
-                .maxKeys(maxFiles)
-                .build());
+        try (var minioClient = buildClientByRegion(regionId)) {
+            var objects = minioClient.listObjects(ListObjectsArgs.builder()
+                    .bucket(bucketName.toLowerCase())
+                    .prefix(objectName)
+                    .recursive(true)
+                    .maxKeys(maxFiles)
+                    .build());
 
-        return StreamSupport.stream(objects.spliterator(), false)
-                .map(item -> {
-                    try {
-                        return item.get();
-                    } catch (Exception e) {
-                        throw new EdcException("Error fetching object", e);
-                    }
-                })
-                .map(item -> new S3Object(item.objectName(), item.size()))
-                .collect(Collectors.toList());
+            return StreamSupport.stream(objects.spliterator(), false)
+                    .map(item -> {
+                        try {
+                            return item.get();
+                        } catch (Exception e) {
+                            throw new EdcException("Error fetching object", e);
+                        }
+                    })
+                    .map(item -> new S3Object(item.objectName(), item.size()))
+                    .collect(Collectors.toList());
+
+        } catch (Exception e) {
+            throw new EdcException(format("Error listing objects with prefix %s in bucket %s, region %s", objectName, bucketName, regionId), e);
+        }
     }
     
     @Override
@@ -191,20 +236,4 @@ public class S3ConnectorImpl implements S3Connector {
             throw new EdcException("Error deleting access key", e);
         }
 	}
-
-    private String getEndpoint(String regionId, String token) {
-        var regions = S3ApiClient.retrieveRegions(token);
-
-        for (S3Region region: regions.getItems()) {
-            if (region.getId().equals(regionId)) {
-                return "https://" + region.getProperties().getEndpoint();
-            }
-        }
-        throw new EdcException("Invalid region: " + regionId);
-    }
-
-    @Override
-    public S3Connector clone(String region, String accessKey, String secretKey) {
-        return new S3ConnectorImpl(region, accessKey, secretKey, this.token, this.maxFiles);
-    }
 }
